@@ -146,46 +146,33 @@ class _FloatingNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(
-          child: _BlurPill(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _NavItem(
-                  icon: Icons.home_rounded,
-                  label: 'Home',
-                  active: location == '/',
-                  onTap: () => context.go('/'),
-                ),
-                _NavItem(
-                  icon: Icons.description_rounded,
-                  label: 'CV',
-                  active: location == '/cv',
-                  onTap: () => context.go('/cv'),
-                ),
-              ],
-            ),
+        _BlurPill(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _NavItem(
+                icon: Icons.bar_chart_rounded,
+                active: location == '/',
+                onTap: () => context.go('/'),
+              ),
+              const SizedBox(width: 10),
+              _NavItem(
+                icon: Icons.crop_square_rounded,
+                active: location == '/cv',
+                onTap: () => context.go('/cv'),
+              ),
+              const SizedBox(width: 10),
+              _NavItem(
+                icon: Icons.account_tree_outlined,
+                active: location == '/roadmap',
+                onTap: () => context.go('/roadmap'),
+              ),
+            ],
           ),
         ),
-        const SizedBox(width: 14),
-        _CenterLoopButton(onTap: () => context.go('/interview')),
-        const SizedBox(width: 14),
-        Expanded(
-          child: _BlurPill(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _NavItem(
-                  icon: Icons.route_rounded,
-                  label: 'Ruta',
-                  active: location == '/roadmap',
-                  onTap: () => context.go('/roadmap'),
-                ),
-              ],
-            ),
-          ),
-        ),
+        _CallButton(onTap: () => context.go('/interview')),
       ],
     );
   }
@@ -204,10 +191,11 @@ class _BlurPill extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
           height: 66,
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 9),
           decoration: BoxDecoration(
             color: LoopColors.surfaceBlack.withValues(alpha: 0.92),
             borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
           ),
           child: child,
         ),
@@ -216,8 +204,8 @@ class _BlurPill extends StatelessWidget {
   }
 }
 
-class _CenterLoopButton extends StatelessWidget {
-  const _CenterLoopButton({required this.onTap});
+class _CallButton extends StatelessWidget {
+  const _CallButton({required this.onTap});
 
   final VoidCallback onTap;
 
@@ -227,12 +215,12 @@ class _CenterLoopButton extends StatelessWidget {
       onTap: onTap,
       customBorder: const CircleBorder(),
       child: Container(
-        width: 70,
-        height: 70,
+        width: 66,
+        height: 66,
         decoration: BoxDecoration(
-          color: LoopColors.accentGreen,
+          color: LoopColors.surfaceBlack.withValues(alpha: 0.92),
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.white, width: 4),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
           boxShadow: [
             BoxShadow(
               blurRadius: 28,
@@ -241,10 +229,29 @@ class _CenterLoopButton extends StatelessWidget {
             ),
           ],
         ),
-        child: const Icon(
-          Icons.graphic_eq_rounded,
-          color: LoopColors.brandGreen,
-          size: 32,
+        child: Center(
+          child: Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: LoopColors.accentGreen, width: 4),
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 10,
+                  spreadRadius: 1,
+                  color: LoopColors.accentGreen.withValues(alpha: 0.42),
+                ),
+              ],
+            ),
+            child: const Center(
+              child: Icon(
+                Icons.graphic_eq_rounded,
+                color: LoopColors.accentGreen,
+                size: 18,
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -254,40 +261,30 @@ class _CenterLoopButton extends StatelessWidget {
 class _NavItem extends StatelessWidget {
   const _NavItem({
     required this.icon,
-    required this.label,
     required this.active,
     required this.onTap,
   });
 
   final IconData icon;
-  final String label;
   final bool active;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final color = active ? LoopColors.accentGreen : Colors.white70;
+    final iconColor = active ? Colors.white : Colors.white70;
 
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(24),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 22, color: color),
-            const SizedBox(height: 3),
-            Text(
-              label,
-              style: TextStyle(
-                color: color,
-                fontSize: 11,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ],
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(
+          color: active ? const Color(0xFF11C86F) : Colors.transparent,
+          shape: BoxShape.circle,
         ),
+        child: Icon(icon, size: 24, color: iconColor),
       ),
     );
   }

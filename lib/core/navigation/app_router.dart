@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -21,34 +22,150 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         routes: [
           GoRoute(
             path: '/',
-            builder: (context, state) => const HomeScreen(),
+            pageBuilder: (context, state) => _navPage(
+              state: state,
+              child: const HomeScreen(),
+            ),
           ),
           GoRoute(
             path: '/loops',
-            builder: (context, state) => const LoopsScreen(),
+            pageBuilder: (context, state) => _navPage(
+              state: state,
+              child: const LoopsScreen(),
+            ),
           ),
           GoRoute(
             path: '/cv',
-            builder: (context, state) => const CvAnalysisScreen(),
+            pageBuilder: (context, state) => _navPage(
+              state: state,
+              child: const CvAnalysisScreen(),
+            ),
           ),
           GoRoute(
             path: '/roadmap',
-            builder: (context, state) => const RoadmapScreen(),
+            pageBuilder: (context, state) => _navPage(
+              state: state,
+              child: const RoadmapScreen(),
+            ),
           ),
           GoRoute(
             path: '/profile',
-            builder: (context, state) => const ProfileScreen(),
+            pageBuilder: (context, state) => _navPage(
+              state: state,
+              child: const ProfileScreen(),
+            ),
           ),
         ],
       ),
       GoRoute(
         path: '/interview',
-        builder: (context, state) => const InterviewCallScreen(),
+        pageBuilder: (context, state) => _callPage(
+          state: state,
+          child: const InterviewCallScreen(),
+        ),
       ),
       GoRoute(
         path: '/recap',
-        builder: (context, state) => const RecapScreen(),
+        pageBuilder: (context, state) => _recapPage(
+          state: state,
+          child: const RecapScreen(),
+        ),
       ),
     ],
   );
 });
+
+CustomTransitionPage<void> _navPage({
+  required GoRouterState state,
+  required Widget child,
+}) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    transitionDuration: Duration.zero,
+    reverseTransitionDuration: Duration.zero,
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final curvedAnimation = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOutCubic,
+        reverseCurve: Curves.easeInCubic,
+      );
+      final fade = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
+      final slide = Tween<Offset>(
+        begin: const Offset(0.04, 0),
+        end: Offset.zero,
+      ).animate(curvedAnimation);
+      final scale = Tween<double>(begin: 0.985, end: 1).animate(curvedAnimation);
+
+      return FadeTransition(
+        opacity: fade,
+        child: SlideTransition(
+          position: slide,
+          child: ScaleTransition(scale: scale, child: child),
+        ),
+      );
+    },
+  );
+}
+
+CustomTransitionPage<void> _callPage({
+  required GoRouterState state,
+  required Widget child,
+}) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    transitionDuration: Duration.zero,
+    reverseTransitionDuration: Duration.zero,
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final curvedAnimation = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOutQuart,
+        reverseCurve: Curves.easeInCubic,
+      );
+      final slide = Tween<Offset>(
+        begin: const Offset(0, 0.08),
+        end: Offset.zero,
+      ).animate(curvedAnimation);
+      final fade = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
+      final scale = Tween<double>(begin: 0.96, end: 1).animate(curvedAnimation);
+
+      return FadeTransition(
+        opacity: fade,
+        child: SlideTransition(
+          position: slide,
+          child: ScaleTransition(scale: scale, child: child),
+        ),
+      );
+    },
+  );
+}
+
+CustomTransitionPage<void> _recapPage({
+  required GoRouterState state,
+  required Widget child,
+}) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    transitionDuration: Duration.zero,
+    reverseTransitionDuration: Duration.zero,
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      final curvedAnimation = CurvedAnimation(
+        parent: animation,
+        curve: Curves.easeOutCubic,
+        reverseCurve: Curves.easeInCubic,
+      );
+      final fade = Tween<double>(begin: 0, end: 1).animate(curvedAnimation);
+      final slide = Tween<Offset>(
+        begin: const Offset(0, 0.04),
+        end: Offset.zero,
+      ).animate(curvedAnimation);
+
+      return FadeTransition(
+        opacity: fade,
+        child: SlideTransition(position: slide, child: child),
+      );
+    },
+  );
+}
