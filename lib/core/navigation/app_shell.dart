@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:cupertino_native/cupertino_native.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -32,7 +34,7 @@ class AppShell extends StatelessWidget {
               left: 18,
               right: 18,
               bottom: 18,
-              child: _FloatingNavBar(location: location),
+              child: _AdaptiveFloatingNavBar(location: location),
             ),
           ],
         ),
@@ -69,53 +71,48 @@ class _TopBar extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
           child: Row(
-        children: [
-          InkWell(
-            onTap: onProfileTap,
-            borderRadius: BorderRadius.circular(22),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-              decoration: BoxDecoration(
-                color: LoopColors.surfaceElevated.withValues(alpha: 0.92),
+            children: [
+              InkWell(
+                onTap: onProfileTap,
                 borderRadius: BorderRadius.circular(22),
-                border: Border.all(color: LoopColors.border),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const CircleAvatar(
-                    radius: 16,
-                    backgroundColor: LoopColors.brandGreen,
-                    child: Text(
-                      'C',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w800,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: LoopColors.surfaceElevated.withValues(alpha: 0.92),
+                    borderRadius: BorderRadius.circular(22),
+                    border: Border.all(color: LoopColors.border),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const CircleAvatar(
+                        radius: 16,
+                        backgroundColor: LoopColors.brandGreen,
+                        child: Text(
+                          'C',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: 9),
+                      Text(
+                        userName,
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 9),
-                  Text(
-                    userName,
-                    style: Theme.of(context).textTheme.labelLarge,
-                  ),
-                ],
+                ),
               ),
-            ),
+              const Spacer(),
+              _TopIconButton(icon: Icons.settings_rounded, onTap: onProfileTap),
+            ],
           ),
-          const Spacer(),
-          _TopIconButton(
-            icon: Icons.notifications_none_rounded,
-            onTap: () {},
-          ),
-          const SizedBox(width: 8),
-          _TopIconButton(
-            icon: Icons.settings_rounded,
-            onTap: onProfileTap,
-          ),
-        ],
-      ),
-    );
+        );
       },
     );
   }
@@ -146,8 +143,23 @@ class _TopIconButton extends StatelessWidget {
   }
 }
 
-class _FloatingNavBar extends StatelessWidget {
-  const _FloatingNavBar({required this.location});
+class _AdaptiveFloatingNavBar extends StatelessWidget {
+  const _AdaptiveFloatingNavBar({required this.location});
+
+  final String location;
+
+  @override
+  Widget build(BuildContext context) {
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      return _IosLiquidTabBar(location: location);
+    }
+
+    return _AndroidFloatingNavBar(location: location);
+  }
+}
+
+class _AndroidFloatingNavBar extends StatelessWidget {
+  const _AndroidFloatingNavBar({required this.location});
 
   final String location;
 
@@ -179,6 +191,60 @@ class _FloatingNavBar extends StatelessWidget {
               ),
             ],
           ),
+        ),
+        _CallButton(onTap: () => context.go('/interview')),
+      ],
+    );
+  }
+}
+
+class _IosLiquidTabBar extends StatelessWidget {
+  const _IosLiquidTabBar({required this.location});
+
+  final String location;
+
+  int get _currentIndex {
+    return switch (location) {
+      '/cv' => 1,
+      '/roadmap' => 2,
+      _ => 0,
+    };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        CNTabBar(
+          height: 66,
+          tint: const Color(0xFF11C86F),
+          backgroundColor: LoopColors.surfaceBlack.withValues(alpha: 0.72),
+          currentIndex: _currentIndex,
+          iconSize: 23,
+          items: const [
+            CNTabBarItem(label: 'Home', icon: CNSymbol('chart.bar.fill')),
+            CNTabBarItem(
+              label: 'CV',
+              icon: CNSymbol('rectangle.portrait.fill'),
+            ),
+            CNTabBarItem(
+              label: 'Ruta',
+              icon: CNSymbol(
+                'point.topleft.down.curvedto.point.bottomright.up',
+              ),
+            ),
+          ],
+          onTap: (index) {
+            switch (index) {
+              case 0:
+                context.go('/');
+              case 1:
+                context.go('/cv');
+              case 2:
+                context.go('/roadmap');
+            }
+          },
         ),
         _CallButton(onTap: () => context.go('/interview')),
       ],
@@ -238,27 +304,11 @@ class _CallButton extends StatelessWidget {
           ],
         ),
         child: Center(
-          child: Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: LoopColors.accentGreen, width: 4),
-              boxShadow: [
-                BoxShadow(
-                  blurRadius: 10,
-                  spreadRadius: 1,
-                  color: LoopColors.accentGreen.withValues(alpha: 0.42),
-                ),
-              ],
-            ),
-            child: const Center(
-              child: Icon(
-                Icons.graphic_eq_rounded,
-                color: LoopColors.accentGreen,
-                size: 18,
-              ),
-            ),
+          child: Image.asset(
+            'assets/icon/icon.png',
+            width: 42,
+            height: 42,
+            fit: BoxFit.contain,
           ),
         ),
       ),
