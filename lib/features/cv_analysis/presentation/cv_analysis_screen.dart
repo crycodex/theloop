@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/navigation/app_shell.dart';
 import '../../../core/theme/loop_colors.dart';
@@ -6,14 +7,23 @@ import '../../../core/widgets/level_circle.dart';
 import '../../../core/widgets/loop_card.dart';
 import '../../../core/widgets/metric_progress_bar.dart';
 import '../../../core/widgets/section_header.dart';
-import '../../../mock_data/loop_mock_data.dart';
+import 'cubit/cv_analysis_cubit.dart';
+import 'cubit/cv_analysis_state.dart';
 
 class CvAnalysisScreen extends StatelessWidget {
   const CvAnalysisScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ShellPagePadding(
+    return BlocBuilder<CvAnalysisCubit, CvAnalysisState>(
+      builder: (context, state) {
+        if (state is! CvAnalysisLoaded) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final analysis = state.analysis;
+
+        return ShellPagePadding(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -27,8 +37,8 @@ class CvAnalysisScreen extends StatelessWidget {
           LoopCard(
             child: Row(
               children: [
-                const LevelCircle(
-                  level: 4.1,
+                LevelCircle(
+                  level: analysis.score / 20,
                   maxLevel: 5,
                   size: 112,
                   foregroundColor: LoopColors.brandGreen,
@@ -38,11 +48,13 @@ class CvAnalysisScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Score actual: 82/100',
-                          style: Theme.of(context).textTheme.titleLarge),
+                      Text(
+                        'Score actual: ${analysis.score}/100',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
                       const SizedBox(height: 6),
                       Text(
-                        'Ultimo analisis: hoy',
+                        'Ultimo analisis: ${analysis.lastAnalyzedLabel}',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       const SizedBox(height: 14),
@@ -62,13 +74,13 @@ class CvAnalysisScreen extends StatelessWidget {
           LoopCard(
             child: Column(
               children: [
-                for (final criterion in LoopMockData.cvCriteria) ...[
+                for (final criterion in analysis.criteria) ...[
                   MetricProgressBar(
                     label: criterion.name,
                     value: criterion.score,
                     color: LoopColors.brandGreen,
                   ),
-                  if (criterion != LoopMockData.cvCriteria.last)
+                  if (criterion != analysis.criteria.last)
                     const SizedBox(height: 18),
                 ],
               ],
@@ -93,12 +105,15 @@ class CvAnalysisScreen extends StatelessWidget {
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                     ),
-                    Text('76%', style: Theme.of(context).textTheme.titleMedium),
+                    Text(
+                      '${analysis.matchScore}%',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                   ],
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Tu CV ya comunica experiencia mobile fuerte. Falta cuantificar impacto en performance, calidad y liderazgo tecnico.',
+                  analysis.matchSummary,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
@@ -106,6 +121,8 @@ class CvAnalysisScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+      },
     );
   }
 }

@@ -1,16 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../core/navigation/app_shell.dart';
 import '../../../core/theme/loop_colors.dart';
 import '../../../core/widgets/loop_card.dart';
-import '../../../mock_data/loop_mock_data.dart';
+import 'cubit/profile_cubit.dart';
+import 'cubit/profile_state.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ShellPagePadding(
+    return BlocBuilder<ProfileCubit, ProfileState>(
+      builder: (context, state) {
+        if (state is! ProfileLoaded) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final profile = state.profile;
+
+        return ShellPagePadding(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -37,12 +47,12 @@ class ProfileScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        LoopMockData.userName,
+                        profile.name,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        LoopMockData.target,
+                        profile.target,
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ],
@@ -60,7 +70,7 @@ class ProfileScreen extends StatelessWidget {
           _SettingsTile(
             icon: Icons.credit_card_rounded,
             title: 'Suscripción',
-            subtitle: 'Plan Pro mock · \$50/mes',
+            subtitle: profile.plan,
           ),
           _SettingsTile(
             icon: Icons.lock_outline_rounded,
@@ -74,6 +84,8 @@ class ProfileScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+      },
     );
   }
 }

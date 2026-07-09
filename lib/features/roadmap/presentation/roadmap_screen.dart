@@ -1,24 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/navigation/app_shell.dart';
 import '../../../core/theme/loop_colors.dart';
 import '../../../core/widgets/loop_card.dart';
-import '../../../mock_data/loop_mock_data.dart';
+import '../domain/entities/roadmap.dart';
+import 'cubit/roadmap_cubit.dart';
+import 'cubit/roadmap_state.dart';
 
 class RoadmapScreen extends StatelessWidget {
   const RoadmapScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ShellPagePadding(
+    return BlocBuilder<RoadmapCubit, RoadmapState>(
+      builder: (context, state) {
+        if (state is! RoadmapLoaded) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final roadmap = state.roadmap;
+
+        return ShellPagePadding(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Ruta', style: Theme.of(context).textTheme.displaySmall),
           const SizedBox(height: 8),
           Text(
-            'Preparación paso a paso para ${LoopMockData.target}.',
+            'Preparación paso a paso para ${roadmap.target}.',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 22),
@@ -34,7 +45,7 @@ class RoadmapScreen extends StatelessWidget {
                 const SizedBox(width: 14),
                 Expanded(
                   child: Text(
-                    'Meta final: simulación behavioral para Meta',
+                    'Meta final: ${roadmap.finalGoal}',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: Colors.white,
                     ),
@@ -44,13 +55,15 @@ class RoadmapScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 22),
-          for (var index = 0; index < LoopMockData.roadmapSteps.length; index++)
+          for (var index = 0; index < roadmap.steps.length; index++)
             _RoadmapStepTile(
-              step: LoopMockData.roadmapSteps[index],
-              isLast: index == LoopMockData.roadmapSteps.length - 1,
+              step: roadmap.steps[index],
+              isLast: index == roadmap.steps.length - 1,
             ),
         ],
       ),
+    );
+      },
     );
   }
 }
@@ -58,7 +71,7 @@ class RoadmapScreen extends StatelessWidget {
 class _RoadmapStepTile extends StatelessWidget {
   const _RoadmapStepTile({required this.step, required this.isLast});
 
-  final RoadmapStepMock step;
+  final RoadmapStep step;
   final bool isLast;
 
   @override

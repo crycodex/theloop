@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/cv_analysis/presentation/cv_analysis_screen.dart';
@@ -11,69 +10,67 @@ import '../../features/recap/presentation/recap_screen.dart';
 import '../../features/roadmap/presentation/roadmap_screen.dart';
 import 'app_shell.dart';
 
-final appRouterProvider = Provider<GoRouter>((ref) {
-  return GoRouter(
-    initialLocation: '/',
-    routes: [
-      ShellRoute(
-        builder: (context, state, child) {
-          return AppShell(location: state.uri.path, child: child);
-        },
-        routes: [
-          GoRoute(
-            path: '/',
-            pageBuilder: (context, state) => _navPage(
-              state: state,
-              child: const HomeScreen(),
-            ),
+final appRouter = GoRouter(
+  initialLocation: '/',
+  routes: [
+    ShellRoute(
+      builder: (context, state, child) {
+        return AppShell(location: state.uri.path, child: child);
+      },
+      routes: [
+        GoRoute(
+          path: '/',
+          pageBuilder: (context, state) => _navPage(
+            state: state,
+            child: const HomeScreen(),
           ),
-          GoRoute(
-            path: '/loops',
-            pageBuilder: (context, state) => _navPage(
-              state: state,
-              child: const LoopsScreen(),
-            ),
-          ),
-          GoRoute(
-            path: '/cv',
-            pageBuilder: (context, state) => _navPage(
-              state: state,
-              child: const CvAnalysisScreen(),
-            ),
-          ),
-          GoRoute(
-            path: '/roadmap',
-            pageBuilder: (context, state) => _navPage(
-              state: state,
-              child: const RoadmapScreen(),
-            ),
-          ),
-          GoRoute(
-            path: '/profile',
-            pageBuilder: (context, state) => _navPage(
-              state: state,
-              child: const ProfileScreen(),
-            ),
-          ),
-        ],
-      ),
-      GoRoute(
-        path: '/interview',
-        pageBuilder: (context, state) => _callPage(
-          state: state,
-          child: const InterviewCallScreen(),
         ),
-      ),
-      GoRoute(
-        path: '/recap',
-        pageBuilder: (context, state) => _recapPage(
-          state: state,
-          child: const RecapScreen(),
+        GoRoute(
+          path: '/loops',
+          pageBuilder: (context, state) => _navPage(
+            state: state,
+            child: const LoopsScreen(),
+          ),
         ),
+        GoRoute(
+          path: '/cv',
+          pageBuilder: (context, state) => _navPage(
+            state: state,
+            child: const CvAnalysisScreen(),
+          ),
+        ),
+        GoRoute(
+          path: '/roadmap',
+          pageBuilder: (context, state) => _navPage(
+            state: state,
+            child: const RoadmapScreen(),
+          ),
+        ),
+        GoRoute(
+          path: '/profile',
+          pageBuilder: (context, state) => _navPage(
+            state: state,
+            child: const ProfileScreen(),
+          ),
+        ),
+      ],
+    ),
+    GoRoute(
+      path: '/interview',
+      pageBuilder: (context, state) => _callPage(
+        state: state,
+        child: const InterviewCallScreen(),
       ),
-    ],
-  );
-});
+    ),
+    GoRoute(
+      path: '/recap',
+      pageBuilder: (context, state) => _recapPage(
+        state: state,
+        child: const RecapScreen(),
+      ),
+    ),
+  ],
+);
 
 CustomTransitionPage<void> _navPage({
   required GoRouterState state,

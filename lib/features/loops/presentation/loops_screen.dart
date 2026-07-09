@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/navigation/app_shell.dart';
@@ -7,14 +8,23 @@ import '../../../core/widgets/delta_badge.dart';
 import '../../../core/widgets/level_circle.dart';
 import '../../../core/widgets/loop_card.dart';
 import '../../../core/widgets/metric_progress_bar.dart';
-import '../../../mock_data/loop_mock_data.dart';
+import 'cubit/loops_cubit.dart';
+import 'cubit/loops_state.dart';
 
 class LoopsScreen extends StatelessWidget {
   const LoopsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ShellPagePadding(
+    return BlocBuilder<LoopsCubit, LoopsState>(
+      builder: (context, state) {
+        if (state is! LoopsLoaded) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final tracks = state.tracks;
+
+        return ShellPagePadding(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -25,7 +35,7 @@ class LoopsScreen extends StatelessWidget {
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 22),
-          for (final track in LoopMockData.tracks) ...[
+          for (final track in tracks) ...[
             LoopCard(
               onTap: () => context.go('/interview'),
               child: Row(
@@ -89,6 +99,8 @@ class LoopsScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+      },
     );
   }
 }

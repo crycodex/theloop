@@ -1,9 +1,11 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../mock_data/loop_mock_data.dart';
+import '../../features/profile/presentation/cubit/profile_cubit.dart';
+import '../../features/profile/presentation/cubit/profile_state.dart';
 import '../theme/loop_colors.dart';
 
 class AppShell extends StatelessWidget {
@@ -60,9 +62,13 @@ class _TopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
-      child: Row(
+    return BlocBuilder<ProfileCubit, ProfileState>(
+      builder: (context, state) {
+        final userName = state is ProfileLoaded ? state.profile.name : '';
+
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+          child: Row(
         children: [
           InkWell(
             onTap: onProfileTap,
@@ -90,7 +96,7 @@ class _TopBar extends StatelessWidget {
                   ),
                   const SizedBox(width: 9),
                   Text(
-                    LoopMockData.userName,
+                    userName,
                     style: Theme.of(context).textTheme.labelLarge,
                   ),
                 ],
@@ -109,6 +115,8 @@ class _TopBar extends StatelessWidget {
           ),
         ],
       ),
+    );
+      },
     );
   }
 }

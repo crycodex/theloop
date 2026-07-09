@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/loop_colors.dart';
+import 'cubit/interview_call_cubit.dart';
+import 'cubit/interview_call_state.dart';
 
 class InterviewCallScreen extends StatelessWidget {
   const InterviewCallScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocBuilder<InterviewCallCubit, InterviewCallState>(
+      builder: (context, state) {
+        return Scaffold(
       backgroundColor: LoopColors.surfaceBlack,
       body: SafeArea(
         child: Padding(
@@ -17,7 +22,7 @@ class InterviewCallScreen extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  _LiveBadge(),
+                  _LiveBadge(elapsedLabel: state.elapsedLabel),
                   const Spacer(),
                   IconButton(
                     onPressed: () => context.go('/'),
@@ -36,7 +41,7 @@ class InterviewCallScreen extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                'Cuéntame de una vez en la que tuviste que liderar una decisión técnica con información incompleta.',
+                state.isPaused ? 'Entrevista pausada.' : state.prompt,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: Colors.white70,
@@ -47,17 +52,25 @@ class InterviewCallScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   _CallControl(
-                    icon: Icons.mic_rounded,
-                    label: 'Mic',
-                    color: Colors.white12,
-                    onTap: () {},
+                    icon: state.isMicEnabled
+                        ? Icons.mic_rounded
+                        : Icons.mic_off_rounded,
+                    label: state.isMicEnabled ? 'Mic' : 'Mute',
+                    color: state.isMicEnabled ? Colors.white12 : LoopColors.amber,
+                    iconColor:
+                        state.isMicEnabled ? Colors.white : LoopColors.brandGreen,
+                    onTap: context.read<InterviewCallCubit>().toggleMic,
                   ),
                   const SizedBox(width: 18),
                   _CallControl(
-                    icon: Icons.pause_rounded,
-                    label: 'Pausar',
-                    color: Colors.white12,
-                    onTap: () {},
+                    icon: state.isPaused
+                        ? Icons.play_arrow_rounded
+                        : Icons.pause_rounded,
+                    label: state.isPaused ? 'Seguir' : 'Pausar',
+                    color: state.isPaused ? LoopColors.accentGreen : Colors.white12,
+                    iconColor:
+                        state.isPaused ? LoopColors.brandGreen : Colors.white,
+                    onTap: context.read<InterviewCallCubit>().togglePause,
                   ),
                   const SizedBox(width: 18),
                   _CallControl(
@@ -73,10 +86,16 @@ class InterviewCallScreen extends StatelessWidget {
         ),
       ),
     );
+      },
+    );
   }
 }
 
 class _LiveBadge extends StatelessWidget {
+  const _LiveBadge({required this.elapsedLabel});
+
+  final String elapsedLabel;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -96,8 +115,8 @@ class _LiveBadge extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          const Text(
-            'EN VIVO · 04:32',
+          Text(
+            'EN VIVO · $elapsedLabel',
             style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w800,
@@ -160,12 +179,14 @@ class _CallControl extends StatelessWidget {
     required this.icon,
     required this.label,
     required this.color,
+    this.iconColor = Colors.white,
     required this.onTap,
   });
 
   final IconData icon;
   final String label;
   final Color color;
+  final Color iconColor;
   final VoidCallback onTap;
 
   @override
@@ -179,7 +200,7 @@ class _CallControl extends StatelessWidget {
             width: 62,
             height: 62,
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-            child: Icon(icon, color: Colors.white, size: 28),
+            child: Icon(icon, color: iconColor, size: 28),
           ),
         ),
         const SizedBox(height: 8),

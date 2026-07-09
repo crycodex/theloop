@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/navigation/app_shell.dart';
@@ -8,31 +9,39 @@ import '../../../core/widgets/level_circle.dart';
 import '../../../core/widgets/loop_card.dart';
 import '../../../core/widgets/metric_progress_bar.dart';
 import '../../../core/widgets/section_header.dart';
-import '../../../mock_data/loop_mock_data.dart';
+import 'cubit/home_dashboard_cubit.dart';
+import 'cubit/home_dashboard_state.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final latestTrack = LoopMockData.tracks.first;
+    return BlocBuilder<HomeDashboardCubit, HomeDashboardState>(
+      builder: (context, state) {
+        if (state is! HomeDashboardLoaded) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-    return ShellPagePadding(
+        final dashboard = state.dashboard;
+        final latestTrack = dashboard.latestTrack;
+
+        return ShellPagePadding(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('Tu preparación para', style: Theme.of(context).textTheme.bodyLarge),
           const SizedBox(height: 4),
-          Text(LoopMockData.target, style: Theme.of(context).textTheme.displaySmall),
+          Text(dashboard.target, style: Theme.of(context).textTheme.displaySmall),
           const SizedBox(height: 24),
           LoopCard(
             color: LoopColors.brandGreen,
             child: Row(
               children: [
-                const LevelCircle(
-                  level: LoopMockData.generalLevel,
+                LevelCircle(
+                  level: dashboard.generalLevel,
                   foregroundColor: LoopColors.accentGreen,
-                  backgroundColor: Color(0x335B7D2E),
+                  backgroundColor: const Color(0x335B7D2E),
                   textColor: Colors.white,
                 ),
                 const SizedBox(width: 18),
@@ -54,7 +63,7 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 14),
-                      const DeltaBadge(value: 0.4),
+                      DeltaBadge(value: latestTrack.delta),
                     ],
                   ),
                 ),
@@ -67,7 +76,7 @@ class HomeScreen extends StatelessWidget {
               Expanded(
                 child: _StatCard(
                   label: 'Racha',
-                  value: '${LoopMockData.streakDays} dias',
+                  value: '${dashboard.streakDays} dias',
                   color: LoopColors.lightGreen,
                 ),
               ),
@@ -75,7 +84,7 @@ class HomeScreen extends StatelessWidget {
               Expanded(
                 child: _StatCard(
                   label: 'Loops',
-                  value: '${LoopMockData.totalLoops}',
+                  value: '${dashboard.totalLoops}',
                   color: LoopColors.infoBlue,
                 ),
               ),
@@ -123,13 +132,13 @@ class HomeScreen extends StatelessWidget {
           LoopCard(
             child: Column(
               children: [
-                for (final criterion in LoopMockData.criteria) ...[
+                for (final criterion in dashboard.criteria) ...[
                   MetricProgressBar(
                     label: criterion.name,
                     value: criterion.score,
                     trailing: criterion.trend,
                   ),
-                  if (criterion != LoopMockData.criteria.last)
+                  if (criterion != dashboard.criteria.last)
                     const SizedBox(height: 18),
                 ],
               ],
@@ -137,6 +146,8 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+      },
     );
   }
 }
