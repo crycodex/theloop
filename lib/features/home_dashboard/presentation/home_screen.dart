@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/localization/app_strings.dart';
 import '../../../core/navigation/app_shell.dart';
 import '../../../core/theme/loop_colors.dart';
 import '../../../core/widgets/delta_badge.dart';
@@ -25,128 +26,135 @@ class HomeScreen extends StatelessWidget {
 
         final dashboard = state.dashboard;
         final latestTrack = dashboard.latestTrack;
+        final strings = AppStrings.of(context);
 
         return ShellPagePadding(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Tu preparación para', style: Theme.of(context).textTheme.bodyLarge),
-          const SizedBox(height: 4),
-          Text(dashboard.target, style: Theme.of(context).textTheme.displaySmall),
-          const SizedBox(height: 24),
-          LoopCard(
-            color: LoopColors.brandGreen,
-            child: Row(
-              children: [
-                LevelCircle(
-                  level: dashboard.generalLevel,
-                  foregroundColor: LoopColors.accentGreen,
-                  backgroundColor: const Color(0x335B7D2E),
-                  textColor: Colors.white,
-                ),
-                const SizedBox(width: 18),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Nivel general',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Listo para sostener una entrevista conductual exigente, con oportunidad de profundizar resultados.',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.white70,
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      DeltaBadge(value: latestTrack.delta),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 18),
-          Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: _StatCard(
-                  label: 'Racha',
-                  value: '${dashboard.streakDays} dias',
-                  color: LoopColors.lightGreen,
+              Text(
+                strings.homePreparingFor,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                dashboard.target,
+                style: Theme.of(context).textTheme.displaySmall,
+              ),
+              const SizedBox(height: 24),
+              LoopCard(
+                color: LoopColors.brandGreen,
+                child: Row(
+                  children: [
+                    LevelCircle(
+                      level: dashboard.generalLevel,
+                      foregroundColor: LoopColors.accentGreen,
+                      backgroundColor: const Color(0x335B7D2E),
+                      textColor: Colors.white,
+                    ),
+                    const SizedBox(width: 18),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            strings.generalLevel,
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(color: Colors.white),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            strings.generalLevelSummary,
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(color: Colors.white70),
+                          ),
+                          const SizedBox(height: 14),
+                          DeltaBadge(value: latestTrack.delta),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _StatCard(
-                  label: 'Loops',
-                  value: '${dashboard.totalLoops}',
-                  color: LoopColors.infoBlue,
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  Expanded(
+                    child: _StatCard(
+                      label: strings.streak,
+                      value: strings.days(dashboard.streakDays),
+                      color: LoopColors.lightGreen,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _StatCard(
+                      label: strings.loops,
+                      value: '${dashboard.totalLoops}',
+                      color: LoopColors.infoBlue,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 28),
+              SectionHeader(
+                title: strings.continueLabel,
+                actionLabel: strings.seeLoops,
+                onAction: () => context.go('/loops'),
+              ),
+              const SizedBox(height: 12),
+              LoopCard(
+                onTap: () => context.go('/interview'),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            '${latestTrack.roleTitle} · ${latestTrack.company}',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ),
+                        DeltaBadge(value: latestTrack.delta, compact: true),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      strings.nextFocus(latestTrack.focus),
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 16),
+                    MetricProgressBar(
+                      label: strings.cyclesCompleted(
+                        latestTrack.cyclesCompleted,
+                      ),
+                      value: latestTrack.progress,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 28),
+              SectionHeader(title: strings.criteriaEvolution),
+              const SizedBox(height: 12),
+              LoopCard(
+                child: Column(
+                  children: [
+                    for (final criterion in dashboard.criteria) ...[
+                      MetricProgressBar(
+                        label: strings.criterion(criterion.name),
+                        value: criterion.score,
+                        trailing: criterion.trend,
+                      ),
+                      if (criterion != dashboard.criteria.last)
+                        const SizedBox(height: 18),
+                    ],
+                  ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 28),
-          SectionHeader(
-            title: 'Continuar',
-            actionLabel: 'Ver loops',
-            onAction: () => context.go('/loops'),
-          ),
-          const SizedBox(height: 12),
-          LoopCard(
-            onTap: () => context.go('/interview'),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        '${latestTrack.roleTitle} · ${latestTrack.company}',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                    ),
-                    DeltaBadge(value: latestTrack.delta, compact: true),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Siguiente foco: ${latestTrack.focus}',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const SizedBox(height: 16),
-                MetricProgressBar(
-                  label: '${latestTrack.cyclesCompleted} ciclos completados',
-                  value: latestTrack.progress,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 28),
-          const SectionHeader(title: 'Evolución por criterio'),
-          const SizedBox(height: 12),
-          LoopCard(
-            child: Column(
-              children: [
-                for (final criterion in dashboard.criteria) ...[
-                  MetricProgressBar(
-                    label: criterion.name,
-                    value: criterion.score,
-                    trailing: criterion.trend,
-                  ),
-                  if (criterion != dashboard.criteria.last)
-                    const SizedBox(height: 18),
-                ],
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+        );
       },
     );
   }

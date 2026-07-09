@@ -27,7 +27,9 @@ class DeltaBadge extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            isPositive ? Icons.trending_up_rounded : Icons.trending_down_rounded,
+            isPositive
+                ? Icons.trending_up_rounded
+                : Icons.trending_down_rounded,
             color: color,
             size: compact ? 14 : 16,
           ),

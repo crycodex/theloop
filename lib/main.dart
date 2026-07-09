@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'core/navigation/app_router.dart';
+import 'core/settings/cubit/settings_cubit.dart';
+import 'core/settings/cubit/settings_state.dart';
 import 'core/theme/loop_theme.dart';
 import 'features/cv_analysis/data/repositories/mock_cv_analysis_repository.dart';
 import 'features/cv_analysis/domain/repositories/cv_analysis_repository.dart';
@@ -91,12 +94,26 @@ class LoopApp extends StatelessWidget {
           ),
           BlocProvider(create: (_) => InterviewCallCubit()),
           BlocProvider(create: (_) => SplashCubit()),
+          BlocProvider(create: (_) => SettingsCubit()),
         ],
-        child: MaterialApp.router(
-          title: 'Loop',
-          debugShowCheckedModeBanner: false,
-          theme: LoopTheme.light,
-          routerConfig: appRouter,
+        child: BlocBuilder<SettingsCubit, SettingsState>(
+          builder: (context, settings) {
+            return MaterialApp.router(
+              title: 'Loop',
+              debugShowCheckedModeBanner: false,
+              theme: LoopTheme.light,
+              darkTheme: LoopTheme.dark,
+              themeMode: settings.themeMode,
+              locale: settings.language.locale,
+              supportedLocales: const [Locale('es'), Locale('en')],
+              localizationsDelegates: const [
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              routerConfig: appRouter,
+            );
+          },
         ),
       ),
     );

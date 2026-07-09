@@ -16,10 +16,8 @@ final appRouter = GoRouter(
   routes: [
     GoRoute(
       path: '/splash',
-      pageBuilder: (context, state) => _instantPage(
-        state: state,
-        child: const SplashScreen(),
-      ),
+      pageBuilder: (context, state) =>
+          _instantPage(state: state, child: const SplashScreen()),
     ),
     ShellRoute(
       builder: (context, state, child) {
@@ -28,54 +26,40 @@ final appRouter = GoRouter(
       routes: [
         GoRoute(
           path: '/',
-          pageBuilder: (context, state) => _navPage(
-            state: state,
-            child: const HomeScreen(),
-          ),
+          pageBuilder: (context, state) =>
+              _navPage(state: state, child: const HomeScreen()),
         ),
         GoRoute(
           path: '/loops',
-          pageBuilder: (context, state) => _navPage(
-            state: state,
-            child: const LoopsScreen(),
-          ),
+          pageBuilder: (context, state) =>
+              _navPage(state: state, child: const LoopsScreen()),
         ),
         GoRoute(
           path: '/cv',
-          pageBuilder: (context, state) => _navPage(
-            state: state,
-            child: const CvAnalysisScreen(),
-          ),
+          pageBuilder: (context, state) =>
+              _navPage(state: state, child: const CvAnalysisScreen()),
         ),
         GoRoute(
           path: '/roadmap',
-          pageBuilder: (context, state) => _navPage(
-            state: state,
-            child: const RoadmapScreen(),
-          ),
+          pageBuilder: (context, state) =>
+              _navPage(state: state, child: const RoadmapScreen()),
         ),
         GoRoute(
           path: '/profile',
-          pageBuilder: (context, state) => _navPage(
-            state: state,
-            child: const ProfileScreen(),
-          ),
+          pageBuilder: (context, state) =>
+              _navPage(state: state, child: const ProfileScreen()),
         ),
       ],
     ),
     GoRoute(
       path: '/interview',
-      pageBuilder: (context, state) => _callPage(
-        state: state,
-        child: const InterviewCallScreen(),
-      ),
+      pageBuilder: (context, state) =>
+          _callPage(state: state, child: const InterviewCallScreen()),
     ),
     GoRoute(
       path: '/recap',
-      pageBuilder: (context, state) => _recapPage(
-        state: state,
-        child: const RecapScreen(),
-      ),
+      pageBuilder: (context, state) =>
+          _recapPage(state: state, child: const RecapScreen()),
     ),
   ],
 );
@@ -89,7 +73,8 @@ CustomTransitionPage<void> _instantPage({
     transitionDuration: Duration.zero,
     reverseTransitionDuration: Duration.zero,
     child: child,
-    transitionsBuilder: (context, animation, secondaryAnimation, child) => child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+        child,
   );
 }
 
@@ -113,7 +98,10 @@ CustomTransitionPage<void> _navPage({
         begin: const Offset(0.04, 0),
         end: Offset.zero,
       ).animate(curvedAnimation);
-      final scale = Tween<double>(begin: 0.985, end: 1).animate(curvedAnimation);
+      final scale = Tween<double>(
+        begin: 0.985,
+        end: 1,
+      ).animate(curvedAnimation);
 
       return FadeTransition(
         opacity: fade,

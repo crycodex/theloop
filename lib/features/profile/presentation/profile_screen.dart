@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../core/localization/app_strings.dart';
 import '../../../core/navigation/app_shell.dart';
+import '../../../core/settings/cubit/settings_cubit.dart';
+import '../../../core/settings/cubit/settings_state.dart';
 import '../../../core/theme/loop_colors.dart';
 import '../../../core/widgets/loop_card.dart';
 import 'cubit/profile_cubit.dart';
@@ -19,72 +22,161 @@ class ProfileScreen extends StatelessWidget {
         }
 
         final profile = state.profile;
+        final strings = AppStrings.of(context);
 
         return ShellPagePadding(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Perfil', style: Theme.of(context).textTheme.displaySmall),
-          const SizedBox(height: 18),
-          LoopCard(
-            child: Row(
-              children: [
-                const CircleAvatar(
-                  radius: 34,
-                  backgroundColor: LoopColors.brandGreen,
-                  child: Text(
-                    'C',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.w800,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                strings.profile,
+                style: Theme.of(context).textTheme.displaySmall,
+              ),
+              const SizedBox(height: 18),
+              LoopCard(
+                child: Row(
+                  children: [
+                    const CircleAvatar(
+                      radius: 34,
+                      backgroundColor: LoopColors.brandGreen,
+                      child: Text(
+                        'C',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            profile.name,
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            profile.target,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        profile.name,
-                        style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 18),
+              _SettingsTile(
+                icon: Icons.flag_rounded,
+                title: strings.careerGoal,
+                subtitle: strings.careerGoalSubtitle,
+              ),
+              _SettingsTile(
+                icon: Icons.credit_card_rounded,
+                title: strings.subscription,
+                subtitle: strings.subscriptionPlan(profile.plan),
+              ),
+              _SettingsTile(
+                icon: Icons.lock_outline_rounded,
+                title: strings.privacy,
+                subtitle: strings.privacySubtitle,
+              ),
+              _PreferencesCard(strings: strings),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _PreferencesCard extends StatelessWidget {
+  const _PreferencesCard({required this.strings});
+
+  final AppStrings strings;
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<SettingsCubit, SettingsState>(
+      builder: (context, settings) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: LoopCard(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        color: LoopColors.lightGreen,
+                        borderRadius: BorderRadius.circular(15),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        profile.target,
-                        style: Theme.of(context).textTheme.bodyMedium,
+                      child: const Icon(
+                        Icons.palette_outlined,
+                        color: LoopColors.brandGreen,
                       ),
-                    ],
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            strings.preferences,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            strings.preferencesSubtitle,
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                SwitchListTile.adaptive(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    strings.darkMode,
+                    style: Theme.of(context).textTheme.labelLarge,
                   ),
+                  value: settings.isDarkMode,
+                  activeThumbColor: LoopColors.accentGreen,
+                  onChanged: context.read<SettingsCubit>().setDarkMode,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  strings.languageLabel,
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
+                const SizedBox(height: 10),
+                SegmentedButton<AppLanguage>(
+                  segments: AppLanguage.values
+                      .map(
+                        (language) => ButtonSegment(
+                          value: language,
+                          label: Text(language.label),
+                        ),
+                      )
+                      .toList(),
+                  selected: {settings.language},
+                  onSelectionChanged: (selection) {
+                    context.read<SettingsCubit>().setLanguage(selection.first);
+                  },
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 18),
-          _SettingsTile(
-            icon: Icons.flag_rounded,
-            title: 'Objetivo profesional',
-            subtitle: 'Rol, nivel, empresas e idioma',
-          ),
-          _SettingsTile(
-            icon: Icons.credit_card_rounded,
-            title: 'Suscripción',
-            subtitle: profile.plan,
-          ),
-          _SettingsTile(
-            icon: Icons.lock_outline_rounded,
-            title: 'Privacidad',
-            subtitle: 'Exportar datos o eliminar cuenta',
-          ),
-          _SettingsTile(
-            icon: Icons.palette_outlined,
-            title: 'Preferencias',
-            subtitle: 'Tema, notificaciones e idioma',
-          ),
-        ],
-      ),
-    );
+        );
       },
     );
   }
@@ -129,7 +221,10 @@ class _SettingsTile extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded, color: LoopColors.textMuted),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: LoopColors.textMuted,
+            ),
           ],
         ),
       ),

@@ -26,10 +26,7 @@ class MetricProgressBar extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: Text(
-                label,
-                style: Theme.of(context).textTheme.labelLarge,
-              ),
+              child: Text(label, style: Theme.of(context).textTheme.labelLarge),
             ),
             Text(
               trailing ?? '${(normalized * 100).round()}%',

@@ -5,7 +5,7 @@ import 'home_dashboard_state.dart';
 
 class HomeDashboardCubit extends Cubit<HomeDashboardState> {
   HomeDashboardCubit(this._getHomeDashboard)
-      : super(const HomeDashboardInitial()) {
+    : super(const HomeDashboardInitial()) {
     load();
   }
 

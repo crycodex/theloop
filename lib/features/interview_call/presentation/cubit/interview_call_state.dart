@@ -7,11 +7,11 @@ class InterviewCallState {
   });
 
   const InterviewCallState.initial()
-      : isMicEnabled = true,
-        isPaused = false,
-        elapsedLabel = '04:32',
-        prompt =
-            'Cuéntame de una vez en la que tuviste que liderar una decisión técnica con información incompleta.';
+    : isMicEnabled = true,
+      isPaused = false,
+      elapsedLabel = '04:32',
+      prompt =
+          'Cuéntame de una vez en la que tuviste que liderar una decisión técnica con información incompleta.';
 
   final bool isMicEnabled;
   final bool isPaused;

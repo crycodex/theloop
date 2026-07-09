@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/localization/app_strings.dart';
 import '../../../core/theme/loop_colors.dart';
 import 'cubit/interview_call_cubit.dart';
 import 'cubit/interview_call_state.dart';
@@ -13,88 +14,105 @@ class InterviewCallScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<InterviewCallCubit, InterviewCallState>(
       builder: (context, state) {
+        final strings = AppStrings.of(context);
+
         return Scaffold(
-      backgroundColor: LoopColors.surfaceBlack,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(22, 18, 22, 28),
-          child: Column(
-            children: [
-              Row(
+          backgroundColor: LoopColors.surfaceBlack,
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(22, 18, 22, 28),
+              child: Column(
                 children: [
-                  _LiveBadge(elapsedLabel: state.elapsedLabel),
+                  Row(
+                    children: [
+                      _LiveBadge(
+                        elapsedLabel: state.elapsedLabel,
+                        strings: strings,
+                      ),
+                      const Spacer(),
+                      IconButton(
+                        onPressed: () => context.go('/'),
+                        icon: const Icon(
+                          Icons.close_rounded,
+                          color: Colors.white70,
+                        ),
+                      ),
+                    ],
+                  ),
                   const Spacer(),
-                  IconButton(
-                    onPressed: () => context.go('/'),
-                    icon: const Icon(Icons.close_rounded, color: Colors.white70),
+                  const _Orb(),
+                  const SizedBox(height: 34),
+                  Text(
+                    strings.interviewerAi,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.headlineMedium?.copyWith(color: Colors.white),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    state.isPaused
+                        ? strings.interviewPaused
+                        : strings.interviewPrompt(state.prompt),
+                    textAlign: TextAlign.center,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyLarge?.copyWith(color: Colors.white70),
+                  ),
+                  const Spacer(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _CallControl(
+                        icon: state.isMicEnabled
+                            ? Icons.mic_rounded
+                            : Icons.mic_off_rounded,
+                        label: state.isMicEnabled ? strings.mic : strings.mute,
+                        color: state.isMicEnabled
+                            ? Colors.white12
+                            : LoopColors.amber,
+                        iconColor: state.isMicEnabled
+                            ? Colors.white
+                            : LoopColors.brandGreen,
+                        onTap: context.read<InterviewCallCubit>().toggleMic,
+                      ),
+                      const SizedBox(width: 18),
+                      _CallControl(
+                        icon: state.isPaused
+                            ? Icons.play_arrow_rounded
+                            : Icons.pause_rounded,
+                        label: state.isPaused ? strings.resume : strings.pause,
+                        color: state.isPaused
+                            ? LoopColors.accentGreen
+                            : Colors.white12,
+                        iconColor: state.isPaused
+                            ? LoopColors.brandGreen
+                            : Colors.white,
+                        onTap: context.read<InterviewCallCubit>().togglePause,
+                      ),
+                      const SizedBox(width: 18),
+                      _CallControl(
+                        icon: Icons.call_end_rounded,
+                        label: strings.endCall,
+                        color: LoopColors.danger,
+                        onTap: () => context.go('/recap'),
+                      ),
+                    ],
                   ),
                 ],
               ),
-              const Spacer(),
-              const _Orb(),
-              const SizedBox(height: 34),
-              Text(
-                'Interviewer AI',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                state.isPaused ? 'Entrevista pausada.' : state.prompt,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.white70,
-                ),
-              ),
-              const Spacer(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  _CallControl(
-                    icon: state.isMicEnabled
-                        ? Icons.mic_rounded
-                        : Icons.mic_off_rounded,
-                    label: state.isMicEnabled ? 'Mic' : 'Mute',
-                    color: state.isMicEnabled ? Colors.white12 : LoopColors.amber,
-                    iconColor:
-                        state.isMicEnabled ? Colors.white : LoopColors.brandGreen,
-                    onTap: context.read<InterviewCallCubit>().toggleMic,
-                  ),
-                  const SizedBox(width: 18),
-                  _CallControl(
-                    icon: state.isPaused
-                        ? Icons.play_arrow_rounded
-                        : Icons.pause_rounded,
-                    label: state.isPaused ? 'Seguir' : 'Pausar',
-                    color: state.isPaused ? LoopColors.accentGreen : Colors.white12,
-                    iconColor:
-                        state.isPaused ? LoopColors.brandGreen : Colors.white,
-                    onTap: context.read<InterviewCallCubit>().togglePause,
-                  ),
-                  const SizedBox(width: 18),
-                  _CallControl(
-                    icon: Icons.call_end_rounded,
-                    label: 'Terminar',
-                    color: LoopColors.danger,
-                    onTap: () => context.go('/recap'),
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
-    );
+        );
       },
     );
   }
 }
 
 class _LiveBadge extends StatelessWidget {
-  const _LiveBadge({required this.elapsedLabel});
+  const _LiveBadge({required this.elapsedLabel, required this.strings});
 
   final String elapsedLabel;
+  final AppStrings strings;
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +134,7 @@ class _LiveBadge extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Text(
-            'EN VIVO · $elapsedLabel',
+            '${strings.live} · $elapsedLabel',
             style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w800,
@@ -206,9 +224,9 @@ class _CallControl extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           label,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Colors.white70,
-          ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: Colors.white70),
         ),
       ],
     );
