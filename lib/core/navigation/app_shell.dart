@@ -1,0 +1,294 @@
+import 'dart:ui';
+
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../mock_data/loop_mock_data.dart';
+import '../theme/loop_colors.dart';
+
+class AppShell extends StatelessWidget {
+  const AppShell({super.key, required this.location, required this.child});
+
+  final String location;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        bottom: false,
+        child: Stack(
+          children: [
+            Positioned.fill(child: child),
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: _TopBar(onProfileTap: () => context.go('/profile')),
+            ),
+            Positioned(
+              left: 18,
+              right: 18,
+              bottom: 18,
+              child: _FloatingNavBar(location: location),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ShellPagePadding extends StatelessWidget {
+  const ShellPagePadding({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 92, 20, 128),
+      child: child,
+    );
+  }
+}
+
+class _TopBar extends StatelessWidget {
+  const _TopBar({required this.onProfileTap});
+
+  final VoidCallback onProfileTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+      child: Row(
+        children: [
+          InkWell(
+            onTap: onProfileTap,
+            borderRadius: BorderRadius.circular(22),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              decoration: BoxDecoration(
+                color: LoopColors.surfaceElevated.withValues(alpha: 0.92),
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: LoopColors.border),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const CircleAvatar(
+                    radius: 16,
+                    backgroundColor: LoopColors.brandGreen,
+                    child: Text(
+                      'C',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 9),
+                  Text(
+                    LoopMockData.userName,
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const Spacer(),
+          _TopIconButton(
+            icon: Icons.notifications_none_rounded,
+            onTap: () {},
+          ),
+          const SizedBox(width: 8),
+          _TopIconButton(
+            icon: Icons.settings_rounded,
+            onTap: onProfileTap,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TopIconButton extends StatelessWidget {
+  const _TopIconButton({required this.icon, required this.onTap});
+
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(19),
+      child: Container(
+        width: 38,
+        height: 38,
+        decoration: BoxDecoration(
+          color: LoopColors.surfaceElevated.withValues(alpha: 0.92),
+          borderRadius: BorderRadius.circular(19),
+          border: Border.all(color: LoopColors.border),
+        ),
+        child: Icon(icon, size: 20, color: LoopColors.textPrimary),
+      ),
+    );
+  }
+}
+
+class _FloatingNavBar extends StatelessWidget {
+  const _FloatingNavBar({required this.location});
+
+  final String location;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: _BlurPill(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _NavItem(
+                  icon: Icons.home_rounded,
+                  label: 'Home',
+                  active: location == '/',
+                  onTap: () => context.go('/'),
+                ),
+                _NavItem(
+                  icon: Icons.description_rounded,
+                  label: 'CV',
+                  active: location == '/cv',
+                  onTap: () => context.go('/cv'),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(width: 14),
+        _CenterLoopButton(onTap: () => context.go('/interview')),
+        const SizedBox(width: 14),
+        Expanded(
+          child: _BlurPill(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _NavItem(
+                  icon: Icons.route_rounded,
+                  label: 'Ruta',
+                  active: location == '/roadmap',
+                  onTap: () => context.go('/roadmap'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _BlurPill extends StatelessWidget {
+  const _BlurPill({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(999),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+        child: Container(
+          height: 66,
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            color: LoopColors.surfaceBlack.withValues(alpha: 0.92),
+            borderRadius: BorderRadius.circular(999),
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
+}
+
+class _CenterLoopButton extends StatelessWidget {
+  const _CenterLoopButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      customBorder: const CircleBorder(),
+      child: Container(
+        width: 70,
+        height: 70,
+        decoration: BoxDecoration(
+          color: LoopColors.accentGreen,
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.white, width: 4),
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 28,
+              offset: const Offset(0, 12),
+              color: LoopColors.brandGreen.withValues(alpha: 0.24),
+            ),
+          ],
+        ),
+        child: const Icon(
+          Icons.graphic_eq_rounded,
+          color: LoopColors.brandGreen,
+          size: 32,
+        ),
+      ),
+    );
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  const _NavItem({
+    required this.icon,
+    required this.label,
+    required this.active,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool active;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = active ? LoopColors.accentGreen : Colors.white70;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(24),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 22, color: color),
+            const SizedBox(height: 3),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
