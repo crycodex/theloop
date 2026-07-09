@@ -214,18 +214,27 @@ class _CallButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       onTap: onTap,
-      customBorder: const CircleBorder(),
-      child: SizedBox(
-        width: 66,
-        height: 66,
-        child: Center(
-          child: Image.asset(
-            'assets/icon/icon.png',
-            width: 50,
-            height: 50,
-            fit: BoxFit.contain,
+      behavior: HitTestBehavior.translucent,
+      child: ClipOval(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: Container(
+            width: 66,
+            height: 66,
+            decoration: BoxDecoration(
+              color: LoopColors.lightGreen.withValues(alpha: 0.55),
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: Image.asset(
+                'assets/icon/icon.png',
+                width: 50,
+                height: 50,
+                fit: BoxFit.contain,
+              ),
+            ),
           ),
         ),
       ),
