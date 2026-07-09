@@ -1,7 +1,5 @@
 import 'dart:ui';
 
-import 'package:cupertino_native/cupertino_native.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -34,7 +32,7 @@ class AppShell extends StatelessWidget {
               left: 18,
               right: 18,
               bottom: 18,
-              child: _AdaptiveFloatingNavBar(location: location),
+              child: _FloatingNavBar(location: location),
             ),
           ],
         ),
@@ -143,23 +141,8 @@ class _TopIconButton extends StatelessWidget {
   }
 }
 
-class _AdaptiveFloatingNavBar extends StatelessWidget {
-  const _AdaptiveFloatingNavBar({required this.location});
-
-  final String location;
-
-  @override
-  Widget build(BuildContext context) {
-    if (defaultTargetPlatform == TargetPlatform.iOS) {
-      return _IosLiquidTabBar(location: location);
-    }
-
-    return _AndroidFloatingNavBar(location: location);
-  }
-}
-
-class _AndroidFloatingNavBar extends StatelessWidget {
-  const _AndroidFloatingNavBar({required this.location});
+class _FloatingNavBar extends StatelessWidget {
+  const _FloatingNavBar({required this.location});
 
   final String location;
 
@@ -198,60 +181,6 @@ class _AndroidFloatingNavBar extends StatelessWidget {
   }
 }
 
-class _IosLiquidTabBar extends StatelessWidget {
-  const _IosLiquidTabBar({required this.location});
-
-  final String location;
-
-  int get _currentIndex {
-    return switch (location) {
-      '/cv' => 1,
-      '/roadmap' => 2,
-      _ => 0,
-    };
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        CNTabBar(
-          height: 66,
-          tint: const Color(0xFF11C86F),
-          backgroundColor: LoopColors.surfaceBlack.withValues(alpha: 0.72),
-          currentIndex: _currentIndex,
-          iconSize: 23,
-          items: const [
-            CNTabBarItem(label: 'Home', icon: CNSymbol('chart.bar.fill')),
-            CNTabBarItem(
-              label: 'CV',
-              icon: CNSymbol('rectangle.portrait.fill'),
-            ),
-            CNTabBarItem(
-              label: 'Ruta',
-              icon: CNSymbol(
-                'point.topleft.down.curvedto.point.bottomright.up',
-              ),
-            ),
-          ],
-          onTap: (index) {
-            switch (index) {
-              case 0:
-                context.go('/');
-              case 1:
-                context.go('/cv');
-              case 2:
-                context.go('/roadmap');
-            }
-          },
-        ),
-        _CallButton(onTap: () => context.go('/interview')),
-      ],
-    );
-  }
-}
-
 class _BlurPill extends StatelessWidget {
   const _BlurPill({required this.child});
 
@@ -267,9 +196,9 @@ class _BlurPill extends StatelessWidget {
           height: 66,
           padding: const EdgeInsets.symmetric(horizontal: 9),
           decoration: BoxDecoration(
-            color: LoopColors.surfaceBlack.withValues(alpha: 0.92),
+            color: Colors.transparent,
             borderRadius: BorderRadius.circular(999),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+            border: Border.all(color: Colors.transparent),
           ),
           child: child,
         ),
@@ -288,26 +217,14 @@ class _CallButton extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       customBorder: const CircleBorder(),
-      child: Container(
+      child: SizedBox(
         width: 66,
         height: 66,
-        decoration: BoxDecoration(
-          color: LoopColors.surfaceBlack.withValues(alpha: 0.92),
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
-          boxShadow: [
-            BoxShadow(
-              blurRadius: 28,
-              offset: const Offset(0, 12),
-              color: LoopColors.brandGreen.withValues(alpha: 0.24),
-            ),
-          ],
-        ),
         child: Center(
           child: Image.asset(
             'assets/icon/icon.png',
-            width: 42,
-            height: 42,
+            width: 50,
+            height: 50,
             fit: BoxFit.contain,
           ),
         ),
@@ -329,7 +246,9 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final iconColor = active ? Colors.white : Colors.white70;
+    final iconColor = active
+        ? Colors.white
+        : LoopColors.textPrimary.withValues(alpha: 0.78);
 
     return InkWell(
       onTap: onTap,

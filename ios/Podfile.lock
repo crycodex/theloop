@@ -1,0 +1,22 @@
+PODS:
+  - cupertino_native (0.0.1):
+    - Flutter
+  - Flutter (1.0.0)
+
+DEPENDENCIES:
+  - cupertino_native (from `.symlinks/plugins/cupertino_native/ios`)
+  - Flutter (from `Flutter`)
+
+EXTERNAL SOURCES:
+  cupertino_native:
+    :path: ".symlinks/plugins/cupertino_native/ios"
+  Flutter:
+    :path: Flutter
+
+SPEC CHECKSUMS:
+  cupertino_native: 2bf2872026a59c9db5b72250892f7d9ca5244197
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+
+PODFILE CHECKSUM: 3c63482e143d1b91d2d2560aee9fb04ecc74ac7e
+
+COCOAPODS: 1.16.2
