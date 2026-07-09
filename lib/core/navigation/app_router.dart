@@ -8,11 +8,19 @@ import '../../features/loops/presentation/loops_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/recap/presentation/recap_screen.dart';
 import '../../features/roadmap/presentation/roadmap_screen.dart';
+import '../../features/splash/presentation/splash_screen.dart';
 import 'app_shell.dart';
 
 final appRouter = GoRouter(
-  initialLocation: '/',
+  initialLocation: '/splash',
   routes: [
+    GoRoute(
+      path: '/splash',
+      pageBuilder: (context, state) => _instantPage(
+        state: state,
+        child: const SplashScreen(),
+      ),
+    ),
     ShellRoute(
       builder: (context, state, child) {
         return AppShell(location: state.uri.path, child: child);
@@ -71,6 +79,19 @@ final appRouter = GoRouter(
     ),
   ],
 );
+
+CustomTransitionPage<void> _instantPage({
+  required GoRouterState state,
+  required Widget child,
+}) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    transitionDuration: Duration.zero,
+    reverseTransitionDuration: Duration.zero,
+    child: child,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) => child,
+  );
+}
 
 CustomTransitionPage<void> _navPage({
   required GoRouterState state,

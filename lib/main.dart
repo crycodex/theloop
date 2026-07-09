@@ -28,6 +28,7 @@ import 'features/roadmap/data/repositories/mock_roadmap_repository.dart';
 import 'features/roadmap/domain/repositories/roadmap_repository.dart';
 import 'features/roadmap/domain/usecases/get_roadmap.dart';
 import 'features/roadmap/presentation/cubit/roadmap_cubit.dart';
+import 'features/splash/presentation/cubit/splash_cubit.dart';
 
 void main() {
   runApp(const LoopApp());
@@ -89,6 +90,7 @@ class LoopApp extends StatelessWidget {
                 RecapCubit(GetLatestRecap(context.read<RecapRepository>())),
           ),
           BlocProvider(create: (_) => InterviewCallCubit()),
+          BlocProvider(create: (_) => SplashCubit()),
         ],
         child: MaterialApp.router(
           title: 'Loop',
