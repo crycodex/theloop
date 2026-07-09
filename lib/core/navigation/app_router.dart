@@ -44,12 +44,12 @@ final appRouter = GoRouter(
           pageBuilder: (context, state) =>
               _navPage(state: state, child: const RoadmapScreen()),
         ),
-        GoRoute(
-          path: '/profile',
-          pageBuilder: (context, state) =>
-              _navPage(state: state, child: const ProfileScreen()),
-        ),
       ],
+    ),
+    GoRoute(
+      path: '/profile',
+      pageBuilder: (context, state) =>
+          _navPage(state: state, child: const ProfileScreen()),
     ),
     GoRoute(
       path: '/interview',

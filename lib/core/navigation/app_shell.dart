@@ -65,78 +65,66 @@ class _TopBar extends StatelessWidget {
     return BlocBuilder<ProfileCubit, ProfileState>(
       builder: (context, state) {
         final userName = state is ProfileLoaded ? state.profile.name : '';
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final glassColor = isDark
+            ? Colors.white.withValues(alpha: 0.08)
+            : LoopColors.lightGreen.withValues(alpha: 0.55);
 
         return Padding(
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
           child: Row(
             children: [
+              const Spacer(),
               InkWell(
                 onTap: onProfileTap,
                 borderRadius: BorderRadius.circular(22),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: LoopColors.surfaceElevated.withValues(alpha: 0.92),
-                    borderRadius: BorderRadius.circular(22),
-                    border: Border.all(color: LoopColors.border),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const CircleAvatar(
-                        radius: 16,
-                        backgroundColor: LoopColors.brandGreen,
-                        child: Text(
-                          'C',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w800,
-                          ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(22),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: glassColor,
+                        borderRadius: BorderRadius.circular(22),
+                        border: Border.all(
+                          color: isDark
+                              ? Colors.white.withValues(alpha: 0.08)
+                              : Colors.white.withValues(alpha: 0.24),
                         ),
                       ),
-                      const SizedBox(width: 9),
-                      Text(
-                        userName,
-                        style: Theme.of(context).textTheme.labelLarge,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const CircleAvatar(
+                            radius: 16,
+                            backgroundColor: LoopColors.brandGreen,
+                            child: Text(
+                              'C',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 9),
+                          Text(
+                            userName,
+                            style: Theme.of(context).textTheme.labelLarge,
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
-              const Spacer(),
-              _TopIconButton(icon: Icons.settings_rounded, onTap: onProfileTap),
             ],
           ),
         );
       },
-    );
-  }
-}
-
-class _TopIconButton extends StatelessWidget {
-  const _TopIconButton({required this.icon, required this.onTap});
-
-  final IconData icon;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(19),
-      child: Container(
-        width: 38,
-        height: 38,
-        decoration: BoxDecoration(
-          color: LoopColors.surfaceElevated.withValues(alpha: 0.92),
-          borderRadius: BorderRadius.circular(19),
-          border: Border.all(color: LoopColors.border),
-        ),
-        child: Icon(icon, size: 20, color: LoopColors.textPrimary),
-      ),
     );
   }
 }
@@ -214,6 +202,8 @@ class _CallButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.translucent,
@@ -224,8 +214,15 @@ class _CallButton extends StatelessWidget {
             width: 66,
             height: 66,
             decoration: BoxDecoration(
-              color: LoopColors.lightGreen.withValues(alpha: 0.55),
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.08)
+                  : LoopColors.lightGreen.withValues(alpha: 0.55),
               shape: BoxShape.circle,
+              border: Border.all(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.08)
+                    : Colors.white.withValues(alpha: 0.24),
+              ),
             ),
             child: Center(
               child: Image.asset(
@@ -255,8 +252,11 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final iconColor = active
         ? Colors.white
+        : isDark
+        ? Colors.white.withValues(alpha: 0.72)
         : LoopColors.textPrimary.withValues(alpha: 0.78);
 
     return InkWell(

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/localization/app_strings.dart';
-import '../../../core/navigation/app_shell.dart';
 import '../../../core/settings/cubit/settings_cubit.dart';
 import '../../../core/settings/cubit/settings_state.dart';
 import '../../../core/theme/loop_colors.dart';
@@ -24,68 +24,81 @@ class ProfileScreen extends StatelessWidget {
         final profile = state.profile;
         final strings = AppStrings.of(context);
 
-        return ShellPagePadding(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                strings.profile,
-                style: Theme.of(context).textTheme.displaySmall,
-              ),
-              const SizedBox(height: 18),
-              LoopCard(
-                child: Row(
-                  children: [
-                    const CircleAvatar(
-                      radius: 34,
-                      backgroundColor: LoopColors.brandGreen,
-                      child: Text(
-                        'C',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.w800,
+        return Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              onPressed: () => context.go('/'),
+              icon: const Icon(Icons.arrow_back_rounded),
+            ),
+            title: Text(strings.profile),
+          ),
+          body: SafeArea(
+            top: false,
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    strings.profile,
+                    style: Theme.of(context).textTheme.displaySmall,
+                  ),
+                  const SizedBox(height: 18),
+                  LoopCard(
+                    child: Row(
+                      children: [
+                        const CircleAvatar(
+                          radius: 34,
+                          backgroundColor: LoopColors.brandGreen,
+                          child: Text(
+                            'C',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 28,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            profile.name,
-                            style: Theme.of(context).textTheme.titleLarge,
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                profile.name,
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                profile.target,
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            profile.target,
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 18),
+                  _SettingsTile(
+                    icon: Icons.flag_rounded,
+                    title: strings.careerGoal,
+                    subtitle: strings.careerGoalSubtitle,
+                  ),
+                  _SettingsTile(
+                    icon: Icons.credit_card_rounded,
+                    title: strings.subscription,
+                    subtitle: strings.subscriptionPlan(profile.plan),
+                  ),
+                  _SettingsTile(
+                    icon: Icons.lock_outline_rounded,
+                    title: strings.privacy,
+                    subtitle: strings.privacySubtitle,
+                  ),
+                  _PreferencesCard(strings: strings),
+                ],
               ),
-              const SizedBox(height: 18),
-              _SettingsTile(
-                icon: Icons.flag_rounded,
-                title: strings.careerGoal,
-                subtitle: strings.careerGoalSubtitle,
-              ),
-              _SettingsTile(
-                icon: Icons.credit_card_rounded,
-                title: strings.subscription,
-                subtitle: strings.subscriptionPlan(profile.plan),
-              ),
-              _SettingsTile(
-                icon: Icons.lock_outline_rounded,
-                title: strings.privacy,
-                subtitle: strings.privacySubtitle,
-              ),
-              _PreferencesCard(strings: strings),
-            ],
+            ),
           ),
         );
       },
