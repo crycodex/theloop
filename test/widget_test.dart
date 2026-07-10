@@ -7,7 +7,6 @@ void main() {
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(const LoopApp());
-    await tester.pump(const Duration(seconds: 3));
     await tester.pump();
 
     expect(find.text('Toca para continuar'), findsOneWidget);

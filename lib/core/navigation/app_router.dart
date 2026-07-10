@@ -9,17 +9,11 @@ import '../../features/onboarding/presentation/onboarding_screens.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/recap/presentation/recap_screen.dart';
 import '../../features/roadmap/presentation/roadmap_screen.dart';
-import '../../features/splash/presentation/splash_screen.dart';
 import 'app_shell.dart';
 
 final appRouter = GoRouter(
-  initialLocation: '/splash',
+  initialLocation: '/welcome',
   routes: [
-    GoRoute(
-      path: '/splash',
-      pageBuilder: (context, state) =>
-          _instantPage(state: state, child: const SplashScreen()),
-    ),
     GoRoute(
       path: '/welcome',
       pageBuilder: (context, state) =>
