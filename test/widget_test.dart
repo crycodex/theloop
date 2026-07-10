@@ -3,12 +3,21 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:theloop/main.dart';
 
 void main() {
-  testWidgets('Loop app renders home dashboard', (WidgetTester tester) async {
+  testWidgets('Loop app opens the onboarding flow', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(const LoopApp());
     await tester.pump(const Duration(seconds: 3));
-    await tester.pumpAndSettle();
+    await tester.pump();
 
-    expect(find.text('Tu preparación para'), findsOneWidget);
-    expect(find.text('Mobile Engineer · Meta'), findsWidgets);
+    expect(find.text('Toca para continuar'), findsOneWidget);
+
+    await tester.tap(find.text('Toca para continuar'));
+    await tester.pump();
+    expect(find.text('Bienvenido'), findsOneWidget);
+
+    await tester.tap(find.text('Regístrate'));
+    await tester.pump();
+    expect(find.text('Empecemos contigo'), findsOneWidget);
   });
 }

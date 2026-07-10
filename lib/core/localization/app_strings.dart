@@ -28,6 +28,81 @@ class AppStrings {
   String days(int count) => _es ? '$count dias' : '$count days';
   String get loops => 'Loops';
   String get continueLabel => _es ? 'Continuar' : 'Continue';
+  String get welcomeLanguage => _es ? 'Español' : 'English';
+  String get welcomeHeadline => _es
+      ? 'Domina la entrevista,\nconsigue la oportunidad'
+      : 'Master the interview,\nland the opportunity';
+  String get tapToContinue => _es ? 'Toca para continuar' : 'Tap to continue';
+  String get welcomeLogin => _es
+      ? '¿Ya tienes cuenta? Inicia sesión'
+      : 'Already have an account? Sign in';
+  String get loginTitle => _es ? 'Bienvenido' : 'Welcome';
+  String get emailLabel => _es ? 'Email' : 'Email';
+  String get emailHint => _es ? 'Ingresa tu email' : 'Enter your email';
+  String get passwordLabel => _es ? 'Contraseña' : 'Password';
+  String get passwordHint =>
+      _es ? 'Ingresa tu contraseña' : 'Enter your password';
+  String get confirmPasswordLabel =>
+      _es ? 'Confirmar contraseña' : 'Confirm password';
+  String get confirmPasswordHint =>
+      _es ? 'Repite tu contraseña' : 'Repeat your password';
+  String get forgotPassword =>
+      _es ? '¿Olvidaste tu contraseña?' : 'Forgot your password?';
+  String get signIn => _es ? 'Iniciar sesión' : 'Sign in';
+  String get noAccount =>
+      _es ? '¿No tienes una cuenta?' : "Don't have an account?";
+  String get register => _es ? 'Regístrate' : 'Register';
+  String get nameLabel => _es ? 'Nombre completo' : 'Full name';
+  String get nameHint => _es ? '¿Cómo te llamas?' : 'What is your name?';
+  String get createAccount => _es ? 'Crear cuenta' : 'Create account';
+  String get accountDetailsTitle =>
+      _es ? 'Empecemos contigo' : "Let's start with you";
+  String get accountDetailsDescription => _es
+      ? 'Cuéntanos un poco para personalizar tu loop.'
+      : 'Tell us a little so we can personalize your loop.';
+  String get goalTitle => _es ? '¿Cuál es tu objetivo?' : 'What is your goal?';
+  String get goalDescription => _es
+      ? 'Personalizamos tu ruta según tus elecciones.'
+      : 'We personalize your path around your choices.';
+  String get experienceTitle => _es
+      ? '¿Cuál es tu nivel de\nexperiencia?'
+      : 'What is your experience\nlevel?';
+  String get experienceDescription => _es
+      ? 'Calibraremos tu dificultad y nivel para progresar.'
+      : "We'll calibrate your difficulty and level to help you progress.";
+  String get finishTitle =>
+      _es ? 'Tu loop está en camino' : 'Your loop is on its way';
+  String get finishDescription =>
+      _es ? 'Construyendo tu mejor camino' : 'Building your best path';
+  String get creating => _es ? 'Creando...' : 'Creating...';
+  String get next => _es ? 'Continuar' : 'Continue';
+  String get buildMyLoop => _es ? 'Crear mi loop' : 'Create my loop';
+  String get goalBigTech => 'Faang/BigTech';
+  String get goalBigTechDetail =>
+      _es ? 'Google · Meta · Amazon' : 'Google · Meta · Amazon';
+  String get goalConsulting => _es ? 'Consultoría MBB' : 'MBB Consulting';
+  String get goalConsultingDetail => 'McKinsey · BCG · Bain';
+  String get goalBanking => _es ? 'Banca de Inversión' : 'Investment Banking';
+  String get goalBankingDetail => 'Goldman · JPM · MS';
+  String get goalStartup => 'Startup';
+  String get goalStartupDetail =>
+      _es ? 'SERIE A-D, Scaleups' : 'Series A-D, Scaleups';
+  String get goalProductManager => 'Product Manager';
+  String get goalProductManagerDetail => _es ? 'Roles PM' : 'PM roles';
+  String get goalCustom => _es ? 'Mi Objetivo' : 'My goal';
+  String get goalCustomDetail => _es ? 'Lo defino yo' : 'I define it';
+  String get experienceNone => _es ? 'Sin experiencia' : 'No experience';
+  String get experienceNoneDetail =>
+      _es ? '0 - 1, Estudiante o graduado' : '0 - 1, Student or graduate';
+  String get experienceSome => _es ? 'Algo de experiencia' : 'Some experience';
+  String get experienceSomeDetail => _es
+      ? '2 - 4 años, He tenido algunas entrevistas'
+      : '2 - 4 years, I have had some interviews';
+  String get experienceAdvanced =>
+      _es ? 'Tengo experiencia' : 'I have experience';
+  String get experienceAdvancedDetail => _es
+      ? '+ 5 años, Tengo trabajo pero quiero mejorar'
+      : '+ 5 years, I have a job but want to improve';
   String get seeLoops => _es ? 'Ver loops' : 'See loops';
   String nextFocus(String focus) => _es
       ? 'Siguiente foco: ${trackFocus(focus)}'

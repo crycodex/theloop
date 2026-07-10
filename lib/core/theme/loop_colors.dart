@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 abstract final class LoopColors {
   static const brandGreen = Color(0xFF173404);
   static const accentGreen = Color(0xFF97C459);
+  static const onboardingGreen = Color(0xFF00BF6F);
+  static const onboardingGreenSoft = Color(0xFFE6FAF0);
   static const lightGreen = Color(0xFFEAF3DE);
   static const amber = Color(0xFFFAEEDA);
   static const infoBlue = Color(0xFFE6F1FB);

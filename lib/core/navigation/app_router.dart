@@ -5,6 +5,7 @@ import '../../features/cv_analysis/presentation/cv_analysis_screen.dart';
 import '../../features/home_dashboard/presentation/home_screen.dart';
 import '../../features/interview_call/presentation/interview_call_screen.dart';
 import '../../features/loops/presentation/loops_screen.dart';
+import '../../features/onboarding/presentation/onboarding_screens.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/recap/presentation/recap_screen.dart';
 import '../../features/roadmap/presentation/roadmap_screen.dart';
@@ -18,6 +19,21 @@ final appRouter = GoRouter(
       path: '/splash',
       pageBuilder: (context, state) =>
           _instantPage(state: state, child: const SplashScreen()),
+    ),
+    GoRoute(
+      path: '/welcome',
+      pageBuilder: (context, state) =>
+          _instantPage(state: state, child: const WelcomeScreen()),
+    ),
+    GoRoute(
+      path: '/login',
+      pageBuilder: (context, state) =>
+          _instantPage(state: state, child: const LoginScreen()),
+    ),
+    GoRoute(
+      path: '/register',
+      pageBuilder: (context, state) =>
+          _instantPage(state: state, child: const RegisterScreen()),
     ),
     ShellRoute(
       builder: (context, state, child) {
