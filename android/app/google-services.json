@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1009082169764",
+    "project_id": "the-loop-d46af",
+    "storage_bucket": "the-loop-d46af.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1009082169764:android:eb87a67b2ffb147c80a931",
+        "android_client_info": {
+          "package_name": "com.lopp.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoj7rbHP5fxe9zu1QfGpzyzVlIfpAqHJE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
