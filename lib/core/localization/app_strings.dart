@@ -37,6 +37,9 @@ class AppStrings {
       ? '¿Ya tienes cuenta? Inicia sesión'
       : 'Already have an account? Sign in';
   String get loginTitle => _es ? 'Bienvenido' : 'Welcome';
+  String get loginDescription => _es
+      ? 'Continúa donde lo dejaste y sigue mejorando.'
+      : 'Pick up where you left off and keep improving.';
   String get emailLabel => _es ? 'Email' : 'Email';
   String get emailHint => _es ? 'Ingresa tu email' : 'Enter your email';
   String get passwordLabel => _es ? 'Contraseña' : 'Password';
@@ -48,6 +51,19 @@ class AppStrings {
       _es ? 'Repite tu contraseña' : 'Repeat your password';
   String get forgotPassword =>
       _es ? '¿Olvidaste tu contraseña?' : 'Forgot your password?';
+  String get forgotPasswordTitle =>
+      _es ? 'Recupera tu cuenta' : 'Recover your account';
+  String get forgotPasswordDescription => _es
+      ? 'Ingresa tu email y te enviaremos instrucciones para crear una nueva contraseña.'
+      : 'Enter your email and we will send instructions to create a new password.';
+  String get sendResetLink =>
+      _es ? 'Enviar instrucciones' : 'Send instructions';
+  String get resetLinkSentTitle =>
+      _es ? 'Revisa tu correo' : 'Check your email';
+  String resetLinkSentDescription(String email) => _es
+      ? 'Enviamos las instrucciones a $email. Revisa también tu carpeta de spam.'
+      : 'We sent instructions to $email. Check your spam folder too.';
+  String get backToLogin => _es ? 'Volver a iniciar sesión' : 'Back to sign in';
   String get signIn => _es ? 'Iniciar sesión' : 'Sign in';
   String get noAccount =>
       _es ? '¿No tienes una cuenta?' : "Don't have an account?";
@@ -83,6 +99,16 @@ class AppStrings {
   String get creating => _es ? 'Creando...' : 'Creating...';
   String get next => _es ? 'Continuar' : 'Continue';
   String get buildMyLoop => _es ? 'Crear mi loop' : 'Create my loop';
+  String stepProgress(int step, int total) =>
+      _es ? 'Paso $step de $total' : 'Step $step of $total';
+  String get requiredFieldError =>
+      _es ? 'Este campo es obligatorio' : 'This field is required';
+  String get invalidEmailError =>
+      _es ? 'Ingresa un email válido' : 'Enter a valid email';
+  String get shortPasswordError =>
+      _es ? 'Ingresa al menos 6 caracteres' : 'Enter at least 6 characters';
+  String get passwordsDoNotMatchError =>
+      _es ? 'Las contraseñas no coinciden' : 'Passwords do not match';
   String get goalBigTech => 'Faang/BigTech';
   String get goalBigTechDetail =>
       _es ? 'Google · Meta · Amazon' : 'Google · Meta · Amazon';

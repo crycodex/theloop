@@ -25,6 +25,11 @@ final appRouter = GoRouter(
           _instantPage(state: state, child: const LoginScreen()),
     ),
     GoRoute(
+      path: '/forgot-password',
+      pageBuilder: (context, state) =>
+          _navPage(state: state, child: const ForgotPasswordScreen()),
+    ),
+    GoRoute(
       path: '/register',
       pageBuilder: (context, state) =>
           _instantPage(state: state, child: const RegisterScreen()),
