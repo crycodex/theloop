@@ -118,6 +118,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       AuthFailureReason.emailAlreadyInUse => strings.authErrorEmailInUse,
       AuthFailureReason.invalidCredential => strings.authErrorInvalidCredential,
       AuthFailureReason.weakPassword => strings.authErrorWeakPassword,
+      AuthFailureReason.emailNotVerified => strings.authErrorEmailNotVerified,
       AuthFailureReason.network => strings.authErrorNetwork,
       AuthFailureReason.unknown => strings.authErrorUnknown,
     };
@@ -131,8 +132,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
-        if (state is AuthSuccess) {
-          context.go('/');
+        if (state is EmailVerificationSent) {
+          showCupertinoDialog<void>(
+            context: context,
+            builder: (dialogContext) => CupertinoAlertDialog(
+              title: Text(strings.verifyEmailTitle),
+              content: Text(strings.verifyEmailMessage(state.email)),
+              actions: [
+                CupertinoDialogAction(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: Text(strings.backToLogin),
+                ),
+              ],
+            ),
+          ).then((_) {
+            if (context.mounted) context.go('/login');
+          });
         } else if (state is AuthFailure) {
           _revertToStart();
           ScaffoldMessenger.of(context).showSnackBar(

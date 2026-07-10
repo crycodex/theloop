@@ -230,6 +230,15 @@ class AppStrings {
   String get authErrorUnknown => _es
       ? 'Ocurrió un error. Inténtalo de nuevo.'
       : 'Something went wrong. Try again.';
+  String get authErrorEmailNotVerified => _es
+      ? 'Debes verificar tu correo antes de iniciar sesión. Te reenviamos el enlace.'
+      : 'You need to verify your email before signing in. We resent the link.';
+
+  String get verifyEmailTitle =>
+      _es ? 'Verifica tu correo' : 'Verify your email';
+  String verifyEmailMessage(String email) => _es
+      ? 'Te enviamos un enlace de verificación a $email. Confírmalo y luego inicia sesión.'
+      : 'We sent a verification link to $email. Confirm it and then sign in.';
 
   String get recapTitle => _es ? 'Reporte final' : 'Final report';
   String get strength => _es ? 'Fortaleza' : 'Strength';

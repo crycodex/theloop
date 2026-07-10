@@ -53,6 +53,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       AuthFailureReason.emailAlreadyInUse => strings.authErrorEmailInUse,
       AuthFailureReason.invalidCredential => strings.authErrorInvalidCredential,
       AuthFailureReason.weakPassword => strings.authErrorWeakPassword,
+      AuthFailureReason.emailNotVerified => strings.authErrorEmailNotVerified,
       AuthFailureReason.network => strings.authErrorNetwork,
       AuthFailureReason.unknown => strings.authErrorUnknown,
     };

@@ -39,7 +39,7 @@ class AuthCubit extends Cubit<AuthState> {
         customGoal: customGoal,
         experienceId: experienceId,
       );
-      emit(AuthSuccess(user));
+      emit(EmailVerificationSent(user.email ?? email));
     } on FirebaseAuthException catch (e) {
       emit(AuthFailure(_mapError(e.code)));
     } catch (_) {
@@ -82,6 +82,7 @@ class AuthCubit extends Cubit<AuthState> {
     'wrong-password' ||
     'user-not-found' => AuthFailureReason.invalidCredential,
     'weak-password' => AuthFailureReason.weakPassword,
+    'email-not-verified' => AuthFailureReason.emailNotVerified,
     'network-request-failed' => AuthFailureReason.network,
     _ => AuthFailureReason.unknown,
   };

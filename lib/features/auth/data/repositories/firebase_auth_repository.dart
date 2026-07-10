@@ -17,8 +17,13 @@ class FirebaseAuthRepository implements AuthRepository {
   @override
   AuthUser? get currentUser => _mapUser(_auth.currentUser);
 
-  AuthUser? _mapUser(User? user) =>
-      user == null ? null : AuthUser(uid: user.uid, email: user.email);
+  AuthUser? _mapUser(User? user) => user == null
+      ? null
+      : AuthUser(
+          uid: user.uid,
+          email: user.email,
+          emailVerified: user.emailVerified,
+        );
 
   @override
   Future<AuthUser> signUp({
@@ -53,8 +58,10 @@ class FirebaseAuthRepository implements AuthRepository {
     await batch.commit();
 
     await credential.user!.updateDisplayName(name);
+    await credential.user!.sendEmailVerification();
+    await _auth.signOut();
 
-    return AuthUser(uid: uid, email: email);
+    return AuthUser(uid: uid, email: email, emailVerified: false);
   }
 
   @override
@@ -67,7 +74,12 @@ class FirebaseAuthRepository implements AuthRepository {
       password: password,
     );
     final user = credential.user!;
-    return AuthUser(uid: user.uid, email: user.email);
+    if (!user.emailVerified) {
+      await user.sendEmailVerification();
+      await _auth.signOut();
+      throw FirebaseAuthException(code: 'email-not-verified');
+    }
+    return AuthUser(uid: user.uid, email: user.email, emailVerified: true);
   }
 
   @override

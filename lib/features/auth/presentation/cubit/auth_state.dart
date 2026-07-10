@@ -4,6 +4,7 @@ enum AuthFailureReason {
   emailAlreadyInUse,
   invalidCredential,
   weakPassword,
+  emailNotVerified,
   network,
   unknown,
 }
@@ -28,6 +29,12 @@ class AuthSuccess extends AuthState {
 
 class PasswordResetSent extends AuthState {
   const PasswordResetSent();
+}
+
+class EmailVerificationSent extends AuthState {
+  const EmailVerificationSent(this.email);
+
+  final String email;
 }
 
 class AuthFailure extends AuthState {
