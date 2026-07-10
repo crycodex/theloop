@@ -55,6 +55,12 @@ class AppStrings {
   String get nameLabel => _es ? 'Nombre completo' : 'Full name';
   String get nameHint => _es ? '¿Cómo te llamas?' : 'What is your name?';
   String get createAccount => _es ? 'Crear cuenta' : 'Create account';
+  String get exitOnboarding => _es ? 'Salir' : 'Exit';
+  String get customGoalLabel =>
+      _es ? 'Describe tu objetivo' : 'Describe your goal';
+  String get customGoalHint => _es
+      ? 'Ej. Prepararme para una entrevista de diseño'
+      : 'E.g. Prepare for a design interview';
   String get accountDetailsTitle =>
       _es ? 'Empecemos contigo' : "Let's start with you";
   String get accountDetailsDescription => _es

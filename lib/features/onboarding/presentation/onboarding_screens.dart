@@ -258,10 +258,12 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _accountFormKey = GlobalKey<FormState>();
+  final _goalFormKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmationController = TextEditingController();
+  final _customGoalController = TextEditingController();
   final _pageController = PageController();
   int _step = 0;
   int _goal = 0;
@@ -274,6 +276,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmationController.dispose();
+    _customGoalController.dispose();
     _pageController.dispose();
     super.dispose();
   }
@@ -282,6 +285,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (_step == 0 && !_accountFormKey.currentState!.validate()) {
       return;
     }
+    if (_step == 1 && !_goalFormKey.currentState!.validate()) return;
     if (_step >= 3) return;
 
     final nextStep = _step + 1;
@@ -295,6 +299,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (nextStep == 3) {
       _createLoop();
     }
+  }
+
+  Future<void> _goBack() async {
+    if (_step == 0) {
+      context.go('/login');
+      return;
+    }
+
+    final previousStep = _step - 1;
+    await _pageController.previousPage(
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.fastEaseInToSlowEaseOut,
+    );
+    if (mounted) setState(() => _step = previousStep);
   }
 
   Future<void> _createLoop() async {
@@ -329,6 +347,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           _RegisterPage(
             title: strings.accountDetailsTitle,
             description: strings.accountDetailsDescription,
+            onExit: () => context.go('/login'),
+            onBack: _goBack,
+            showBack: _step > 0,
             child: Form(
               key: _accountFormKey,
               child: Column(
@@ -386,14 +407,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
           _RegisterPage(
             title: strings.goalTitle,
             description: strings.goalDescription,
-            child: _GoalGrid(
-              selectedIndex: _goal,
-              onSelected: (index) => setState(() => _goal = index),
+            onExit: () => context.go('/login'),
+            onBack: _goBack,
+            showBack: _step > 0,
+            child: Form(
+              key: _goalFormKey,
+              child: _GoalGrid(
+                selectedIndex: _goal,
+                customGoalController: _customGoalController,
+                onSelected: (index) => setState(() => _goal = index),
+              ),
             ),
           ),
           _RegisterPage(
             title: strings.experienceTitle,
             description: strings.experienceDescription,
+            onExit: () => context.go('/login'),
+            onBack: _goBack,
+            showBack: _step > 0,
             child: _ExperienceOptions(
               selectedIndex: _experience,
               onSelected: (index) => setState(() => _experience = index),
@@ -402,6 +433,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           _RegisterPage(
             title: strings.finishTitle,
             description: strings.finishDescription,
+            onExit: () => context.go('/login'),
+            onBack: _goBack,
+            showBack: _step > 0,
             child: Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -540,26 +574,55 @@ class _RegisterPage extends StatelessWidget {
   const _RegisterPage({
     required this.title,
     required this.description,
+    required this.onExit,
+    required this.onBack,
+    required this.showBack,
     required this.child,
   });
 
   final String title;
   final String description;
+  final VoidCallback onExit;
+  final VoidCallback onBack;
+  final bool showBack;
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
+    final strings = AppStrings.of(context);
+
     return Material(
       color: Colors.transparent,
       child: SafeArea(
         bottom: false,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(32, 56, 32, 20),
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 440),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Row(
+                  children: [
+                    if (showBack)
+                      CupertinoButton(
+                        padding: EdgeInsets.zero,
+                        minimumSize: const Size(44, 44),
+                        onPressed: onBack,
+                        child: const Icon(CupertinoIcons.back),
+                      )
+                    else
+                      const SizedBox(width: 44),
+                    const Spacer(),
+                    CupertinoButton(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      minimumSize: const Size(44, 44),
+                      onPressed: onExit,
+                      child: Text(strings.exitOnboarding),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
                 Text(
                   title,
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
@@ -584,9 +647,14 @@ class _RegisterPage extends StatelessWidget {
 }
 
 class _GoalGrid extends StatelessWidget {
-  const _GoalGrid({required this.selectedIndex, required this.onSelected});
+  const _GoalGrid({
+    required this.selectedIndex,
+    required this.customGoalController,
+    required this.onSelected,
+  });
 
   final int selectedIndex;
+  final TextEditingController customGoalController;
   final ValueChanged<int> onSelected;
 
   @override
@@ -601,46 +669,64 @@ class _GoalGrid extends StatelessWidget {
       ('+ ${strings.goalCustom}', strings.goalCustomDetail),
     ];
 
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 1.25,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-      ),
-      itemCount: goals.length,
-      itemBuilder: (context, index) {
-        final selected = selectedIndex == index;
-        return _SelectionCard(
-          selected: selected,
-          onTap: () => onSelected(index),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                goals[index].$1,
-                style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: selected ? Colors.white : null,
-                  fontSize: 12,
-                ),
-              ),
-              const SizedBox(height: 3),
-              Text(
-                goals[index].$2,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: selected
-                      ? Colors.white.withValues(alpha: 0.85)
-                      : Theme.of(context).textTheme.bodyMedium?.color,
-                  fontSize: 9,
-                ),
-              ),
-            ],
+    return Column(
+      children: [
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 1.25,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
           ),
-        );
-      },
+          itemCount: goals.length,
+          itemBuilder: (context, index) {
+            final selected = selectedIndex == index;
+            return _SelectionCard(
+              selected: selected,
+              onTap: () => onSelected(index),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    goals[index].$1,
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: selected ? Colors.white : null,
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    goals[index].$2,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: selected
+                          ? Colors.white.withValues(alpha: 0.85)
+                          : Theme.of(context).textTheme.bodyMedium?.color,
+                      fontSize: 9,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+        if (selectedIndex == 5) ...[
+          const SizedBox(height: 20),
+          _FieldLabel(label: strings.customGoalLabel),
+          const SizedBox(height: 7),
+          TextFormField(
+            controller: customGoalController,
+            textCapitalization: TextCapitalization.sentences,
+            maxLines: 2,
+            decoration: InputDecoration(hintText: strings.customGoalHint),
+            validator: (value) => (value?.trim().isEmpty ?? true)
+                ? 'Describe tu objetivo para continuar'
+                : null,
+          ),
+        ],
+      ],
     );
   }
 }
