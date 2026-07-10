@@ -10,7 +10,7 @@ class ProfileCubit extends Cubit<ProfileState> {
 
   final GetProfile _getProfile;
 
-  void load() {
-    emit(ProfileLoaded(_getProfile()));
+  Future<void> load() async {
+    emit(ProfileLoaded(await _getProfile()));
   }
 }

@@ -1,9 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/localization/app_strings.dart';
 import '../../../core/theme/loop_colors.dart';
+import '../../auth/presentation/cubit/auth_cubit.dart';
+import '../../auth/presentation/cubit/auth_state.dart';
 import 'validators/auth_validators.dart';
 import 'widgets/auth_form_widgets.dart';
 import 'widgets/onboarding_backdrop.dart';
@@ -40,19 +43,43 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
     setState(() => _isSending = true);
-    await Future<void>.delayed(const Duration(milliseconds: 700));
-    if (!mounted) return;
-    setState(() {
-      _isSending = false;
-      _sent = true;
-    });
+    await context.read<AuthCubit>().sendPasswordReset(
+      _emailController.text.trim(),
+    );
+  }
+
+  String _errorMessage(AppStrings strings, AuthFailureReason reason) {
+    return switch (reason) {
+      AuthFailureReason.emailAlreadyInUse => strings.authErrorEmailInUse,
+      AuthFailureReason.invalidCredential => strings.authErrorInvalidCredential,
+      AuthFailureReason.weakPassword => strings.authErrorWeakPassword,
+      AuthFailureReason.network => strings.authErrorNetwork,
+      AuthFailureReason.unknown => strings.authErrorUnknown,
+    };
   }
 
   @override
   Widget build(BuildContext context) {
     final strings = AppStrings.of(context);
 
-    return Scaffold(
+    return BlocListener<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (!_isSending) return;
+        if (state is PasswordResetSent ||
+            (state is AuthFailure &&
+                state.reason == AuthFailureReason.invalidCredential)) {
+          setState(() {
+            _isSending = false;
+            _sent = true;
+          });
+        } else if (state is AuthFailure) {
+          setState(() => _isSending = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(_errorMessage(strings, state.reason))),
+          );
+        }
+      },
+      child: Scaffold(
       resizeToAvoidBottomInset: true,
       body: OnboardingBackdrop(
         alignment: const Alignment(-5, 0.3),
@@ -121,6 +148,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             ),
           ),
         ),
+      ),
       ),
     );
   }

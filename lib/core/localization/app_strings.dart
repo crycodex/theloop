@@ -123,6 +123,15 @@ class AppStrings {
   String get goalProductManagerDetail => _es ? 'Roles PM' : 'PM roles';
   String get goalCustom => _es ? 'Mi Objetivo' : 'My goal';
   String get goalCustomDetail => _es ? 'Lo defino yo' : 'I define it';
+  String goalLabel(String id) => switch (id) {
+    'bigTech' => goalBigTech,
+    'consulting' => goalConsulting,
+    'banking' => goalBanking,
+    'startup' => goalStartup,
+    'productManager' => goalProductManager,
+    'custom' => goalCustom,
+    _ => id,
+  };
   String get experienceNone => _es ? 'Sin experiencia' : 'No experience';
   String get experienceNoneDetail =>
       _es ? '0 - 1, Estudiante o graduado' : '0 - 1, Student or graduate';
@@ -201,6 +210,26 @@ class AppStrings {
       _es ? 'Tema e idioma' : 'Theme and language';
   String get darkMode => _es ? 'Modo oscuro' : 'Dark mode';
   String get languageLabel => _es ? 'Idioma' : 'Language';
+
+  String get logout => _es ? 'Cerrar sesión' : 'Sign out';
+  String get logoutConfirmTitle =>
+      _es ? '¿Cerrar sesión?' : 'Sign out?';
+  String get logoutConfirmMessage => _es
+      ? 'Tendrás que iniciar sesión de nuevo.'
+      : "You'll need to sign in again.";
+
+  String get authErrorEmailInUse =>
+      _es ? 'Ese correo ya está registrado.' : 'That email is already registered.';
+  String get authErrorInvalidCredential => _es
+      ? 'Correo o contraseña incorrectos.'
+      : 'Incorrect email or password.';
+  String get authErrorWeakPassword =>
+      _es ? 'La contraseña es demasiado débil.' : 'Password is too weak.';
+  String get authErrorNetwork =>
+      _es ? 'Sin conexión. Inténtalo de nuevo.' : 'No connection. Try again.';
+  String get authErrorUnknown => _es
+      ? 'Ocurrió un error. Inténtalo de nuevo.'
+      : 'Something went wrong. Try again.';
 
   String get recapTitle => _es ? 'Reporte final' : 'Final report';
   String get strength => _es ? 'Fortaleza' : 'Strength';

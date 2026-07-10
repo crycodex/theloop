@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -6,6 +9,9 @@ import 'core/navigation/app_router.dart';
 import 'core/settings/cubit/settings_cubit.dart';
 import 'core/settings/cubit/settings_state.dart';
 import 'core/theme/loop_theme.dart';
+import 'features/auth/data/repositories/firebase_auth_repository.dart';
+import 'features/auth/domain/repositories/auth_repository.dart';
+import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/cv_analysis/data/repositories/mock_cv_analysis_repository.dart';
 import 'features/cv_analysis/domain/repositories/cv_analysis_repository.dart';
 import 'features/cv_analysis/domain/usecases/get_cv_analysis.dart';
@@ -19,7 +25,7 @@ import 'features/loops/data/repositories/mock_loops_repository.dart';
 import 'features/loops/domain/repositories/loops_repository.dart';
 import 'features/loops/domain/usecases/get_loop_tracks.dart';
 import 'features/loops/presentation/cubit/loops_cubit.dart';
-import 'features/profile/data/repositories/mock_profile_repository.dart';
+import 'features/profile/data/repositories/firestore_profile_repository.dart';
 import 'features/profile/domain/repositories/profile_repository.dart';
 import 'features/profile/domain/usecases/get_profile.dart';
 import 'features/profile/presentation/cubit/profile_cubit.dart';
@@ -31,8 +37,11 @@ import 'features/roadmap/data/repositories/mock_roadmap_repository.dart';
 import 'features/roadmap/domain/repositories/roadmap_repository.dart';
 import 'features/roadmap/domain/usecases/get_roadmap.dart';
 import 'features/roadmap/presentation/cubit/roadmap_cubit.dart';
+import 'firebase_options.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const LoopApp());
 }
 
@@ -43,6 +52,10 @@ class LoopApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
+        RepositoryProvider<AuthRepository>(
+          create: (_) =>
+              FirebaseAuthRepository(FirebaseAuth.instance, FirebaseFirestore.instance),
+        ),
         RepositoryProvider<LoopsRepository>(
           create: (_) => const MockLoopsRepository(),
         ),
@@ -57,62 +70,96 @@ class LoopApp extends StatelessWidget {
           create: (_) => const MockRoadmapRepository(),
         ),
         RepositoryProvider<ProfileRepository>(
-          create: (_) => const MockProfileRepository(),
+          create: (context) => FirestoreProfileRepository(
+            FirebaseFirestore.instance,
+            context.read<AuthRepository>(),
+          ),
         ),
         RepositoryProvider<RecapRepository>(
           create: (_) => const MockRecapRepository(),
         ),
       ],
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider(
-            create: (context) => HomeDashboardCubit(
-              GetHomeDashboard(context.read<HomeDashboardRepository>()),
-            ),
-          ),
-          BlocProvider(
-            create: (context) =>
-                LoopsCubit(GetLoopTracks(context.read<LoopsRepository>())),
-          ),
-          BlocProvider(
-            create: (context) => CvAnalysisCubit(
-              GetCvAnalysis(context.read<CvAnalysisRepository>()),
-            ),
-          ),
-          BlocProvider(
-            create: (context) =>
-                RoadmapCubit(GetRoadmap(context.read<RoadmapRepository>())),
-          ),
-          BlocProvider(
-            create: (context) =>
-                ProfileCubit(GetProfile(context.read<ProfileRepository>())),
-          ),
-          BlocProvider(
-            create: (context) =>
-                RecapCubit(GetLatestRecap(context.read<RecapRepository>())),
-          ),
-          BlocProvider(create: (_) => InterviewCallCubit()),
-          BlocProvider(create: (_) => SettingsCubit()),
-        ],
-        child: BlocBuilder<SettingsCubit, SettingsState>(
-          builder: (context, settings) {
-            return MaterialApp.router(
-              title: 'Loop',
-              debugShowCheckedModeBanner: false,
-              theme: LoopTheme.light,
-              darkTheme: LoopTheme.dark,
-              themeMode: settings.themeMode,
-              locale: settings.language.locale,
-              supportedLocales: const [Locale('es'), Locale('en')],
-              localizationsDelegates: const [
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
-              routerConfig: appRouter,
-            );
-          },
+      child: const _LoopAppView(),
+    );
+  }
+}
+
+class _LoopAppView extends StatefulWidget {
+  const _LoopAppView();
+
+  @override
+  State<_LoopAppView> createState() => _LoopAppViewState();
+}
+
+class _LoopAppViewState extends State<_LoopAppView> {
+  late final AppRouter _appRouter;
+
+  @override
+  void initState() {
+    super.initState();
+    _appRouter = AppRouter(context.read<AuthRepository>());
+  }
+
+  @override
+  void dispose() {
+    _appRouter.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => AuthCubit(context.read<AuthRepository>()),
         ),
+        BlocProvider(
+          create: (context) => HomeDashboardCubit(
+            GetHomeDashboard(context.read<HomeDashboardRepository>()),
+          ),
+        ),
+        BlocProvider(
+          create: (context) =>
+              LoopsCubit(GetLoopTracks(context.read<LoopsRepository>())),
+        ),
+        BlocProvider(
+          create: (context) => CvAnalysisCubit(
+            GetCvAnalysis(context.read<CvAnalysisRepository>()),
+          ),
+        ),
+        BlocProvider(
+          create: (context) =>
+              RoadmapCubit(GetRoadmap(context.read<RoadmapRepository>())),
+        ),
+        BlocProvider(
+          create: (context) =>
+              ProfileCubit(GetProfile(context.read<ProfileRepository>())),
+        ),
+        BlocProvider(
+          create: (context) =>
+              RecapCubit(GetLatestRecap(context.read<RecapRepository>())),
+        ),
+        BlocProvider(create: (_) => InterviewCallCubit()),
+        BlocProvider(create: (_) => SettingsCubit()),
+      ],
+      child: BlocBuilder<SettingsCubit, SettingsState>(
+        builder: (context, settings) {
+          return MaterialApp.router(
+            title: 'Loop',
+            debugShowCheckedModeBanner: false,
+            theme: LoopTheme.light,
+            darkTheme: LoopTheme.dark,
+            themeMode: settings.themeMode,
+            locale: settings.language.locale,
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale('es'), Locale('en')],
+            routerConfig: _appRouter.router,
+          );
+        },
       ),
     );
   }

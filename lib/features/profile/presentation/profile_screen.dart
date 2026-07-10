@@ -7,6 +7,7 @@ import '../../../core/settings/cubit/settings_cubit.dart';
 import '../../../core/settings/cubit/settings_state.dart';
 import '../../../core/theme/loop_colors.dart';
 import '../../../core/widgets/loop_card.dart';
+import '../../auth/presentation/cubit/auth_cubit.dart';
 import 'cubit/profile_cubit.dart';
 import 'cubit/profile_state.dart';
 
@@ -70,7 +71,9 @@ class ProfileScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                profile.target,
+                                profile.target.isEmpty
+                                    ? profile.email
+                                    : strings.goalLabel(profile.target),
                                 style: Theme.of(context).textTheme.bodyMedium,
                               ),
                             ],
@@ -96,6 +99,15 @@ class ProfileScreen extends StatelessWidget {
                     subtitle: strings.privacySubtitle,
                   ),
                   _PreferencesCard(strings: strings),
+                  const SizedBox(height: 8),
+                  _SettingsTile(
+                    icon: Icons.logout_rounded,
+                    title: strings.logout,
+                    subtitle: strings.logoutConfirmMessage,
+                    iconColor: LoopColors.danger,
+                    iconBackground: LoopColors.danger.withValues(alpha: 0.12),
+                    onTap: () => _confirmSignOut(context, strings),
+                  ),
                 ],
               ),
             ),
@@ -103,6 +115,32 @@ class ProfileScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<void> _confirmSignOut(BuildContext context, AppStrings strings) async {
+    final authCubit = context.read<AuthCubit>();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(strings.logoutConfirmTitle),
+        content: Text(strings.logoutConfirmMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(strings.exitOnboarding),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(strings.logout),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    await authCubit.signOut();
+    if (context.mounted) context.go('/welcome');
   }
 }
 
@@ -200,17 +238,24 @@ class _SettingsTile extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.subtitle,
+    this.onTap,
+    this.iconColor,
+    this.iconBackground,
   });
 
   final IconData icon;
   final String title;
   final String subtitle;
+  final VoidCallback? onTap;
+  final Color? iconColor;
+  final Color? iconBackground;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: LoopCard(
+        onTap: onTap,
         padding: const EdgeInsets.all(18),
         child: Row(
           children: [
@@ -218,10 +263,10 @@ class _SettingsTile extends StatelessWidget {
               width: 42,
               height: 42,
               decoration: BoxDecoration(
-                color: LoopColors.lightGreen,
+                color: iconBackground ?? LoopColors.lightGreen,
                 borderRadius: BorderRadius.circular(15),
               ),
-              child: Icon(icon, color: LoopColors.brandGreen),
+              child: Icon(icon, color: iconColor ?? LoopColors.brandGreen),
             ),
             const SizedBox(width: 14),
             Expanded(

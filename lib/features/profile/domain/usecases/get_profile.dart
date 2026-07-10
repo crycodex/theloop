@@ -6,5 +6,5 @@ class GetProfile {
 
   final ProfileRepository _repository;
 
-  Profile call() => _repository.getProfile();
+  Future<Profile> call() => _repository.getProfile();
 }
