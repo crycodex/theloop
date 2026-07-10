@@ -1,4 +1,4 @@
-package com.example.theloop
+package com.lopp.app
 
 import io.flutter.embedding.android.FlutterActivity
 
