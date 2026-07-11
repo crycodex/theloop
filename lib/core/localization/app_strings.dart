@@ -361,6 +361,12 @@ class AppStrings {
   String get preparingReport =>
       _es ? 'Preparando tu reporte…' : 'Preparing your report…';
   String get retry => _es ? 'Reintentar' : 'Retry';
+  String get noWifiTitle => _es ? 'Sin Wi‑Fi' : 'No Wi‑Fi';
+  String get noWifiBody => _es
+      ? 'Conéctate a una red Wi‑Fi para usar Loop. La app necesita internet para sincronizar tu progreso y practicar entrevistas.'
+      : 'Connect to a Wi‑Fi network to use Loop. The app needs internet to sync your progress and practice interviews.';
+  String get noWifiReconnect => _es ? 'Reconectar' : 'Reconnect';
+  String get noWifiChecking => _es ? 'Comprobando…' : 'Checking…';
   String get noTranscript =>
       _es ? 'El loop terminó sin conversación.' : 'The loop ended without a conversation.';
   String get noLoopsTitle => homeWelcome;

@@ -34,6 +34,8 @@ dependencies:
   flutter_pcm_sound: ^3.3.3
   http: ^1.6.0
   flutter_native_splash: ^2.4.7
+  connectivity_plus: ^7.2.0
+  shared_preferences: ^2.5.5
 
 
 dev_dependencies:

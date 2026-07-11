@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:theloop/core/navigation/app_router.dart';
 import 'package:theloop/core/settings/cubit/settings_cubit.dart';
 import 'package:theloop/core/settings/cubit/settings_state.dart';
+import 'package:theloop/core/settings/data/settings_storage.dart';
 import 'package:theloop/core/theme/loop_theme.dart';
 import 'package:theloop/features/auth/domain/repositories/auth_repository.dart';
 import 'package:theloop/features/auth/presentation/cubit/auth_cubit.dart';
@@ -66,7 +67,9 @@ class _TestAppViewState extends State<_TestAppView> {
           create: (context) =>
               ProfileCubit(GetProfile(context.read<ProfileRepository>())),
         ),
-        BlocProvider(create: (_) => SettingsCubit()),
+        BlocProvider(
+          create: (_) => SettingsCubit(InMemorySettingsStorage()),
+        ),
       ],
       child: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, settings) {

@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'core/bootstrap/loop_bootstrap.dart';
 import 'core/config/app_env.dart';
 import 'core/navigation/app_router.dart';
 import 'core/settings/cubit/settings_cubit.dart';
 import 'core/settings/cubit/settings_state.dart';
+import 'core/settings/data/settings_storage.dart';
 import 'core/theme/loop_theme.dart';
 import 'features/auth/data/repositories/firebase_auth_repository.dart';
 import 'features/auth/domain/repositories/auth_repository.dart';
@@ -45,19 +47,33 @@ import 'features/roadmap/data/repositories/mock_roadmap_repository.dart';
 import 'features/roadmap/domain/repositories/roadmap_repository.dart';
 import 'features/roadmap/domain/usecases/get_roadmap.dart';
 import 'features/roadmap/presentation/cubit/roadmap_cubit.dart';
-import 'firebase_options.dart';
 
 const _firestoreDatabaseId = 'default';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppEnv.load();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const LoopApp());
+
+  final settingsStorage = SharedPreferencesSettingsStorage();
+  final initialSettings = await settingsStorage.load();
+
+  runApp(
+    LoopBootstrap(
+      initialSettings: initialSettings,
+      settingsStorage: settingsStorage,
+    ),
+  );
 }
 
 class LoopApp extends StatelessWidget {
-  const LoopApp({super.key});
+  const LoopApp({
+    super.key,
+    required this.initialSettings,
+    required this.settingsStorage,
+  });
+
+  final SettingsState initialSettings;
+  final SettingsStorage settingsStorage;
 
   @override
   Widget build(BuildContext context) {
@@ -115,13 +131,22 @@ class LoopApp extends StatelessWidget {
               FirestoreRecapRepository(context.read<InterviewLoopRepository>()),
         ),
       ],
-      child: const _LoopAppView(),
+      child: _LoopAppView(
+        initialSettings: initialSettings,
+        settingsStorage: settingsStorage,
+      ),
     );
   }
 }
 
 class _LoopAppView extends StatefulWidget {
-  const _LoopAppView();
+  const _LoopAppView({
+    required this.initialSettings,
+    required this.settingsStorage,
+  });
+
+  final SettingsState initialSettings;
+  final SettingsStorage settingsStorage;
 
   @override
   State<_LoopAppView> createState() => _LoopAppViewState();
@@ -175,7 +200,12 @@ class _LoopAppViewState extends State<_LoopAppView> {
           create: (context) =>
               RecapCubit(GetLatestRecap(context.read<RecapRepository>())),
         ),
-        BlocProvider(create: (_) => SettingsCubit()),
+        BlocProvider(
+          create: (_) => SettingsCubit(
+            widget.settingsStorage,
+            initialState: widget.initialSettings,
+          ),
+        ),
         BlocProvider(
           create: (context) => InterviewCallCubit(
             GeminiLiveService(),
