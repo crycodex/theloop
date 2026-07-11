@@ -15,47 +15,47 @@ service cloud.firestore {
         allow read, create, update: if request.auth != null
           && request.auth.uid == userId;
         allow delete: if false;
-      }
 
-      match /loops/{loopId} {
-        allow read: if request.auth != null && request.auth.uid == userId;
+        match /loops/{loopId} {
+          allow read: if request.auth != null && request.auth.uid == userId;
 
-        allow create: if request.auth != null
-          && request.auth.uid == userId
-          && request.resource.data.status == 'active'
-          && request.resource.data.profileSnapshot is map
-          && request.resource.data.startedAt is timestamp
-          && request.resource.data.updatedAt is timestamp;
+          allow create: if request.auth != null
+            && request.auth.uid == userId
+            && request.resource.data.status == 'active'
+            && request.resource.data.profileSnapshot is map
+            && request.resource.data.startedAt is timestamp
+            && request.resource.data.updatedAt is timestamp;
 
-        allow update: if request.auth != null
-          && request.auth.uid == userId
-          && resource.data.status == 'active'
-          && (
-            (
-              request.resource.data.status == 'abandoned'
-              && request.resource.data.diff(resource.data).affectedKeys()
-                .hasOnly(['status', 'endedAt', 'updatedAt'])
-            )
-            || (
-              request.resource.data.status == 'completed'
-              && request.resource.data.loopType == 'prep'
-              && request.resource.data.transcript is list
-              && request.resource.data.durationSeconds is int
-              && request.resource.data.endedAt is timestamp
-              && request.resource.data.updatedAt is timestamp
-            )
-            || (
-              request.resource.data.status == 'completed'
-              && request.resource.data.transcript is list
-              && request.resource.data.report is map
-              && request.resource.data.memorySummary is string
-              && request.resource.data.durationSeconds is int
-              && request.resource.data.endedAt is timestamp
-              && request.resource.data.updatedAt is timestamp
-            )
-          );
+          allow update: if request.auth != null
+            && request.auth.uid == userId
+            && resource.data.status == 'active'
+            && (
+              (
+                request.resource.data.status == 'abandoned'
+                && request.resource.data.diff(resource.data).affectedKeys()
+                  .hasOnly(['status', 'endedAt', 'updatedAt'])
+              )
+              || (
+                request.resource.data.status == 'completed'
+                && request.resource.data.loopType == 'prep'
+                && request.resource.data.transcript is list
+                && request.resource.data.durationSeconds is int
+                && request.resource.data.endedAt is timestamp
+                && request.resource.data.updatedAt is timestamp
+              )
+              || (
+                request.resource.data.status == 'completed'
+                && request.resource.data.transcript is list
+                && request.resource.data.report is map
+                && request.resource.data.memorySummary is string
+                && request.resource.data.durationSeconds is int
+                && request.resource.data.endedAt is timestamp
+                && request.resource.data.updatedAt is timestamp
+              )
+            );
 
-        allow delete: if false;
+          allow delete: if false;
+        }
       }
     }
   }

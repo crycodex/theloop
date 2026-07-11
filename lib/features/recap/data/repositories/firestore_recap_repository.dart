@@ -9,16 +9,15 @@ class FirestoreRecapRepository implements RecapRepository {
   final InterviewLoopRepository _loops;
 
   @override
-  Future<SessionRecap?> getRecap(String? loopId) async {
-    final completed = loopId == null || loopId.isEmpty
-        ? await _loops.getCompletedLoops()
-        : null;
-    final loop = completed != null
-        ? (completed.isEmpty ? null : completed.first)
-        : await _loops.getLoop(loopId!);
+  Future<SessionRecap?> getRecap({
+    required String trackId,
+    required String loopId,
+  }) async {
+    final loop = await _loops.getLoop(trackId: trackId, loopId: loopId);
     final report = loop?.report;
     if (loop == null || report == null) return null;
     return SessionRecap(
+      trackId: trackId,
       loopId: loop.id,
       level: report.score / 2,
       delta: 0,

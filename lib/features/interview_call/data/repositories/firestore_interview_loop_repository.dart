@@ -13,41 +13,50 @@ class FirestoreInterviewLoopRepository implements InterviewLoopRepository {
   final FirebaseFirestore _firestore;
   final AuthRepository _authRepository;
 
-  CollectionReference<Map<String, dynamic>> get _loops {
+  CollectionReference<Map<String, dynamic>> _loopsFor(String trackId) {
     final user = _authRepository.currentUser;
     if (user == null) {
       throw StateError('No hay un usuario autenticado.');
     }
-    return _firestore.collection('users').doc(user.uid).collection('loops');
+    return _firestore
+        .collection('users')
+        .doc(user.uid)
+        .collection('tracks')
+        .doc(trackId)
+        .collection('loops');
   }
 
   @override
-  Future<List<InterviewLoop>> getCompletedLoops() async {
-    final snapshot = await _loops
-        .where('status', isEqualTo: 'completed')
-        .orderBy('endedAt', descending: true)
+  Future<List<InterviewLoop>> getLoopsForTrack(String trackId) async {
+    final snapshot = await _loopsFor(trackId)
+        .orderBy('startedAt', descending: true)
         .get();
-    return snapshot.docs.map(_fromDocument).toList(growable: false);
+    return snapshot.docs
+        .map((doc) => _fromDocument(trackId, doc))
+        .toList(growable: false);
   }
 
   @override
-  Future<InterviewLoop?> getLoop(String loopId) async {
-    final document = await _loops.doc(loopId).get();
-    return document.exists ? _fromDocument(document) : null;
+  Future<InterviewLoop?> getLoop({
+    required String trackId,
+    required String loopId,
+  }) async {
+    final document = await _loopsFor(trackId).doc(loopId).get();
+    return document.exists ? _fromDocument(trackId, document) : null;
   }
 
   @override
   Future<String> createActiveLoop({
+    required String trackId,
     String? sourceLoopId,
-    String? trackId,
     LoopType loopType = LoopType.interview,
     required Map<String, dynamic> profileSnapshot,
   }) async {
-    final document = _loops.doc();
+    final collection = _loopsFor(trackId);
+    final document = collection.doc();
     await document.set({
       'status': 'active',
       'sourceLoopId': sourceLoopId,
-      'trackId': trackId,
       'loopType': loopType.name,
       'profileSnapshot': profileSnapshot,
       'startedAt': FieldValue.serverTimestamp(),
@@ -58,11 +67,12 @@ class FirestoreInterviewLoopRepository implements InterviewLoopRepository {
 
   @override
   Future<void> completePrepLoop({
+    required String trackId,
     required String loopId,
     required List<TranscriptTurn> transcript,
     required int durationSeconds,
   }) {
-    return _loops.doc(loopId).update({
+    return _loopsFor(trackId).doc(loopId).update({
       'status': 'completed',
       'loopType': LoopType.prep.name,
       'transcript': transcript.map((turn) => turn.toJson()).toList(),
@@ -74,12 +84,15 @@ class FirestoreInterviewLoopRepository implements InterviewLoopRepository {
 
   @override
   Future<void> completeLoop({
+    required String trackId,
     required String loopId,
     required List<TranscriptTurn> transcript,
     required InterviewReport report,
     required int durationSeconds,
-  }) {
-    return _loops.doc(loopId).update({
+  }) async {
+    final batch = _firestore.batch();
+    final loopRef = _loopsFor(trackId).doc(loopId);
+    batch.update(loopRef, {
       'status': 'completed',
       'transcript': transcript.map((turn) => turn.toJson()).toList(),
       'report': {
@@ -95,11 +108,30 @@ class FirestoreInterviewLoopRepository implements InterviewLoopRepository {
       'endedAt': FieldValue.serverTimestamp(),
       'updatedAt': FieldValue.serverTimestamp(),
     });
+
+    final user = _authRepository.currentUser;
+    if (user != null) {
+      final trackRef = _firestore
+          .collection('users')
+          .doc(user.uid)
+          .collection('tracks')
+          .doc(trackId);
+      batch.update(trackRef, {
+        'latestScore': report.score,
+        'latestLevel': report.score / 2,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+    }
+
+    await batch.commit();
   }
 
   @override
-  Future<void> abandonLoop(String loopId) {
-    return _loops.doc(loopId).update({
+  Future<void> abandonLoop({
+    required String trackId,
+    required String loopId,
+  }) {
+    return _loopsFor(trackId).doc(loopId).update({
       'status': 'abandoned',
       'endedAt': FieldValue.serverTimestamp(),
       'updatedAt': FieldValue.serverTimestamp(),
@@ -107,6 +139,7 @@ class FirestoreInterviewLoopRepository implements InterviewLoopRepository {
   }
 
   InterviewLoop _fromDocument(
+    String trackId,
     DocumentSnapshot<Map<String, dynamic>> document,
   ) {
     final data = document.data() ?? const <String, dynamic>{};
@@ -120,7 +153,9 @@ class FirestoreInterviewLoopRepository implements InterviewLoopRepository {
 
     return InterviewLoop(
       id: document.id,
+      trackId: trackId,
       status: data['status'] as String? ?? 'active',
+      loopType: data['loopType'] as String? ?? LoopType.interview.name,
       startedAt: startedAt?.toDate() ?? DateTime.fromMillisecondsSinceEpoch(0),
       endedAt: endedAt?.toDate(),
       durationSeconds: (data['durationSeconds'] as num?)?.toInt() ?? 0,

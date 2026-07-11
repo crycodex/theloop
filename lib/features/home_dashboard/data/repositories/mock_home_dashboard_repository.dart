@@ -17,7 +17,9 @@ class MockHomeDashboardRepository implements HomeDashboardRepository {
       generalLevel: 3.7,
       streakDays: 6,
       totalLoops: 18,
-      latestTrack: tracks.first,
+      totalTracks: tracks.length,
+      tracks: tracks,
+      hasMeasuredLevel: true,
       criteria: const [
         CriterionProgress(name: 'Estructura STAR', score: 0.82, trend: '+0.4'),
         CriterionProgress(name: 'Impacto medible', score: 0.68, trend: '+0.2'),

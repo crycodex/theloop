@@ -135,6 +135,8 @@ class FirestoreTracksRepository implements TracksRepository {
       prepCompleted: data['prepCompleted'] as bool? ?? false,
       cyclesCompleted: (data['cyclesCompleted'] as num?)?.toInt() ?? 0,
       createdAt: createdAt?.toDate() ?? DateTime.fromMillisecondsSinceEpoch(0),
+      latestScore: (data['latestScore'] as num?)?.toDouble() ?? 0,
+      latestLevel: (data['latestLevel'] as num?)?.toDouble() ?? 0,
     );
   }
 }

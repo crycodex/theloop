@@ -17,7 +17,6 @@ class InterviewCallState {
   const InterviewCallState({
     required this.phase,
     required this.isMicEnabled,
-    required this.isPaused,
     required this.isAiSpeaking,
     required this.remainingSeconds,
     required this.transcript,
@@ -31,7 +30,6 @@ class InterviewCallState {
   const InterviewCallState.initial()
     : phase = InterviewCallPhase.idle,
       isMicEnabled = true,
-      isPaused = false,
       isAiSpeaking = false,
       remainingSeconds = kLoopDurationSeconds,
       transcript = const [],
@@ -43,7 +41,6 @@ class InterviewCallState {
 
   final InterviewCallPhase phase;
   final bool isMicEnabled;
-  final bool isPaused;
   final bool isAiSpeaking;
   final int remainingSeconds;
   final List<TranscriptTurn> transcript;
@@ -65,7 +62,6 @@ class InterviewCallState {
   InterviewCallState copyWith({
     InterviewCallPhase? phase,
     bool? isMicEnabled,
-    bool? isPaused,
     bool? isAiSpeaking,
     int? remainingSeconds,
     List<TranscriptTurn>? transcript,
@@ -79,7 +75,6 @@ class InterviewCallState {
     return InterviewCallState(
       phase: phase ?? this.phase,
       isMicEnabled: isMicEnabled ?? this.isMicEnabled,
-      isPaused: isPaused ?? this.isPaused,
       isAiSpeaking: isAiSpeaking ?? this.isAiSpeaking,
       remainingSeconds: remainingSeconds ?? this.remainingSeconds,
       transcript: transcript ?? this.transcript,

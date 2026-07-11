@@ -8,13 +8,15 @@ import '../../../core/widgets/delta_badge.dart';
 import '../../../core/widgets/level_circle.dart';
 import '../../../core/widgets/loop_card.dart';
 import '../../../core/widgets/metric_progress_bar.dart';
+import '../../home_dashboard/presentation/cubit/home_dashboard_cubit.dart';
 import '../domain/entities/session_recap.dart';
 import 'cubit/recap_cubit.dart';
 import 'cubit/recap_state.dart';
 
 class RecapScreen extends StatefulWidget {
-  const RecapScreen({super.key, this.loopId});
+  const RecapScreen({super.key, this.trackId, this.loopId});
 
+  final String? trackId;
   final String? loopId;
 
   @override
@@ -26,7 +28,15 @@ class _RecapScreenState extends State<RecapScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<RecapCubit>().load(widget.loopId);
+      final trackId = widget.trackId;
+      final loopId = widget.loopId;
+      if (trackId == null ||
+          trackId.isEmpty ||
+          loopId == null ||
+          loopId.isEmpty) {
+        return;
+      }
+      context.read<RecapCubit>().load(trackId: trackId, loopId: loopId);
     });
   }
 
@@ -39,7 +49,7 @@ class _RecapScreenState extends State<RecapScreen> {
             backgroundColor: LoopColors.surface,
             appBar: AppBar(
               leading: IconButton(
-                onPressed: () => context.go('/'),
+                onPressed: () => _goHome(context),
                 icon: const Icon(Icons.close_rounded),
               ),
             ),
@@ -71,7 +81,7 @@ class _RecapScreenState extends State<RecapScreen> {
           appBar: AppBar(
             title: Text(strings.recapTitle),
             leading: IconButton(
-              onPressed: () => context.go('/'),
+              onPressed: () => _goHome(context),
               icon: const Icon(Icons.close_rounded),
             ),
           ),
@@ -159,7 +169,7 @@ class _RecapScreenState extends State<RecapScreen> {
                 const SizedBox(height: 22),
                 FilledButton(
                   onPressed: () => context.go(
-                    '/interview?sourceLoopId=${recap.loopId}',
+                    '/interview?trackId=${recap.trackId}&sourceLoopId=${recap.loopId}&loopType=interview',
                   ),
                   child: Text(strings.practiceAgain),
                 ),
@@ -236,4 +246,9 @@ class _Insight extends StatelessWidget {
       ],
     );
   }
+}
+
+void _goHome(BuildContext context) {
+  context.read<HomeDashboardCubit>().load();
+  context.go('/');
 }

@@ -13,7 +13,14 @@ class FirestoreHomeDashboardRepository implements HomeDashboardRepository {
   Future<HomeDashboard> getDashboard() async {
     final profile = await _profiles.getProfile();
     final tracks = await _loops.getTracks();
-    final latest = tracks.isEmpty ? null : tracks.first;
+    final totalLoops = tracks.fold<int>(
+      0,
+      (sum, track) => sum + track.cyclesCompleted,
+    );
+    final measured = tracks.where((track) => track.cyclesCompleted > 0).toList();
+    final latest = measured.isEmpty
+        ? (tracks.isEmpty ? null : tracks.first)
+        : measured.first;
     final score = latest?.progress ?? 0;
 
     return HomeDashboard(
@@ -22,10 +29,12 @@ class FirestoreHomeDashboardRepository implements HomeDashboardRepository {
           ? profile.customGoal!
           : profile.target,
       generalLevel: latest?.level ?? 0,
-      streakDays: tracks.isEmpty ? 0 : 1,
-      totalLoops: tracks.length,
-      latestTrack: latest,
-      criteria: latest == null
+      streakDays: totalLoops > 0 ? 1 : 0,
+      totalLoops: totalLoops,
+      totalTracks: tracks.length,
+      tracks: tracks,
+      hasMeasuredLevel: measured.isNotEmpty,
+      criteria: measured.isEmpty
           ? const []
           : [
               CriterionProgress(

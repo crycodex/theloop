@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/home_dashboard/presentation/cubit/home_dashboard_cubit.dart';
 import '../../features/profile/presentation/cubit/profile_cubit.dart';
 import '../../features/profile/presentation/cubit/profile_state.dart';
 import '../theme/loop_colors.dart';
@@ -146,13 +147,16 @@ class _FloatingNavBar extends StatelessWidget {
               _NavItem(
                 icon: Icons.bar_chart_rounded,
                 active: location == '/',
-                onTap: () => context.go('/'),
+                onTap: () {
+                  context.read<HomeDashboardCubit>().load();
+                  context.go('/');
+                },
               ),
               const SizedBox(width: 10),
               _NavItem(
                 icon: Icons.crop_square_rounded,
-                active: location == '/cv',
-                onTap: () => context.go('/cv'),
+                active: location == '/loops',
+                onTap: () => context.go('/loops'),
               ),
               const SizedBox(width: 10),
               _NavItem(
@@ -163,7 +167,7 @@ class _FloatingNavBar extends StatelessWidget {
             ],
           ),
         ),
-        _CallButton(onTap: () => context.go('/interview')),
+        _CallButton(onTap: () => context.go('/loops/create')),
       ],
     );
   }

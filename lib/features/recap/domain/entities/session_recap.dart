@@ -10,6 +10,7 @@ class SessionRecap {
     required this.criteria,
     required this.strength,
     required this.improvement,
+    this.trackId = '',
     this.loopId = '',
     this.transcript = const [],
     this.recommendation = '',
@@ -22,6 +23,7 @@ class SessionRecap {
   final List<CriterionProgress> criteria;
   final String strength;
   final String improvement;
+  final String trackId;
   final String loopId;
   final List<TranscriptTurn> transcript;
   final String recommendation;

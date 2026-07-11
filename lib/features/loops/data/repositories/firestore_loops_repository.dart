@@ -16,7 +16,9 @@ class FirestoreLoopsRepository implements LoopsRepository {
             id: track.id,
             roleTitle: track.title,
             company: track.company.isEmpty ? 'Entrevista IA' : track.company,
-            level: track.cyclesCompleted.toDouble(),
+            level: track.latestLevel > 0
+                ? track.latestLevel
+                : track.cyclesCompleted.toDouble(),
             cyclesCompleted: track.cyclesCompleted,
             delta: 0,
             progress: track.prepCompleted

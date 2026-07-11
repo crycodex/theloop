@@ -140,7 +140,10 @@ final routes = [
     path: '/recap',
     pageBuilder: (context, state) => _recapPage(
       state: state,
-      child: RecapScreen(loopId: state.uri.queryParameters['loopId']),
+      child: RecapScreen(
+        trackId: state.uri.queryParameters['trackId'],
+        loopId: state.uri.queryParameters['loopId'],
+      ),
     ),
   ),
 ];

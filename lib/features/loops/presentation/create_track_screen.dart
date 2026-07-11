@@ -34,7 +34,7 @@ class _CreateTrackScreenState extends State<CreateTrackScreen> {
   }
 
   Future<void> _createTrack() async {
-    final strings = AppStrings.of(context);
+    final strings = AppStrings.read(context);
     final title = _titleController.text.trim();
     final description = _descriptionController.text.trim();
     if (title.isEmpty || description.isEmpty) {
@@ -49,7 +49,7 @@ class _CreateTrackScreenState extends State<CreateTrackScreen> {
   }
 
   Future<void> _generateWithAi() async {
-    final strings = AppStrings.of(context);
+    final strings = AppStrings.read(context);
     final input = _aiInputController.text.trim();
     if (input.isEmpty) {
       setState(() => _error = strings.trackAiRequired);

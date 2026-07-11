@@ -6,5 +6,9 @@ class GetLatestRecap {
 
   final RecapRepository _repository;
 
-  Future<SessionRecap?> call([String? loopId]) => _repository.getRecap(loopId);
+  Future<SessionRecap?> call({
+    required String trackId,
+    required String loopId,
+  }) =>
+      _repository.getRecap(trackId: trackId, loopId: loopId);
 }

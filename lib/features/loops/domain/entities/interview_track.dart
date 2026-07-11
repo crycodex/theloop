@@ -9,6 +9,8 @@ class InterviewTrack {
     required this.prepCompleted,
     required this.cyclesCompleted,
     required this.createdAt,
+    this.latestScore = 0,
+    this.latestLevel = 0,
   });
 
   final String id;
@@ -18,4 +20,6 @@ class InterviewTrack {
   final bool prepCompleted;
   final int cyclesCompleted;
   final DateTime createdAt;
+  final double latestScore;
+  final double latestLevel;
 }

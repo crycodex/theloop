@@ -50,10 +50,6 @@ class InterviewAudioService {
     _micSubscription = stream.listen(onData);
   }
 
-  Future<void> pauseMic() => _recorder.pause();
-
-  Future<void> resumeMic() => _recorder.resume();
-
   Future<void> stopMic() async {
     await _micSubscription?.cancel();
     _micSubscription = null;

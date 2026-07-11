@@ -16,10 +16,38 @@ class AppStrings {
     return AppStrings(language);
   }
 
+  static AppStrings read(BuildContext context) {
+    final language = context.read<SettingsCubit>().state.language;
+    return AppStrings(language);
+  }
+
   bool get _es => language == AppLanguage.spanish;
 
   String get appTitle => 'Loop';
-  String get homePreparingFor => _es ? 'Tu preparación para' : 'Your prep for';
+  String get homeWelcome => _es ? 'Bienvenido' : 'Welcome';
+  String get homeIntro => _es
+      ? 'Aquí verás tu progreso. Completa tu primer loop para empezar a medirte.'
+      : 'Your progress lives here. Complete your first loop to start measuring.';
+  String get homeLevelTitle => _es ? 'Tu nivel general' : 'Your general level';
+  String get homeLevelEmpty => _es ? 'Sin medir aún' : 'Not measured yet';
+  String get homeLevelEmptyHint => _es
+      ? 'Tu primer loop marca tu punto de partida'
+      : 'Your first loop marks your starting point';
+  String get homeStreakLabel => _es ? 'racha' : 'streak';
+  String get homeLoopsLabel => 'loops';
+  String get homeTracksLabel => _es ? 'rutas' : 'tracks';
+  String get homeCreateLoopTitle =>
+      _es ? 'Crea tu primer loop' : 'Create your first loop';
+  String get homeCreateLoopBody => _es
+      ? 'Elige un puesto objetivo y practica para esa entrevista'
+      : 'Pick a target role and practice for that interview';
+  String get homeCreateLoopCta => _es ? 'Empezar ahora' : 'Start now';
+  String get homePracticesTitle => _es
+      ? 'Tus prácticas de entrevista'
+      : 'Your interview practices';
+  String get homeNewLoopCta =>
+      _es ? 'Nuevo loop' : 'New loop';
+  String get homeDefaultUser => _es ? 'Usuario' : 'User';
   String get generalLevel => _es ? 'Nivel general' : 'General level';
   String get generalLevelSummary => _es
       ? 'Listo para sostener una entrevista conductual exigente, con oportunidad de profundizar resultados.'
@@ -309,14 +337,10 @@ class AppStrings {
       _es ? 'Preparando tu reporte…' : 'Preparing your report…';
   String get retry => _es ? 'Reintentar' : 'Retry';
   String get noTranscript =>
-      _es ? 'La llamada terminó sin conversación.' : 'The call ended without a conversation.';
-  String get noCallsTitle =>
-      _es ? 'Aún no tienes llamadas' : 'You have no calls yet';
-  String get noCallsDescription => _es
-      ? 'Haz tu primera práctica y aquí verás el resumen y tu progreso.'
-      : 'Complete your first practice to see its summary and your progress here.';
-  String get startFirstCall =>
-      _es ? 'Iniciar primera llamada' : 'Start first call';
+      _es ? 'El loop terminó sin conversación.' : 'The loop ended without a conversation.';
+  String get noLoopsTitle => homeWelcome;
+  String get noLoopsDescription => homeIntro;
+  String get startFirstLoop => homeCreateLoopCta;
 
   String criterion(String value) {
     if (_es) return value;

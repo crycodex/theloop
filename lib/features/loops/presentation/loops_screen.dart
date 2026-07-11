@@ -57,7 +57,7 @@ class _LoopsScreenState extends State<LoopsScreen> {
                 LoopCard(
                   color: LoopColors.lightGreen,
                   onTap: () => context.go('/loops/create'),
-                  child: Text(strings.noCallsDescription),
+                  child: Text(strings.noLoopsDescription),
                 ),
               for (final track in tracks) ...[
                 LoopCard(

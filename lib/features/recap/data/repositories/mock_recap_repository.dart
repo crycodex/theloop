@@ -6,7 +6,10 @@ class MockRecapRepository implements RecapRepository {
   const MockRecapRepository();
 
   @override
-  Future<SessionRecap?> getRecap(String? loopId) async {
+  Future<SessionRecap?> getRecap({
+    required String trackId,
+    required String loopId,
+  }) async {
     return const SessionRecap(
       level: 3.9,
       delta: 0.4,

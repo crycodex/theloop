@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/localization/app_strings.dart';
 import '../../../core/theme/loop_colors.dart';
 import '../../loops/domain/entities/interview_track.dart';
+import '../../home_dashboard/presentation/cubit/home_dashboard_cubit.dart';
 import 'cubit/interview_call_cubit.dart';
 import 'cubit/interview_call_state.dart';
 
@@ -91,7 +92,7 @@ class _InterviewCallScreenState extends State<InterviewCallScreen> {
                                 await context
                                     .read<InterviewCallCubit>()
                                     .cancel();
-                                if (context.mounted) context.go('/');
+                                if (context.mounted) _goHome(context);
                               },
                         icon: const Icon(
                           Icons.close_rounded,
@@ -112,7 +113,6 @@ class _InterviewCallScreenState extends State<InterviewCallScreen> {
                           : strings.preparingReport,
                       InterviewCallPhase.error =>
                         state.errorMessage ?? strings.authErrorUnknown,
-                      _ when state.isPaused => strings.interviewPaused,
                       _ when state.isAiSpeaking => strings.recruiterSpeaking,
                       _ => strings.recruiterListening,
                     },
@@ -199,22 +199,6 @@ class _InterviewCallScreenState extends State<InterviewCallScreen> {
                       ),
                       const SizedBox(width: 18),
                       _CallControl(
-                        icon: state.isPaused
-                            ? Icons.play_arrow_rounded
-                            : Icons.pause_rounded,
-                        label: state.isPaused ? strings.resume : strings.pause,
-                        color: state.isPaused
-                            ? LoopColors.accentGreen
-                            : Colors.white12,
-                        iconColor: state.isPaused
-                            ? LoopColors.brandGreen
-                            : Colors.white,
-                        onTap: busy
-                            ? () {}
-                            : context.read<InterviewCallCubit>().togglePause,
-                      ),
-                      const SizedBox(width: 18),
-                      _CallControl(
                         icon: Icons.call_end_rounded,
                         label: strings.endCall,
                         color: LoopColors.danger,
@@ -228,7 +212,7 @@ class _InterviewCallScreenState extends State<InterviewCallScreen> {
                                     .end();
                                 if (!context.mounted) return;
                                 if (resultId == null) {
-                                  context.go('/');
+                                  _goHome(context);
                                   return;
                                 }
                                 if (isPrep && trackId != null) {
@@ -237,7 +221,9 @@ class _InterviewCallScreenState extends State<InterviewCallScreen> {
                                   );
                                   return;
                                 }
-                                context.go('/recap?loopId=$resultId');
+                                context.go(
+                                  '/recap?trackId=$trackId&loopId=$resultId',
+                                );
                               },
                       ),
                     ],
@@ -343,6 +329,11 @@ class _Orb extends StatelessWidget {
       ),
     );
   }
+}
+
+void _goHome(BuildContext context) {
+  context.read<HomeDashboardCubit>().load();
+  context.go('/');
 }
 
 class _CallControl extends StatelessWidget {

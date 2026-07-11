@@ -8,10 +8,13 @@ class RecapCubit extends Cubit<RecapState> {
 
   final GetLatestRecap _getLatestRecap;
 
-  Future<void> load([String? loopId]) async {
+  Future<void> load({
+    required String trackId,
+    required String loopId,
+  }) async {
     emit(const RecapInitial());
     try {
-      final recap = await _getLatestRecap(loopId);
+      final recap = await _getLatestRecap(trackId: trackId, loopId: loopId);
       emit(recap == null ? const RecapEmpty() : RecapLoaded(recap));
     } catch (error) {
       emit(RecapError(error.toString()));

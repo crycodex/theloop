@@ -64,14 +64,17 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
         );
       }
 
+      if (trackId == null || trackId.isEmpty) {
+        throw const GeminiLiveException(
+          'Se necesita un trayecto para iniciar el loop.',
+        );
+      }
+
       final profile = await _profiles.getProfile();
       final previousLoop = sourceLoopId == null
           ? null
-          : await _loops.getLoop(sourceLoopId);
-      InterviewTrack? track;
-      if (trackId != null && trackId.isNotEmpty) {
-        track = await _tracks.getTrack(trackId);
-      }
+          : await _loops.getLoop(trackId: trackId, loopId: sourceLoopId);
+      final track = await _tracks.getTrack(trackId);
 
       final systemPrompt = isPrep
           ? buildPrepSystemPrompt(
@@ -79,7 +82,7 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
               language: settings.language,
               track: track ??
                   InterviewTrack(
-                    id: '',
+                    id: trackId,
                     title: profile.target,
                     company: '',
                     jobDescription: profile.customGoal ?? '',
@@ -96,8 +99,8 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
             );
 
       final loopId = await _loops.createActiveLoop(
-        sourceLoopId: sourceLoopId,
         trackId: trackId,
+        sourceLoopId: sourceLoopId,
         loopType: loopType,
         profileSnapshot: {
           'name': profile.name,
@@ -123,17 +126,6 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
     emit(state.copyWith(isMicEnabled: !state.isMicEnabled));
   }
 
-  Future<void> togglePause() async {
-    if (state.phase != InterviewCallPhase.inCall) return;
-    final paused = !state.isPaused;
-    if (paused) {
-      await _audio.pauseMic();
-    } else {
-      await _audio.resumeMic();
-    }
-    emit(state.copyWith(isPaused: paused));
-  }
-
   Future<String?> end() async {
     if (state.phase != InterviewCallPhase.inCall) return state.loopId;
     final loopId = state.loopId;
@@ -143,34 +135,33 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
     emit(state.copyWith(phase: InterviewCallPhase.ending));
     await _stopRealtime();
 
-    if (loopId == null) {
+    if (loopId == null || trackId == null || trackId.isEmpty) {
       await _fail(const GeminiLiveException('La llamada no tiene sesión.'));
       return null;
     }
 
     final tooShort = elapsed < kMinReportSeconds;
     if (state.transcript.isEmpty || tooShort) {
-      await _loops.abandonLoop(loopId);
+      await _loops.abandonLoop(trackId: trackId, loopId: loopId);
       emit(const InterviewCallState.initial());
       return null;
     }
 
     if (isPrep) {
       await _loops.completePrepLoop(
+        trackId: trackId,
         loopId: loopId,
         transcript: state.transcript,
         durationSeconds: elapsed,
       );
-      if (trackId != null && trackId.isNotEmpty) {
-        await _tracks.markPrepCompleted(trackId);
-      }
+      await _tracks.markPrepCompleted(trackId);
       emit(
         state.copyWith(
           phase: InterviewCallPhase.completed,
           isAiSpeaking: false,
         ),
       );
-      return trackId ?? loopId;
+      return trackId;
     }
 
     try {
@@ -179,14 +170,13 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
         language: _settings.state.language,
       );
       await _loops.completeLoop(
+        trackId: trackId,
         loopId: loopId,
         transcript: state.transcript,
         report: report,
         durationSeconds: elapsed,
       );
-      if (trackId != null && trackId.isNotEmpty) {
-        await _tracks.incrementCycle(trackId);
-      }
+      await _tracks.incrementCycle(trackId);
       emit(
         state.copyWith(
           phase: InterviewCallPhase.completed,
@@ -203,12 +193,15 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
 
   Future<void> cancel() async {
     final loopId = state.loopId;
+    final trackId = state.trackId;
     await _stopRealtime();
     if (loopId != null &&
+        trackId != null &&
+        trackId.isNotEmpty &&
         state.phase != InterviewCallPhase.completed &&
         state.transcript.isEmpty) {
       try {
-        await _loops.abandonLoop(loopId);
+        await _loops.abandonLoop(trackId: trackId, loopId: loopId);
       } catch (_) {}
     }
     emit(const InterviewCallState.initial());
@@ -225,7 +218,6 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
         await _audio.startMic((pcm) {
           if (state.phase == InterviewCallPhase.inCall &&
               state.isMicEnabled &&
-              !state.isPaused &&
               !_audio.isPlaying) {
             _live.sendAudio(pcm);
           }
@@ -274,9 +266,10 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
   Future<void> _fail(Object error, {bool abandon = true}) async {
     await _stopRealtime();
     final loopId = state.loopId;
-    if (abandon && loopId != null) {
+    final trackId = state.trackId;
+    if (abandon && loopId != null && trackId != null && trackId.isNotEmpty) {
       try {
-        await _loops.abandonLoop(loopId);
+        await _loops.abandonLoop(trackId: trackId, loopId: loopId);
       } catch (_) {}
     }
     emit(
