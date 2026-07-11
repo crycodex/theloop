@@ -1,11 +1,17 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show debugPrint;
 
 import '../../domain/entities/auth_user.dart';
 import '../../domain/repositories/auth_repository.dart';
 
 class FirebaseAuthRepository implements AuthRepository {
   FirebaseAuthRepository(this._auth, this._firestore);
+
+  static const _firestoreTimeout = Duration(seconds: 15);
+  static const _rollbackTimeout = Duration(seconds: 10);
 
   final FirebaseAuth _auth;
   final FirebaseFirestore _firestore;
@@ -34,33 +40,72 @@ class FirebaseAuthRepository implements AuthRepository {
     String? customGoal,
     required String experienceId,
   }) async {
+    debugPrint('[signUp] creating auth user...');
     final credential = await _auth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
     final uid = credential.user!.uid;
+    debugPrint('[signUp] auth user created uid=$uid');
     final userDoc = _firestore.collection('users').doc(uid);
 
-    final batch = _firestore.batch()
-      ..set(userDoc, {
-        'uid': uid,
-        'name': name,
-        'email': email,
-        'goal': goalId,
-        if (customGoal != null && customGoal.trim().isNotEmpty)
-          'customGoal': customGoal.trim(),
-        'experience': experienceId,
-        'createdAt': FieldValue.serverTimestamp(),
-      })
-      ..set(userDoc.collection('settings').doc('preferences'), <String, dynamic>{})
-      ..set(userDoc.collection('cv').doc('current'), <String, dynamic>{})
-      ..set(userDoc.collection('roadmap').doc('current'), <String, dynamic>{});
-    await batch.commit();
+    try {
+      final batch = _firestore.batch()
+        ..set(userDoc, {
+          'uid': uid,
+          'name': name,
+          'email': email,
+          'goal': goalId,
+          if (customGoal != null && customGoal.trim().isNotEmpty)
+            'customGoal': customGoal.trim(),
+          'experience': experienceId,
+          'createdAt': FieldValue.serverTimestamp(),
+        })
+        ..set(
+          userDoc.collection('settings').doc('preferences'),
+          <String, dynamic>{},
+        )
+        ..set(userDoc.collection('cv').doc('current'), <String, dynamic>{})
+        ..set(
+          userDoc.collection('roadmap').doc('current'),
+          <String, dynamic>{},
+        );
+      debugPrint('[signUp] committing firestore batch...');
+      await batch.commit().timeout(_firestoreTimeout);
+      debugPrint('[signUp] firestore batch committed');
 
-    await credential.user!.updateDisplayName(name);
-    await credential.user!.sendEmailVerification();
-    await _auth.signOut();
+      debugPrint('[signUp] updating display name...');
+      await credential.user!.updateDisplayName(name);
+      debugPrint('[signUp] display name updated');
 
+      debugPrint('[signUp] sending verification email...');
+      await credential.user!.sendEmailVerification();
+      debugPrint('[signUp] verification email sent');
+
+      // Fire-and-forget: signOut() right after a fresh sign-up can hang on
+      // some platforms. The router already treats an unverified currentUser
+      // as logged-out, so we don't need to wait for this to complete.
+      unawaited(
+        _auth
+            .signOut()
+            .then((_) => debugPrint('[signUp] signOut completed'))
+            .catchError((Object e) => debugPrint('[signUp] signOut error: $e')),
+      );
+    } catch (e, st) {
+      debugPrint('[signUp] ERROR: $e');
+      debugPrint('$st');
+      // Roll back the Auth account so a failed sign-up doesn't permanently
+      // block retries with "email already in use".
+      try {
+        await credential.user!.delete().timeout(_rollbackTimeout);
+        debugPrint('[signUp] rolled back orphaned auth user');
+      } catch (rollbackError) {
+        debugPrint('[signUp] auth rollback failed: $rollbackError');
+      }
+      rethrow;
+    }
+
+    debugPrint('[signUp] returning success, uid=$uid');
     return AuthUser(uid: uid, email: email, emailVerified: false);
   }
 
@@ -76,7 +121,7 @@ class FirebaseAuthRepository implements AuthRepository {
     final user = credential.user!;
     if (!user.emailVerified) {
       await user.sendEmailVerification();
-      await _auth.signOut();
+      unawaited(_auth.signOut());
       throw FirebaseAuthException(code: 'email-not-verified');
     }
     return AuthUser(uid: user.uid, email: user.email, emailVerified: true);

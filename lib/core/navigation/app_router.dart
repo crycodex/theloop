@@ -32,9 +32,13 @@ class AppRouter {
   late final GoRouter router;
 
   String? _redirect(BuildContext context, GoRouterState state) {
-    final loggedIn = _authRepository.currentUser != null;
+    final user = _authRepository.currentUser;
+    final loggedIn = user != null && user.emailVerified;
     final goingToAuthRoute = _authRoutes.contains(state.matchedLocation);
 
+    if (user != null && !user.emailVerified && !goingToAuthRoute) {
+      return '/login';
+    }
     if (!loggedIn && !goingToAuthRoute) return '/welcome';
     if (loggedIn && goingToAuthRoute) return '/';
     return null;

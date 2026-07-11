@@ -39,6 +39,8 @@ import 'features/roadmap/domain/usecases/get_roadmap.dart';
 import 'features/roadmap/presentation/cubit/roadmap_cubit.dart';
 import 'firebase_options.dart';
 
+const _firestoreDatabaseId = 'default';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -52,9 +54,17 @@ class LoopApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
+        RepositoryProvider<FirebaseFirestore>(
+          create: (_) => FirebaseFirestore.instanceFor(
+            app: Firebase.app(),
+            databaseId: _firestoreDatabaseId,
+          ),
+        ),
         RepositoryProvider<AuthRepository>(
-          create: (_) =>
-              FirebaseAuthRepository(FirebaseAuth.instance, FirebaseFirestore.instance),
+          create: (context) => FirebaseAuthRepository(
+            FirebaseAuth.instance,
+            context.read<FirebaseFirestore>(),
+          ),
         ),
         RepositoryProvider<LoopsRepository>(
           create: (_) => const MockLoopsRepository(),
@@ -71,7 +81,7 @@ class LoopApp extends StatelessWidget {
         ),
         RepositoryProvider<ProfileRepository>(
           create: (context) => FirestoreProfileRepository(
-            FirebaseFirestore.instance,
+            context.read<FirebaseFirestore>(),
             context.read<AuthRepository>(),
           ),
         ),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cupertino_onboarding/cupertino_onboarding.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -61,7 +63,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  Future<void> _continue() async {
+  void _continue() {
     FocusScope.of(context).unfocus();
     if (_step == 0 && !(_accountFormKey.currentState?.validate() ?? false)) {
       return;
@@ -72,23 +74,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (_step >= _totalSteps - 1) return;
 
     final nextStep = _step + 1;
-    await _pageController.nextPage(
-      duration: const Duration(milliseconds: 460),
-      curve: Curves.fastEaseInToSlowEaseOut,
-    );
-    if (!mounted) return;
     setState(() => _step = nextStep);
+    unawaited(
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 460),
+        curve: Curves.fastEaseInToSlowEaseOut,
+      ),
+    );
 
     if (nextStep == _totalSteps - 1) {
-      context.read<AuthCubit>().signUp(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-        name: _nameController.text.trim(),
-        goalId: _goalIds[_goal],
-        customGoal: _goal == _goalIds.length - 1
-            ? _customGoalController.text
-            : null,
-        experienceId: _experienceIds[_experience],
+      debugPrint('[RegisterScreen] starting signUp');
+      unawaited(
+        context.read<AuthCubit>().signUp(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+          name: _nameController.text.trim(),
+          goalId: _goalIds[_goal],
+          customGoal: _goal == _goalIds.length - 1
+              ? _customGoalController.text
+              : null,
+          experienceId: _experienceIds[_experience],
+        ),
       );
     }
   }
@@ -132,6 +138,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
+        debugPrint('[RegisterScreen] listener state=$state');
         if (state is EmailVerificationSent) {
           showCupertinoDialog<void>(
             context: context,
@@ -149,9 +156,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
             if (context.mounted) context.go('/login');
           });
         } else if (state is AuthFailure) {
-          _revertToStart();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(_errorMessage(strings, state.reason))),
+          unawaited(_revertToStart());
+          unawaited(
+            showCupertinoDialog<void>(
+              context: context,
+              builder: (dialogContext) => CupertinoAlertDialog(
+                content: Text(_errorMessage(strings, state.reason)),
+                actions: [
+                  CupertinoDialogAction(
+                    onPressed: () => Navigator.of(dialogContext).pop(),
+                    child: Text(strings.continueLabel),
+                  ),
+                ],
+              ),
+            ),
           );
         }
       },
@@ -278,6 +296,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               totalSteps: _totalSteps,
               onExit: exit,
               onBack: _goBack,
+              showBack: false,
+              showExit: false,
+              centerChild: true,
               child: Center(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 42),

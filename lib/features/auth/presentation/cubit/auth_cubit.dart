@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/repositories/auth_repository.dart';
@@ -29,6 +30,7 @@ class AuthCubit extends Cubit<AuthState> {
     String? customGoal,
     required String experienceId,
   }) async {
+    debugPrint('[AuthCubit] signUp start');
     emit(const AuthSubmitting());
     try {
       final user = await _signUp(
@@ -39,10 +41,13 @@ class AuthCubit extends Cubit<AuthState> {
         customGoal: customGoal,
         experienceId: experienceId,
       );
+      debugPrint('[AuthCubit] signUp success, emitting EmailVerificationSent');
       emit(EmailVerificationSent(user.email ?? email));
     } on FirebaseAuthException catch (e) {
+      debugPrint('[AuthCubit] signUp FirebaseAuthException: ${e.code}');
       emit(AuthFailure(_mapError(e.code)));
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[AuthCubit] signUp unknown error: $e');
       emit(const AuthFailure(AuthFailureReason.unknown));
     }
   }
