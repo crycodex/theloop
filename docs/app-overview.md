@@ -92,7 +92,7 @@ Registro de dependencias en `lib/main.dart`: `MultiRepositoryProvider` + `MultiB
 
 Un **puesto objetivo**: rol, empresa, descripción de la oferta.
 
-- Se crea pegando una oferta o generando con IA
+- Se crea eligiendo una plantilla sugerida (según `goal`), pegando una oferta o generando con IA
 - Vive en `users/{uid}/tracks/{trackId}`
 
 ### Loop
@@ -124,7 +124,7 @@ flowchart LR
 ```
 
 1. **Home sin trayectos** — CTA “Crea tu primer loop”, stats en 0, nivel “Sin medir aún”
-2. **Crear trayecto** — pestañas Pegar oferta / IA → prep automático
+2. **Crear trayecto** — pestañas Sugeridos (plantillas por `goal`) / Pegar oferta / IA → prep automático
 3. **Prep** — coach de voz → al terminar, entrevista siguiente
 4. **Entrevista** — reclutador IA → reporte → recap
 5. **Home con datos** — última práctica, racha, loops totales, nivel si hay medición

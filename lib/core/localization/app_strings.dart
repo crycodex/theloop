@@ -274,10 +274,18 @@ class AppStrings {
 
   String get createTrackTitle =>
       _es ? 'Nuevo trayecto' : 'New track';
+  String get createTrackSuggestedTab =>
+      _es ? 'Sugeridos' : 'Suggested';
   String get createTrackPasteTab =>
       _es ? 'Pegar oferta' : 'Paste job post';
   String get createTrackAiTab =>
       _es ? 'Describir con IA' : 'Describe with AI';
+  String createTrackSuggestedHint(String goalLabel) => _es
+      ? 'Según tu objetivo: $goalLabel. Elige una plantilla para empezar el prep.'
+      : 'Based on your goal: $goalLabel. Pick a template to start prep.';
+  String get createTrackSuggestedEmpty => _es
+      ? 'Tu objetivo es personalizado. Define el trayecto pegando una oferta o describiéndolo con IA.'
+      : 'Your goal is custom. Define the track by pasting a job post or describing it with AI.';
   String get createTrackPasteHint => _es
       ? 'Pega el título y la descripción del puesto para crear tu primer loop de preparación.'
       : 'Paste the role title and job description to create your first prep loop.';
