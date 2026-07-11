@@ -152,13 +152,19 @@ class _FloatingNavBar extends StatelessWidget {
                   context.go('/');
                 },
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 6),
               _NavItem(
-                icon: Icons.crop_square_rounded,
+                icon: Icons.route_rounded,
                 active: location == '/loops',
                 onTap: () => context.go('/loops'),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 6),
+              _NavItem(
+                icon: Icons.description_outlined,
+                active: location == '/cv',
+                onTap: () => context.go('/cv'),
+              ),
+              const SizedBox(width: 6),
               _NavItem(
                 icon: Icons.account_tree_outlined,
                 active: location == '/roadmap',
@@ -268,8 +274,8 @@ class _NavItem extends StatelessWidget {
       borderRadius: BorderRadius.circular(24),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
-        width: 48,
-        height: 48,
+        width: 44,
+        height: 44,
         decoration: BoxDecoration(
           color: active ? const Color(0xFF11C86F) : Colors.transparent,
           shape: BoxShape.circle,

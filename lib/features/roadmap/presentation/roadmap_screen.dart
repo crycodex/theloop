@@ -1,103 +1,98 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../core/localization/app_strings.dart';
 import '../../../core/navigation/app_shell.dart';
 import '../../../core/theme/loop_colors.dart';
 import '../../../core/widgets/loop_card.dart';
-import '../domain/entities/roadmap.dart';
-import 'cubit/roadmap_cubit.dart';
-import 'cubit/roadmap_state.dart';
 
 class RoadmapScreen extends StatelessWidget {
   const RoadmapScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<RoadmapCubit, RoadmapState>(
-      builder: (context, state) {
-        if (state is! RoadmapLoaded) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    final strings = AppStrings.of(context);
 
-        final roadmap = state.roadmap;
-        final strings = AppStrings.of(context);
-
-        return ShellPagePadding(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                strings.roadmap,
-                style: Theme.of(context).textTheme.displaySmall,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                strings.roadmapDescription(roadmap.target),
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              const SizedBox(height: 22),
-              LoopCard(
-                color: LoopColors.brandGreen,
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.flag_rounded,
-                      color: LoopColors.accentGreen,
-                      size: 34,
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Text(
-                        strings.finalGoal(roadmap.finalGoal),
-                        style: Theme.of(
-                          context,
-                        ).textTheme.titleMedium?.copyWith(color: Colors.white),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 22),
-              for (var index = 0; index < roadmap.steps.length; index++)
-                _RoadmapStepTile(
-                  step: roadmap.steps[index],
-                  isLast: index == roadmap.steps.length - 1,
-                  strings: strings,
-                ),
-            ],
+    return ShellPagePadding(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            strings.roadmap,
+            style: Theme.of(context).textTheme.displaySmall,
           ),
-        );
-      },
+          const SizedBox(height: 8),
+          Text(
+            strings.roadmapDescriptionPlaceholder,
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          const SizedBox(height: 22),
+          LoopCard(
+            color: LoopColors.brandGreen,
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.flag_rounded,
+                  color: LoopColors.accentGreen,
+                  size: 34,
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Text(
+                    strings.roadmapGoalPlaceholder,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 22),
+          LoopCard(
+            color: LoopColors.lightGreen,
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.auto_awesome_rounded,
+                  color: LoopColors.brandGreen,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    strings.roadmapComingSoonBody,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 22),
+          for (var index = 0; index < 4; index++)
+            _RoadmapStepPlaceholder(
+              title: strings.roadmapStepPlaceholder(index + 1),
+              isLast: index == 3,
+              isCurrent: index == 1,
+            ),
+        ],
+      ),
     );
   }
 }
 
-class _RoadmapStepTile extends StatelessWidget {
-  const _RoadmapStepTile({
-    required this.step,
+class _RoadmapStepPlaceholder extends StatelessWidget {
+  const _RoadmapStepPlaceholder({
+    required this.title,
     required this.isLast,
-    required this.strings,
+    required this.isCurrent,
   });
 
-  final RoadmapStep step;
+  final String title;
   final bool isLast;
-  final AppStrings strings;
+  final bool isCurrent;
 
   @override
   Widget build(BuildContext context) {
-    final isCompleted = step.state == RoadmapStepState.completed;
-    final isCurrent = step.state == RoadmapStepState.current;
-    final icon = isCompleted
-        ? Icons.check_rounded
-        : isCurrent
-        ? Icons.play_arrow_rounded
-        : Icons.lock_rounded;
-    final markerColor = isCompleted || isCurrent
-        ? LoopColors.accentGreen
-        : LoopColors.border;
-
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -107,10 +102,16 @@ class _RoadmapStepTile extends StatelessWidget {
               width: 34,
               height: 34,
               decoration: BoxDecoration(
-                color: markerColor,
+                color: isCurrent
+                    ? LoopColors.accentGreen
+                    : LoopColors.border,
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, size: 20, color: LoopColors.brandGreen),
+              child: Icon(
+                isCurrent ? Icons.play_arrow_rounded : Icons.lock_rounded,
+                size: 20,
+                color: LoopColors.brandGreen,
+              ),
             ),
             if (!isLast)
               Container(width: 2, height: 76, color: LoopColors.border),
@@ -128,28 +129,22 @@ class _RoadmapStepTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    strings.roadmapText(step.category),
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    strings.roadmapText(step.title),
+                    title,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  if (step.level != null) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      strings.levelAchieved(step.level!),
-                      style: Theme.of(context).textTheme.bodyMedium,
+                  const SizedBox(height: 8),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(999),
+                    child: LinearProgressIndicator(
+                      minHeight: 6,
+                      value: isCurrent ? null : 0,
+                      backgroundColor:
+                          LoopColors.textMuted.withValues(alpha: 0.12),
+                      color: isCurrent
+                          ? LoopColors.brandGreen.withValues(alpha: 0.35)
+                          : LoopColors.textMuted.withValues(alpha: 0.2),
                     ),
-                  ],
-                  if (isCurrent) ...[
-                    const SizedBox(height: 14),
-                    FilledButton(
-                      onPressed: () => context.go('/interview'),
-                      child: Text(strings.practiceNow),
-                    ),
-                  ],
+                  ),
                 ],
               ),
             ),

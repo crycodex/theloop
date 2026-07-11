@@ -107,14 +107,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 loading: false,
               ),
               const SizedBox(height: 24),
-              SectionHeader(
-                title: strings.homePracticesTitle,
-                actionLabel: strings.seeLoops,
-                onAction: () => context.go('/loops'),
-              ),
-              const SizedBox(height: 12),
-              for (final track in dashboard.tracks) ...[
-                _PracticeCard(track: track, strings: strings),
+              if (dashboard.latestTrack != null) ...[
+                SectionHeader(
+                  title: strings.homeLatestPractice,
+                  actionLabel: strings.seeLoops,
+                  onAction: () => context.go('/loops'),
+                ),
+                const SizedBox(height: 12),
+                _PracticeCard(
+                  track: dashboard.latestTrack!,
+                  strings: strings,
+                ),
                 const SizedBox(height: 12),
               ],
               LoopCard(

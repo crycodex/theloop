@@ -45,6 +45,9 @@ class AppStrings {
   String get homePracticesTitle => _es
       ? 'Tus prácticas de entrevista'
       : 'Your interview practices';
+  String get homeLatestPractice => _es
+      ? 'Tu práctica más reciente'
+      : 'Your latest practice';
   String get homeNewLoopCta =>
       _es ? 'Nuevo loop' : 'New loop';
   String get homeDefaultUser => _es ? 'Usuario' : 'User';
@@ -182,7 +185,7 @@ class AppStrings {
   String get criteriaEvolution =>
       _es ? 'Evolución por criterio' : 'Progress by criterion';
 
-  String get tracks => _es ? 'Trayectos' : 'Tracks';
+  String get tracks => _es ? 'Trayectorias' : 'Tracks';
   String get tracksDescription => _es
       ? 'Cada loop mide tu progreso frente a un puesto objetivo concreto.'
       : 'Each loop measures your progress against a specific target role.';
@@ -190,10 +193,20 @@ class AppStrings {
       ? 'Crear trayecto: pegar oferta o describirlo con IA'
       : 'Create a track: paste a job post or describe it with AI';
 
-  String get cvAnalysis => 'CV Analysis';
+  String get cvAnalysis => _es ? 'Análisis de CV' : 'CV Analysis';
   String get cvDescription => _es
       ? 'Tu hoja de vida medida contra claridad, impacto y match con ofertas.'
       : 'Your resume measured against clarity, impact, and job fit.';
+  String get cvComingSoonTitle =>
+      _es ? 'Próximamente' : 'Coming soon';
+  String get cvComingSoonBody => _es
+      ? 'Aquí podrás subir tu CV y recibir un score con desglose y match contra ofertas.'
+      : 'Upload your resume here to get a scored breakdown and job-fit match.';
+  String get cvUploadCta => _es ? 'Subir CV' : 'Upload resume';
+  String cvCriterionPlaceholder(String name) => name;
+  String get cvMatchPlaceholder => _es
+      ? 'El match contra una oferta objetivo aparecerá aquí.'
+      : 'Job-fit match against a target role will appear here.';
   String scoreCurrent(int score) =>
       _es ? 'Score actual: $score/100' : 'Current score: $score/100';
   String lastAnalysis(String value) => _es
@@ -203,7 +216,19 @@ class AppStrings {
   String get breakdown => _es ? 'Desglose' : 'Breakdown';
   String get matchVsJob => _es ? 'Match vs oferta' : 'Match vs job';
 
-  String get roadmap => _es ? 'Ruta' : 'Roadmap';
+  String get roadmap => _es ? 'Roadmap' : 'Roadmap';
+  String get roadmapDescriptionPlaceholder => _es
+      ? 'Tu ruta personalizada de preparación paso a paso.'
+      : 'Your personalized step-by-step preparation path.';
+  String get roadmapGoalPlaceholder => _es
+      ? 'Meta final: consigue tu próximo rol objetivo'
+      : 'Final goal: land your next target role';
+  String get roadmapComingSoonBody => _es
+      ? 'Próximamente: hitos, niveles y prácticas recomendadas según tu progreso.'
+      : 'Coming soon: milestones, levels, and recommended practice based on your progress.';
+  String roadmapStepPlaceholder(int step) => _es
+      ? 'Hito $step'
+      : 'Milestone $step';
   String roadmapDescription(String target) => _es
       ? 'Preparación paso a paso para $target.'
       : 'Step-by-step preparation for $target.';
