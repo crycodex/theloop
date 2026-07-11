@@ -36,6 +36,47 @@ class FirestoreInterviewLoopRepository implements InterviewLoopRepository {
   }
 
   @override
+  Future<String> createActiveLoop({
+    String? sourceLoopId,
+    required Map<String, dynamic> profileSnapshot,
+  }) async {
+    final document = _loops.doc();
+    await document.set({
+      'status': 'active',
+      'sourceLoopId': sourceLoopId,
+      'profileSnapshot': profileSnapshot,
+      'startedAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+    return document.id;
+  }
+
+  @override
+  Future<void> completeLoop({
+    required String loopId,
+    required List<TranscriptTurn> transcript,
+    required InterviewReport report,
+    required int durationSeconds,
+  }) {
+    return _loops.doc(loopId).update({
+      'status': 'completed',
+      'transcript': transcript.map((turn) => turn.toJson()).toList(),
+      'report': {
+        'role': report.role,
+        'summary': report.summary,
+        'strengths': report.strengths,
+        'improvements': report.improvements,
+        'score': report.score,
+        'recommendation': report.recommendation,
+      },
+      'memorySummary': report.memorySummary,
+      'durationSeconds': durationSeconds,
+      'endedAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  @override
   Future<void> abandonLoop(String loopId) {
     return _loops.doc(loopId).update({
       'status': 'abandoned',

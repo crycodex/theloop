@@ -23,7 +23,7 @@ import 'features/home_dashboard/presentation/cubit/home_dashboard_cubit.dart';
 import 'features/interview_call/data/repositories/firestore_interview_loop_repository.dart';
 import 'features/interview_call/data/services/audio_service.dart';
 import 'features/interview_call/data/services/gemini_live_service.dart';
-import 'features/interview_call/data/services/interview_api_service.dart';
+import 'features/interview_call/data/services/interview_report_service.dart';
 import 'features/interview_call/domain/repositories/interview_loop_repository.dart';
 import 'features/interview_call/presentation/cubit/interview_call_cubit.dart';
 import 'features/loops/data/repositories/firestore_loops_repository.dart';
@@ -166,10 +166,11 @@ class _LoopAppViewState extends State<_LoopAppView> {
         ),
         BlocProvider(
           create: (context) => InterviewCallCubit(
-            InterviewApiService(FirebaseAuth.instance),
             GeminiLiveService(),
             InterviewAudioService(),
+            InterviewReportService(),
             context.read<InterviewLoopRepository>(),
+            context.read<ProfileRepository>(),
           ),
         ),
         BlocProvider(create: (_) => SettingsCubit()),

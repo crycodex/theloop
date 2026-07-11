@@ -9,9 +9,9 @@ void main() {
     final service = GeminiLiveService();
     final eventsFuture = service.events.take(6).toList();
 
+    service.handleServerMessage(jsonEncode({'setupComplete': {}}));
     service.handleServerMessage(
       jsonEncode({
-        'setupComplete': {},
         'serverContent': {
           'inputTranscription': {'text': 'Hola '},
           'modelTurn': {

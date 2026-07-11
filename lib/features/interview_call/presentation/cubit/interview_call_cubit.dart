@@ -2,50 +2,73 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../profile/domain/repositories/profile_repository.dart';
 import '../../data/services/audio_service.dart';
 import '../../data/services/gemini_live_service.dart';
-import '../../data/services/interview_api_service.dart';
+import '../../data/services/interview_prompt.dart';
+import '../../data/services/interview_report_service.dart';
 import '../../domain/repositories/interview_loop_repository.dart';
 import 'interview_call_state.dart';
 
 class InterviewCallCubit extends Cubit<InterviewCallState> {
   InterviewCallCubit(
-    this._api,
     this._live,
     this._audio,
+    this._reports,
     this._loops,
+    this._profiles,
   ) : super(const InterviewCallState.initial());
 
-  final InterviewApiService _api;
   final GeminiLiveService _live;
   final InterviewAudioService _audio;
+  final InterviewReportService _reports;
   final InterviewLoopRepository _loops;
+  final ProfileRepository _profiles;
   StreamSubscription<LiveEvent>? _liveSubscription;
   Timer? _timer;
-  bool _allowUserAudio = false;
+
   Future<void> start({String? sourceLoopId}) async {
     if (state.phase == InterviewCallPhase.connecting ||
         state.phase == InterviewCallPhase.inCall) {
       return;
     }
+
     emit(
       const InterviewCallState.initial().copyWith(
         phase: InterviewCallPhase.connecting,
       ),
     );
+
     try {
       if (!await _audio.requestMicrophonePermission()) {
-        throw const InterviewApiException(
+        throw const GeminiLiveException(
           'Se necesita permiso de micrófono para iniciar la llamada.',
         );
       }
-      final credentials = await _api.createLiveToken(
-        sourceLoopId: sourceLoopId,
+
+      final profile = await _profiles.getProfile();
+      final previousLoop = sourceLoopId == null
+          ? null
+          : await _loops.getLoop(sourceLoopId);
+      final systemPrompt = buildInterviewSystemPrompt(
+        profile: profile,
+        previousLoop: previousLoop,
       );
-      emit(state.copyWith(loopId: credentials.loopId));
+
+      final loopId = await _loops.createActiveLoop(
+        sourceLoopId: sourceLoopId,
+        profileSnapshot: {
+          'name': profile.name,
+          'goal': profile.target,
+          'customGoal': profile.customGoal,
+          'experience': profile.experience,
+        },
+      );
+
+      emit(state.copyWith(loopId: loopId));
       await _liveSubscription?.cancel();
       _liveSubscription = _live.events.listen(_onLiveEvent);
-      await _live.connect(credentials);
+      await _live.connect(systemPrompt: systemPrompt);
     } catch (error) {
       await _fail(error);
     }
@@ -72,8 +95,9 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
     final elapsed = state.elapsedSeconds;
     emit(state.copyWith(phase: InterviewCallPhase.ending));
     await _stopRealtime();
+
     if (loopId == null) {
-      await _fail(const InterviewApiException('La llamada no tiene sesión.'));
+      await _fail(const GeminiLiveException('La llamada no tiene sesión.'));
       return null;
     }
     if (state.transcript.isEmpty) {
@@ -81,10 +105,15 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
       emit(const InterviewCallState.initial());
       return null;
     }
+
     try {
-      final report = await _api.generateReport(
+      final report = await _reports.generateReport(
+        transcript: state.transcript,
+      );
+      await _loops.completeLoop(
         loopId: loopId,
         transcript: state.transcript,
+        report: report,
         durationSeconds: elapsed,
       );
       emit(
@@ -110,7 +139,7 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
       try {
         await _loops.abandonLoop(loopId);
       } catch (_) {
-        // The server may not have created the loop yet.
+        // The loop may not exist yet.
       }
     }
     emit(const InterviewCallState.initial());
@@ -119,11 +148,18 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
   Future<void> _onLiveEvent(LiveEvent event) async {
     switch (event) {
       case LiveSetupComplete():
-        _allowUserAudio = false;
         await _audio.setupPlayer();
         _audio.onPlaybackDone = () {
           if (!isClosed) emit(state.copyWith(isAiSpeaking: false));
         };
+        await _audio.startMic((pcm) {
+          if (state.phase == InterviewCallPhase.inCall &&
+              state.isMicEnabled &&
+              !state.isPaused &&
+              !_audio.isPlaying) {
+            _live.sendAudio(pcm);
+          }
+        });
         _live.startConversation();
         _timer?.cancel();
         _timer = Timer.periodic(const Duration(seconds: 1), (_) {
@@ -132,17 +168,6 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
           }
         });
         emit(state.copyWith(phase: InterviewCallPhase.inCall));
-        await _audio.startMic((pcm) {
-          if (!_allowUserAudio ||
-              state.phase != InterviewCallPhase.inCall ||
-              !state.isMicEnabled ||
-              state.isPaused ||
-              state.isAiSpeaking ||
-              _audio.isPlaying) {
-            return;
-          }
-          _live.sendAudio(pcm);
-        });
       case LiveAudioChunk(:final pcm):
         _audio.play(pcm);
         emit(state.copyWith(isAiSpeaking: true));
@@ -152,14 +177,13 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
       case LiveTranscriptUpdated(:final transcript):
         emit(state.copyWith(transcript: transcript));
       case LiveTurnComplete():
-        _allowUserAudio = true;
+        break;
       case LiveClosed(:final reason):
-        await _fail(InterviewApiException(reason));
+        await _fail(GeminiLiveException(reason));
     }
   }
 
   Future<void> _stopRealtime() async {
-    _allowUserAudio = false;
     _timer?.cancel();
     _timer = null;
     await _audio.stopMic();
@@ -193,7 +217,7 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
     await _stopRealtime();
     await _audio.dispose();
     await _live.dispose();
-    _api.dispose();
+    _reports.dispose();
     return super.close();
   }
 }

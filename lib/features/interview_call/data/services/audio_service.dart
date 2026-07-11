@@ -1,8 +1,9 @@
 import 'dart:async';
-import 'dart:collection';
 import 'dart:typed_data';
 
 import 'package:flutter_pcm_sound/flutter_pcm_sound.dart' as pcm;
+import 'package:flutter_pcm_sound/flutter_pcm_sound.dart'
+    show FlutterPcmSound, LogLevel, PcmArrayInt16;
 import 'package:record/record.dart';
 
 class InterviewAudioService {
@@ -10,34 +11,33 @@ class InterviewAudioService {
     : _recorder = recorder ?? AudioRecorder();
 
   final AudioRecorder _recorder;
-  final Queue<Uint8List> _playQueue = Queue<Uint8List>();
+  final List<Uint8List> _playQueue = [];
   StreamSubscription<Uint8List>? _micSubscription;
   bool _playerReady = false;
-  bool _feeding = false;
-  int _remainingFrames = 0;
+  bool _isPlaying = false;
 
   void Function()? onPlaybackDone;
 
-  bool get isPlaying =>
-      _feeding || _remainingFrames > 0 || _playQueue.isNotEmpty;
+  bool get isPlaying => _isPlaying;
 
-  Future<bool> requestMicrophonePermission() => _recorder.hasPermission();
+  Future<bool> requestMicrophonePermission() =>
+      _recorder.hasPermission();
 
   Future<void> setupPlayer() async {
     if (_playerReady) return;
-    await pcm.FlutterPcmSound.setup(
+    await FlutterPcmSound.setLogLevel(LogLevel.error);
+    await FlutterPcmSound.setup(
       sampleRate: 24000,
       channelCount: 1,
       iosAudioCategory: pcm.IosAudioCategory.playAndRecord,
     );
-    await pcm.FlutterPcmSound.setFeedThreshold(3600);
-    pcm.FlutterPcmSound.setFeedCallback(_feedPlayer);
+    await FlutterPcmSound.setFeedThreshold(3600);
+    FlutterPcmSound.setFeedCallback(_onFeed);
     _playerReady = true;
   }
 
   Future<void> startMic(void Function(Uint8List pcm) onData) async {
     await stopMic();
-    await _recorder.ios?.manageAudioSession(false);
     final stream = await _recorder.startStream(
       const RecordConfig(
         encoder: AudioEncoder.pcm16bits,
@@ -45,12 +45,6 @@ class InterviewAudioService {
         numChannels: 1,
         echoCancel: true,
         noiseSuppress: true,
-        autoGain: true,
-        iosConfig: IosRecordConfig(
-          categoryOptions: [
-            IosAudioCategoryOption.allowBluetooth,
-          ],
-        ),
       ),
     );
     _micSubscription = stream.listen(onData);
@@ -69,44 +63,42 @@ class InterviewAudioService {
   }
 
   void play(Uint8List chunk) {
-    if (chunk.isEmpty) return;
+    if (!_playerReady || chunk.isEmpty) return;
     _playQueue.add(Uint8List.fromList(chunk));
-    pcm.FlutterPcmSound.start();
+    _isPlaying = true;
+    FlutterPcmSound.start();
   }
 
   void clearPlayback() {
     _playQueue.clear();
-    if (_remainingFrames == 0 && !_feeding) {
-      onPlaybackDone?.call();
-    }
+    _isPlaying = false;
   }
 
-  void _feedPlayer(int remainingFrames) {
-    _remainingFrames = remainingFrames;
+  void _onFeed(int remainingFrames) {
     if (_playQueue.isEmpty) {
-      if (remainingFrames == 0) onPlaybackDone?.call();
+      if (remainingFrames == 0 && _isPlaying) {
+        _isPlaying = false;
+        onPlaybackDone?.call();
+      }
       return;
     }
 
-    final chunk = _playQueue.removeFirst();
-    _feeding = true;
+    final chunk = _playQueue.removeAt(0);
     unawaited(
-      pcm.FlutterPcmSound.feed(
-        pcm.PcmArrayInt16(
-          bytes: chunk.buffer.asByteData(
-            chunk.offsetInBytes,
-            chunk.lengthInBytes,
-          ),
-        ),
-      ).whenComplete(() => _feeding = false),
+      FlutterPcmSound.feed(
+        PcmArrayInt16(bytes: ByteData.sublistView(chunk)),
+      ),
     );
   }
 
   Future<void> dispose() async {
     await stopMic();
     _playQueue.clear();
-    pcm.FlutterPcmSound.setFeedCallback(null);
-    if (_playerReady) await pcm.FlutterPcmSound.release();
+    FlutterPcmSound.setFeedCallback(null);
+    if (_playerReady) {
+      _playerReady = false;
+      await FlutterPcmSound.release();
+    }
     await _recorder.dispose();
   }
 }
