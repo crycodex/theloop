@@ -37,4 +37,6 @@ abstract interface class InterviewLoopRepository {
     required String trackId,
     required String loopId,
   });
+
+  Future<List<DateTime>> getCompletedPracticeDates(Iterable<String> trackIds);
 }

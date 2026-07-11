@@ -196,7 +196,7 @@ class _BlurPill extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.transparent,
             borderRadius: BorderRadius.circular(999),
-            border: Border.all(color: Colors.transparent),
+            border: Border.all(color: Colors.green.withValues(alpha: 0.4)),
           ),
           child: child,
         ),
@@ -228,11 +228,7 @@ class _CallButton extends StatelessWidget {
                   ? Colors.white.withValues(alpha: 0.08)
                   : LoopColors.lightGreen.withValues(alpha: 0.55),
               shape: BoxShape.circle,
-              border: Border.all(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.08)
-                    : Colors.white.withValues(alpha: 0.24),
-              ),
+              border: Border.all(color: Colors.green.withValues(alpha: 0.4)),
             ),
             child: Center(
               child: Image.asset(

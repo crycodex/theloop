@@ -10,6 +10,7 @@ import '../../../core/widgets/level_circle.dart';
 import '../../../core/widgets/loop_card.dart';
 import '../../../core/widgets/metric_progress_bar.dart';
 import '../../../core/widgets/section_header.dart';
+import '../../../core/widgets/skeleton.dart';
 import '../../loops/domain/entities/loop_track.dart';
 import 'cubit/home_dashboard_cubit.dart';
 import 'cubit/home_dashboard_state.dart';
@@ -62,6 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
               child: _HomeEmpty(
                 strings: strings,
                 displayName: displayName,
+                streak: dashboard.streakDays,
                 onCreate: () => context.go('/loops/create'),
               ),
             ),
@@ -72,74 +74,72 @@ class _HomeScreenState extends State<HomeScreen> {
           onRefresh: () async => _reload(),
           child: ShellPagePadding(
             child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                strings.homeWelcome,
-                style: Theme.of(context).textTheme.displaySmall,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                displayName,
-                style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                  color: LoopColors.brandGreen,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  strings.homeWelcome,
+                  style: Theme.of(context).textTheme.displaySmall,
                 ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                strings.homeIntro,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              const SizedBox(height: 22),
-              _LevelCard(
-                strings: strings,
-                level: dashboard.generalLevel,
-                hasMeasuredLevel: dashboard.hasMeasuredLevel,
-                delta: dashboard.latestTrack?.delta ?? 0,
-                loading: false,
-              ),
-              const SizedBox(height: 14),
-              _StatsRow(
-                strings: strings,
-                streak: dashboard.streakDays,
-                loops: dashboard.totalLoops,
-                tracks: dashboard.totalTracks,
-                loading: false,
-              ),
-              const SizedBox(height: 24),
-              if (dashboard.latestTrack != null) ...[
-                SectionHeader(
-                  title: strings.homeLatestPractice,
-                  actionLabel: strings.seeLoops,
-                  onAction: () => context.go('/loops'),
+                const SizedBox(height: 4),
+                Text(
+                  displayName,
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                    color: LoopColors.brandGreen,
+                  ),
                 ),
-                const SizedBox(height: 12),
-                _PracticeCard(
-                  track: dashboard.latestTrack!,
+                const SizedBox(height: 10),
+                Text(
+                  strings.homeIntro,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 22),
+                _LevelCard(
                   strings: strings,
+                  level: dashboard.generalLevel,
+                  hasMeasuredLevel: dashboard.hasMeasuredLevel,
+                  delta: dashboard.latestTrack?.delta ?? 0,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
+                _StatsRow(
+                  strings: strings,
+                  streak: dashboard.streakDays,
+                  loops: dashboard.totalLoops,
+                  tracks: dashboard.totalTracks,
+                ),
+                const SizedBox(height: 24),
+                if (dashboard.latestTrack != null) ...[
+                  SectionHeader(
+                    title: strings.homeLatestPractice,
+                    actionLabel: strings.seeLoops,
+                    onAction: () => context.go('/loops'),
+                  ),
+                  const SizedBox(height: 12),
+                  _PracticeCard(
+                    track: dashboard.latestTrack!,
+                    strings: strings,
+                  ),
+                  const SizedBox(height: 12),
+                ],
+                LoopCard(
+                  color: LoopColors.lightGreen,
+                  onTap: () => context.go('/loops/create'),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.add_circle_rounded,
+                        color: LoopColors.brandGreen,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        strings.homeNewLoopCta,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ],
+                  ),
+                ),
               ],
-              LoopCard(
-                color: LoopColors.lightGreen,
-                onTap: () => context.go('/loops/create'),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.add_circle_rounded,
-                      color: LoopColors.brandGreen,
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      strings.homeNewLoopCta,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  ],
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
         );
       },
     );
@@ -156,17 +156,17 @@ class _HomeLoading extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SkeletonBox(height: 34, width: 180),
+        const SkeletonBox(height: 34, width: 180),
         const SizedBox(height: 8),
-        _SkeletonBox(height: 34, width: 140),
+        const SkeletonBox(height: 34, width: 140),
         const SizedBox(height: 12),
-        _SkeletonBox(height: 18, width: double.infinity),
+        const SkeletonLine(height: 18),
         const SizedBox(height: 22),
-        _LevelCard(strings: strings, loading: true),
+        const _LevelCardSkeleton(),
         const SizedBox(height: 14),
-        _StatsRow(strings: strings, loading: true),
+        const _StatsRowSkeleton(),
         const SizedBox(height: 24),
-        _SkeletonBox(height: 120, width: double.infinity),
+        const SkeletonBox(height: 160, borderRadius: 18),
       ],
     );
   }
@@ -176,11 +176,13 @@ class _HomeEmpty extends StatelessWidget {
   const _HomeEmpty({
     required this.strings,
     required this.displayName,
+    required this.streak,
     required this.onCreate,
   });
 
   final AppStrings strings;
   final String displayName;
+  final int streak;
   final VoidCallback onCreate;
 
   @override
@@ -205,9 +207,9 @@ class _HomeEmpty extends StatelessWidget {
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         const SizedBox(height: 22),
-        _LevelCard(strings: strings, loading: false),
+        _LevelCard(strings: strings),
         const SizedBox(height: 14),
-        _StatsRow(strings: strings, streak: 0, loops: 0, tracks: 0),
+        _StatsRow(strings: strings, streak: streak, loops: 0, tracks: 0),
         const SizedBox(height: 24),
         LoopCard(
           color: LoopColors.brandGreen,
@@ -256,73 +258,86 @@ class _LevelCard extends StatelessWidget {
     this.level = 0,
     this.hasMeasuredLevel = false,
     this.delta = 0,
-    this.loading = false,
   });
 
   final AppStrings strings;
   final double level;
   final bool hasMeasuredLevel;
   final double delta;
-  final bool loading;
 
   @override
   Widget build(BuildContext context) {
     return LoopCard(
       padding: const EdgeInsets.all(18),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          if (loading)
-            const SizedBox(
-              width: 72,
-              height: 72,
-              child: Center(
-                child: CircularProgressIndicator(strokeWidth: 2.5),
-              ),
-            )
-          else if (hasMeasuredLevel)
+          if (hasMeasuredLevel)
             LevelCircle(level: level, size: 72)
           else
-            const _DottedLoader(),
+            const _LevelEmptyRing(size: 72),
           const SizedBox(width: 16),
           Expanded(
-            child: loading
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      _SkeletonBox(height: 14, width: 120),
-                      SizedBox(height: 10),
-                      _SkeletonBox(height: 22, width: 160),
-                      SizedBox(height: 8),
-                      _SkeletonBox(height: 14, width: 220),
-                    ],
-                  )
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        strings.homeLevelTitle,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        hasMeasuredLevel
-                            ? level.toStringAsFixed(1)
-                            : strings.homeLevelEmpty,
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        hasMeasuredLevel
-                            ? strings.generalLevelSummary
-                            : strings.homeLevelEmptyHint,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      if (hasMeasuredLevel) ...[
-                        const SizedBox(height: 10),
-                        DeltaBadge(value: delta),
-                      ],
-                    ],
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  strings.homeLevelTitle,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: LoopColors.textMuted,
                   ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  hasMeasuredLevel
+                      ? level.toStringAsFixed(1)
+                      : strings.homeLevelEmpty,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  hasMeasuredLevel
+                      ? strings.generalLevelSummary
+                      : strings.homeLevelEmptyHint,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                if (hasMeasuredLevel) ...[
+                  const SizedBox(height: 10),
+                  DeltaBadge(value: delta),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LevelCardSkeleton extends StatelessWidget {
+  const _LevelCardSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return LoopCard(
+      padding: const EdgeInsets.all(18),
+      child: Row(
+        children: const [
+          SkeletonCircle(size: 72),
+          SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SkeletonLine(width: 120, height: 14),
+                SizedBox(height: 10),
+                SkeletonLine(width: 160, height: 22),
+                SizedBox(height: 8),
+                SkeletonLine(width: 220, height: 14),
+              ],
+            ),
           ),
         ],
       ),
@@ -336,14 +351,12 @@ class _StatsRow extends StatelessWidget {
     this.streak = 0,
     this.loops = 0,
     this.tracks = 0,
-    this.loading = false,
   });
 
   final AppStrings strings;
   final int streak;
   final int loops;
   final int tracks;
-  final bool loading;
 
   @override
   Widget build(BuildContext context) {
@@ -351,30 +364,47 @@ class _StatsRow extends StatelessWidget {
       children: [
         Expanded(
           child: _MiniStatCard(
-            icon: Icons.error_outline_rounded,
-            value: loading ? null : '$streak',
+            icon: streak > 0
+                ? Icons.local_fire_department_rounded
+                : Icons.local_fire_department_outlined,
+            iconColor: streak > 0 ? LoopColors.brandGreen : LoopColors.textMuted,
+            value: '$streak',
             label: strings.homeStreakLabel,
-            loading: loading,
           ),
         ),
         const SizedBox(width: 10),
         Expanded(
           child: _MiniStatCard(
             icon: Icons.loop_rounded,
-            value: loading ? null : '$loops',
+            value: '$loops',
             label: strings.homeLoopsLabel,
-            loading: loading,
           ),
         ),
         const SizedBox(width: 10),
         Expanded(
           child: _MiniStatCard(
             icon: Icons.adjust_rounded,
-            value: loading ? null : '$tracks',
+            value: '$tracks',
             label: strings.homeTracksLabel,
-            loading: loading,
           ),
         ),
+      ],
+    );
+  }
+}
+
+class _StatsRowSkeleton extends StatelessWidget {
+  const _StatsRowSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Row(
+      children: [
+        Expanded(child: _MiniStatCardSkeleton()),
+        SizedBox(width: 10),
+        Expanded(child: _MiniStatCardSkeleton()),
+        SizedBox(width: 10),
+        Expanded(child: _MiniStatCardSkeleton()),
       ],
     );
   }
@@ -384,14 +414,14 @@ class _MiniStatCard extends StatelessWidget {
   const _MiniStatCard({
     required this.icon,
     required this.label,
-    this.value,
-    this.loading = false,
+    required this.value,
+    this.iconColor = LoopColors.textMuted,
   });
 
   final IconData icon;
-  final String? value;
+  final String value;
   final String label;
-  final bool loading;
+  final Color iconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -400,19 +430,43 @@ class _MiniStatCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 22, color: LoopColors.textMuted),
+          Icon(icon, size: 22, color: iconColor),
           const SizedBox(height: 10),
-          if (loading)
-            const SizedBox(
-              height: 22,
-              width: 22,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            )
-          else
-            Text(
-              '$value $label',
-              style: Theme.of(context).textTheme.titleMedium,
+          Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: value,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                TextSpan(
+                  text: ' $label',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MiniStatCardSkeleton extends StatelessWidget {
+  const _MiniStatCardSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return LoopCard(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: const [
+          SkeletonCircle(size: 22),
+          SizedBox(height: 10),
+          SkeletonLine(width: 72, height: 20),
         ],
       ),
     );
@@ -472,63 +526,62 @@ class _PracticeCard extends StatelessWidget {
   }
 }
 
-class _DottedLoader extends StatelessWidget {
-  const _DottedLoader();
+class _LevelEmptyRing extends StatelessWidget {
+  const _LevelEmptyRing({required this.size});
+
+  final double size;
 
   @override
   Widget build(BuildContext context) {
+    const dotOffsets = [
+      Offset(0, -1),
+      Offset(0.87, -0.5),
+      Offset(0.87, 0.5),
+      Offset(0, 1),
+      Offset(-0.87, 0.5),
+      Offset(-0.87, -0.5),
+      Offset(0.43, 0.75),
+      Offset(-0.43, 0.75),
+    ];
+
+    final radius = size * 0.34;
+    final dotSize = size * 0.11;
+
     return SizedBox(
-      width: 72,
-      height: 72,
+      width: size,
+      height: size,
       child: Stack(
         alignment: Alignment.center,
         children: [
-          for (final offset in const [
-            Offset(0, -18),
-            Offset(17, -6),
-            Offset(11, 15),
-            Offset(-11, 15),
-            Offset(-17, -6),
-            Offset(0, 0),
-            Offset(0, 12),
-            Offset(12, 0),
-          ])
+          Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: LoopColors.border,
+                width: 2,
+              ),
+            ),
+          ),
+          for (final unit in dotOffsets)
             Transform.translate(
-              offset: offset,
+              offset: Offset(unit.dx * radius, unit.dy * radius),
               child: Container(
-                width: 10,
-                height: 10,
+                width: dotSize,
+                height: dotSize,
                 decoration: BoxDecoration(
-                  color: LoopColors.textMuted.withValues(alpha: 0.35),
+                  color: LoopColors.textMuted.withValues(alpha: 0.28),
                   shape: BoxShape.circle,
                 ),
               ),
             ),
-          const SizedBox(
-            width: 18,
-            height: 18,
-            child: CircularProgressIndicator(strokeWidth: 2),
+          Icon(
+            Icons.insights_outlined,
+            size: size * 0.28,
+            color: LoopColors.textMuted.withValues(alpha: 0.45),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _SkeletonBox extends StatelessWidget {
-  const _SkeletonBox({required this.height, required this.width});
-
-  final double height;
-  final double width;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: height,
-      width: width,
-      decoration: BoxDecoration(
-        color: LoopColors.textMuted.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(10),
       ),
     );
   }

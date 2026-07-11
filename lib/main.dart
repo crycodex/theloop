@@ -101,6 +101,7 @@ class LoopApp extends StatelessWidget {
           create: (context) => FirestoreHomeDashboardRepository(
             context.read<ProfileRepository>(),
             context.read<LoopsRepository>(),
+            context.read<InterviewLoopRepository>(),
           ),
         ),
         RepositoryProvider<CvAnalysisRepository>(

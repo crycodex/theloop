@@ -138,6 +138,22 @@ class FirestoreInterviewLoopRepository implements InterviewLoopRepository {
     });
   }
 
+  @override
+  Future<List<DateTime>> getCompletedPracticeDates(
+    Iterable<String> trackIds,
+  ) async {
+    final dates = <DateTime>[];
+    for (final trackId in trackIds) {
+      final loops = await getLoopsForTrack(trackId);
+      for (final loop in loops) {
+        if (loop.status == 'completed' && loop.endedAt != null) {
+          dates.add(loop.endedAt!);
+        }
+      }
+    }
+    return dates;
+  }
+
   InterviewLoop _fromDocument(
     String trackId,
     DocumentSnapshot<Map<String, dynamic>> document,
