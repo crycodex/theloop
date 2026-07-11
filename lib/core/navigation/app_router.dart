@@ -51,9 +51,7 @@ class AppRouter {
 class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Stream<dynamic> stream) {
     notifyListeners();
-    _subscription = stream.asBroadcastStream().listen(
-      (_) => notifyListeners(),
-    );
+    _subscription = stream.asBroadcastStream().listen((_) => notifyListeners());
   }
 
   late final StreamSubscription<dynamic> _subscription;
@@ -100,13 +98,6 @@ final routes = [
         path: '/loops',
         pageBuilder: (context, state) =>
             _navPage(state: state, child: const LoopsScreen()),
-        routes: [
-          GoRoute(
-            path: 'create',
-            pageBuilder: (context, state) =>
-                _navPage(state: state, child: const CreateTrackScreen()),
-          ),
-        ],
       ),
       GoRoute(
         path: '/cv',
@@ -119,6 +110,11 @@ final routes = [
             _navPage(state: state, child: const RoadmapScreen()),
       ),
     ],
+  ),
+  GoRoute(
+    path: '/loops/create',
+    pageBuilder: (context, state) =>
+        _navPage(state: state, child: const CreateTrackScreen()),
   ),
   GoRoute(
     path: '/profile',
