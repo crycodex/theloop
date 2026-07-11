@@ -40,7 +40,7 @@ async function readUserProfile(uid: string) {
 setGlobalOptions({region: "us-central1", maxInstances: 10});
 
 const geminiApiKey = defineSecret("GEMINI_API_KEY");
-const liveModel = "gemini-3.5-live-translate-preview";
+const liveModel = "gemini-2.5-flash-native-audio-preview-12-2025";
 const reportModels = [
   "gemini-3.5-flash",
   "gemini-flash-latest",

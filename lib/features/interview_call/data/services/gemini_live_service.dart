@@ -93,22 +93,21 @@ class GeminiLiveService {
         },
       );
 
-      _send({
-        'setup': {
-          'model': 'models/${credentials.model}',
-          'generationConfig': {
-            'responseModalities': ['AUDIO'],
-            'mediaResolution': 'MEDIA_RESOLUTION_MEDIUM',
-            'translationConfig': {
-              'targetLanguageCode': 'es',
-            },
-          },
-          'contextWindowCompression': {
-            'triggerTokens': '0',
-            'slidingWindow': {'targetTokens': '0'},
-          },
+      final setup = <String, dynamic>{
+        'model': 'models/${credentials.model}',
+        'generationConfig': {
+          'responseModalities': ['AUDIO'],
         },
-      });
+      };
+      final systemPrompt = credentials.systemPrompt.trim();
+      if (systemPrompt.isNotEmpty) {
+        setup['systemInstruction'] = {
+          'parts': [
+            {'text': systemPrompt},
+          ],
+        };
+      }
+      _send({'setup': setup});
 
       await _setupCompleter!.future.timeout(
         const Duration(seconds: 20),
@@ -177,17 +176,14 @@ class GeminiLiveService {
     return 'No se pudo iniciar la llamada con Gemini Live.';
   }
 
-  void startConversation({required String systemPrompt}) {
+  void startConversation() {
     _send({
       'clientContent': {
         'turns': [
           {
             'role': 'user',
             'parts': [
-              {
-                'text':
-                    '$systemPrompt\n\nHola, estoy listo para comenzar la entrevista.',
-              },
+              {'text': 'Hola, estoy listo para comenzar la entrevista.'},
             ],
           },
         ],

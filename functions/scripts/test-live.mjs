@@ -1,4 +1,4 @@
-import {GoogleGenAI, MediaResolution, Modality} from "@google/genai";
+import {GoogleGenAI, Modality} from "@google/genai";
 
 const apiKey = process.env.GEMINI_API_KEY;
 if (!apiKey) {
@@ -8,12 +8,6 @@ if (!apiKey) {
 
 const liveConfig = {
   responseModalities: [Modality.AUDIO],
-  mediaResolution: MediaResolution.MEDIA_RESOLUTION_MEDIUM,
-  contextWindowCompression: {
-    triggerTokens: "0",
-    slidingWindow: {targetTokens: "0"},
-  },
-  translationConfig: {targetLanguageCode: "es"},
 };
 
 async function waitForSetup(label, timeoutMs = 8000) {
@@ -21,7 +15,7 @@ async function waitForSetup(label, timeoutMs = 8000) {
   let closeReason = "";
   const ai = new GoogleGenAI({apiKey, apiVersion: "v1alpha"});
   const session = await ai.live.connect({
-    model: "gemini-3.5-live-translate-preview",
+    model: "gemini-2.5-flash-native-audio-preview-12-2025",
     config: liveConfig,
     callbacks: {
       onopen: () => console.log(`${label}: open`),
@@ -58,7 +52,7 @@ async function waitForEphemeralSetup(label, timeoutMs = 8000) {
 
   const ai = new GoogleGenAI({apiKey: token.name, apiVersion: "v1alpha"});
   const session = await ai.live.connect({
-    model: "gemini-3.5-live-translate-preview",
+    model: "gemini-2.5-flash-native-audio-preview-12-2025",
     config: liveConfig,
     callbacks: {
       onopen: () => console.log(`${label}: open`),

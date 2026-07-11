@@ -37,6 +37,7 @@ class InterviewAudioService {
 
   Future<void> startMic(void Function(Uint8List pcm) onData) async {
     await stopMic();
+    await _recorder.ios?.manageAudioSession(false);
     final stream = await _recorder.startStream(
       const RecordConfig(
         encoder: AudioEncoder.pcm16bits,
@@ -44,6 +45,12 @@ class InterviewAudioService {
         numChannels: 1,
         echoCancel: true,
         noiseSuppress: true,
+        autoGain: true,
+        iosConfig: IosRecordConfig(
+          categoryOptions: [
+            IosAudioCategoryOption.allowBluetooth,
+          ],
+        ),
       ),
     );
     _micSubscription = stream.listen(onData);

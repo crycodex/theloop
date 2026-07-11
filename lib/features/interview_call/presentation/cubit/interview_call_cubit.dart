@@ -22,8 +22,7 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
   final InterviewLoopRepository _loops;
   StreamSubscription<LiveEvent>? _liveSubscription;
   Timer? _timer;
-  String _systemPrompt = '';
-
+  bool _allowUserAudio = false;
   Future<void> start({String? sourceLoopId}) async {
     if (state.phase == InterviewCallPhase.connecting ||
         state.phase == InterviewCallPhase.inCall) {
@@ -43,7 +42,6 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
       final credentials = await _api.createLiveToken(
         sourceLoopId: sourceLoopId,
       );
-      _systemPrompt = credentials.systemPrompt;
       emit(state.copyWith(loopId: credentials.loopId));
       await _liveSubscription?.cancel();
       _liveSubscription = _live.events.listen(_onLiveEvent);
@@ -121,19 +119,12 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
   Future<void> _onLiveEvent(LiveEvent event) async {
     switch (event) {
       case LiveSetupComplete():
+        _allowUserAudio = false;
         await _audio.setupPlayer();
         _audio.onPlaybackDone = () {
           if (!isClosed) emit(state.copyWith(isAiSpeaking: false));
         };
-        await _audio.startMic((pcm) {
-          if (state.phase == InterviewCallPhase.inCall &&
-              state.isMicEnabled &&
-              !state.isPaused &&
-              !_audio.isPlaying) {
-            _live.sendAudio(pcm);
-          }
-        });
-        _live.startConversation(systemPrompt: _systemPrompt);
+        _live.startConversation();
         _timer?.cancel();
         _timer = Timer.periodic(const Duration(seconds: 1), (_) {
           if (!isClosed && state.phase == InterviewCallPhase.inCall) {
@@ -141,6 +132,17 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
           }
         });
         emit(state.copyWith(phase: InterviewCallPhase.inCall));
+        await _audio.startMic((pcm) {
+          if (!_allowUserAudio ||
+              state.phase != InterviewCallPhase.inCall ||
+              !state.isMicEnabled ||
+              state.isPaused ||
+              state.isAiSpeaking ||
+              _audio.isPlaying) {
+            return;
+          }
+          _live.sendAudio(pcm);
+        });
       case LiveAudioChunk(:final pcm):
         _audio.play(pcm);
         emit(state.copyWith(isAiSpeaking: true));
@@ -150,13 +152,14 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
       case LiveTranscriptUpdated(:final transcript):
         emit(state.copyWith(transcript: transcript));
       case LiveTurnComplete():
-        break;
+        _allowUserAudio = true;
       case LiveClosed(:final reason):
         await _fail(InterviewApiException(reason));
     }
   }
 
   Future<void> _stopRealtime() async {
+    _allowUserAudio = false;
     _timer?.cancel();
     _timer = null;
     await _audio.stopMic();
