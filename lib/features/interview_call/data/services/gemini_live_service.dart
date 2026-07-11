@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import '../../../../core/settings/cubit/settings_state.dart';
 import '../../domain/entities/transcript_turn.dart';
 import 'gemini_config.dart';
 
@@ -58,7 +59,11 @@ class GeminiLiveService {
   Stream<LiveEvent> get events => _events.stream;
   List<TranscriptTurn> get transcript => List.unmodifiable(_transcript);
 
-  Future<void> connect({String? systemPrompt}) async {
+  Future<void> connect({
+    String? systemPrompt,
+    RecruiterVoice voice = RecruiterVoice.sadaltager,
+    String? startMessage,
+  }) async {
     if (kGeminiApiKey.isEmpty) {
       throw const GeminiLiveException(
         'Falta GEMINI_API_KEY. Corre con --dart-define=GEMINI_API_KEY=...',
@@ -93,13 +98,13 @@ class GeminiLiveService {
           'responseModalities': ['AUDIO'],
           'speechConfig': {
             'voiceConfig': {
-              'prebuiltVoiceConfig': {'voiceName': 'Sadaltager'},
+              'prebuiltVoiceConfig': {'voiceName': voice.apiName},
             },
           },
         },
         'systemInstruction': {
           'parts': [
-            {'text': systemPrompt?.trim().isNotEmpty == true ? systemPrompt!.trim() : kDefaultRecruiterPrompt},
+            {'text': systemPrompt?.trim().isNotEmpty == true ? systemPrompt!.trim() : defaultRecruiterPrompt(AppLanguage.spanish)},
           ],
         },
         'inputAudioTranscription': {},
@@ -116,14 +121,17 @@ class GeminiLiveService {
     });
   }
 
-  void startConversation() {
+  void startConversation({String? message}) {
     _send({
       'clientContent': {
         'turns': [
           {
             'role': 'user',
             'parts': [
-              {'text': 'Hola, estoy listo para comenzar la entrevista.'},
+              {
+                'text': message ??
+                    liveStartMessage(AppLanguage.spanish),
+              },
             ],
           },
         ],

@@ -4,13 +4,21 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/localization/app_strings.dart';
 import '../../../core/theme/loop_colors.dart';
+import '../../loops/domain/entities/interview_track.dart';
 import 'cubit/interview_call_cubit.dart';
 import 'cubit/interview_call_state.dart';
 
 class InterviewCallScreen extends StatefulWidget {
-  const InterviewCallScreen({super.key, this.sourceLoopId});
+  const InterviewCallScreen({
+    super.key,
+    this.sourceLoopId,
+    this.trackId,
+    this.loopType = 'interview',
+  });
 
   final String? sourceLoopId;
+  final String? trackId;
+  final String loopType;
 
   @override
   State<InterviewCallScreen> createState() => _InterviewCallScreenState();
@@ -25,6 +33,8 @@ class _InterviewCallScreenState extends State<InterviewCallScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<InterviewCallCubit>().start(
         sourceLoopId: widget.sourceLoopId,
+        trackId: widget.trackId,
+        loopType: widget.loopType == 'prep' ? LoopType.prep : LoopType.interview,
       );
     });
   }
@@ -69,8 +79,9 @@ class _InterviewCallScreenState extends State<InterviewCallScreen> {
                   Row(
                     children: [
                       _LiveBadge(
-                        elapsedLabel: state.elapsedLabel,
+                        timerLabel: state.timerLabel,
                         strings: strings,
+                        isPrep: state.isPrep,
                       ),
                       const Spacer(),
                       IconButton(
@@ -96,7 +107,9 @@ class _InterviewCallScreenState extends State<InterviewCallScreen> {
                     switch (state.phase) {
                       InterviewCallPhase.connecting =>
                         strings.connectingCall,
-                      InterviewCallPhase.ending => strings.preparingReport,
+                      InterviewCallPhase.ending => state.isPrep
+                          ? strings.preparingPrep
+                          : strings.preparingReport,
                       InterviewCallPhase.error =>
                         state.errorMessage ?? strings.authErrorUnknown,
                       _ when state.isPaused => strings.interviewPaused,
@@ -208,14 +221,23 @@ class _InterviewCallScreenState extends State<InterviewCallScreen> {
                         onTap: state.phase != InterviewCallPhase.inCall
                             ? () {}
                             : () async {
-                                final loopId = await context
+                                final isPrep = state.isPrep;
+                                final trackId = widget.trackId;
+                                final resultId = await context
                                     .read<InterviewCallCubit>()
                                     .end();
-                                if (context.mounted && loopId != null) {
-                                  context.go('/recap?loopId=$loopId');
-                                } else if (context.mounted) {
+                                if (!context.mounted) return;
+                                if (resultId == null) {
                                   context.go('/');
+                                  return;
                                 }
+                                if (isPrep && trackId != null) {
+                                  context.go(
+                                    '/interview?trackId=$trackId&loopType=interview',
+                                  );
+                                  return;
+                                }
+                                context.go('/recap?loopId=$resultId');
                               },
                       ),
                     ],
@@ -231,10 +253,15 @@ class _InterviewCallScreenState extends State<InterviewCallScreen> {
 }
 
 class _LiveBadge extends StatelessWidget {
-  const _LiveBadge({required this.elapsedLabel, required this.strings});
+  const _LiveBadge({
+    required this.timerLabel,
+    required this.strings,
+    required this.isPrep,
+  });
 
-  final String elapsedLabel;
+  final String timerLabel;
   final AppStrings strings;
+  final bool isPrep;
 
   @override
   Widget build(BuildContext context) {
@@ -256,7 +283,7 @@ class _LiveBadge extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Text(
-            '${strings.live} · $elapsedLabel',
+            '${isPrep ? strings.prepBadge : strings.live} · $timerLabel',
             style: TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.w800,

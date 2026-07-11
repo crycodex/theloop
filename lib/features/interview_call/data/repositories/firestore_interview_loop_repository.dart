@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../auth/domain/repositories/auth_repository.dart';
+import '../../../loops/domain/entities/interview_track.dart';
 import '../../domain/entities/interview_loop.dart';
 import '../../domain/entities/interview_report.dart';
 import '../../domain/entities/transcript_turn.dart';
@@ -38,17 +39,37 @@ class FirestoreInterviewLoopRepository implements InterviewLoopRepository {
   @override
   Future<String> createActiveLoop({
     String? sourceLoopId,
+    String? trackId,
+    LoopType loopType = LoopType.interview,
     required Map<String, dynamic> profileSnapshot,
   }) async {
     final document = _loops.doc();
     await document.set({
       'status': 'active',
       'sourceLoopId': sourceLoopId,
+      'trackId': trackId,
+      'loopType': loopType.name,
       'profileSnapshot': profileSnapshot,
       'startedAt': FieldValue.serverTimestamp(),
       'updatedAt': FieldValue.serverTimestamp(),
     });
     return document.id;
+  }
+
+  @override
+  Future<void> completePrepLoop({
+    required String loopId,
+    required List<TranscriptTurn> transcript,
+    required int durationSeconds,
+  }) {
+    return _loops.doc(loopId).update({
+      'status': 'completed',
+      'loopType': LoopType.prep.name,
+      'transcript': transcript.map((turn) => turn.toJson()).toList(),
+      'durationSeconds': durationSeconds,
+      'endedAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
   }
 
   @override

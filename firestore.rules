@@ -11,6 +11,12 @@ service cloud.firestore {
           && subcollection in ['settings', 'cv', 'roadmap'];
       }
 
+      match /tracks/{trackId} {
+        allow read, create, update: if request.auth != null
+          && request.auth.uid == userId;
+        allow delete: if false;
+      }
+
       match /loops/{loopId} {
         allow read: if request.auth != null && request.auth.uid == userId;
 
@@ -29,6 +35,14 @@ service cloud.firestore {
               request.resource.data.status == 'abandoned'
               && request.resource.data.diff(resource.data).affectedKeys()
                 .hasOnly(['status', 'endedAt', 'updatedAt'])
+            )
+            || (
+              request.resource.data.status == 'completed'
+              && request.resource.data.loopType == 'prep'
+              && request.resource.data.transcript is list
+              && request.resource.data.durationSeconds is int
+              && request.resource.data.endedAt is timestamp
+              && request.resource.data.updatedAt is timestamp
             )
             || (
               request.resource.data.status == 'completed'

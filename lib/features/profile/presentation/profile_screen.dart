@@ -7,6 +7,7 @@ import '../../../core/settings/cubit/settings_cubit.dart';
 import '../../../core/settings/cubit/settings_state.dart';
 import '../../../core/theme/loop_colors.dart';
 import '../../../core/widgets/loop_card.dart';
+import '../../../features/interview_call/data/services/gemini_config.dart';
 import '../../auth/presentation/cubit/auth_cubit.dart';
 import 'cubit/profile_cubit.dart';
 import 'cubit/profile_state.dart';
@@ -98,7 +99,7 @@ class ProfileScreen extends StatelessWidget {
                     title: strings.privacy,
                     subtitle: strings.privacySubtitle,
                   ),
-                  _PreferencesCard(strings: strings),
+                  _PreferencesPanel(strings: strings),
                   const SizedBox(height: 8),
                   _SettingsTile(
                     icon: Icons.logout_rounded,
@@ -144,8 +145,8 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
-class _PreferencesCard extends StatelessWidget {
-  const _PreferencesCard({required this.strings});
+class _PreferencesPanel extends StatelessWidget {
+  const _PreferencesPanel({required this.strings});
 
   final AppStrings strings;
 
@@ -156,60 +157,38 @@ class _PreferencesCard extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
           child: LoopCard(
-            padding: const EdgeInsets.all(18),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 42,
-                      height: 42,
-                      decoration: BoxDecoration(
-                        color: LoopColors.lightGreen,
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: const Icon(
-                        Icons.palette_outlined,
-                        color: LoopColors.brandGreen,
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            strings.preferences,
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            strings.preferencesSubtitle,
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+            padding: EdgeInsets.zero,
+            child: ExpansionTile(
+              tilePadding: const EdgeInsets.symmetric(horizontal: 18),
+              childrenPadding: const EdgeInsets.fromLTRB(18, 0, 18, 18),
+              leading: Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: LoopColors.lightGreen,
+                  borderRadius: BorderRadius.circular(15),
                 ),
-                const SizedBox(height: 18),
+                child: const Icon(
+                  Icons.tune_rounded,
+                  color: LoopColors.brandGreen,
+                ),
+              ),
+              title: Text(
+                strings.preferences,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              subtitle: Text(strings.preferencesSubtitle),
+              children: [
                 SwitchListTile.adaptive(
                   contentPadding: EdgeInsets.zero,
-                  title: Text(
-                    strings.darkMode,
-                    style: Theme.of(context).textTheme.labelLarge,
-                  ),
+                  title: Text(strings.darkMode),
                   value: settings.isDarkMode,
                   activeThumbColor: LoopColors.accentGreen,
                   onChanged: context.read<SettingsCubit>().setDarkMode,
                 ),
-                const SizedBox(height: 10),
-                Text(
-                  strings.languageLabel,
-                  style: Theme.of(context).textTheme.labelLarge,
-                ),
-                const SizedBox(height: 10),
+                const Divider(),
+                Text(strings.languageLabel, style: Theme.of(context).textTheme.labelLarge),
+                const SizedBox(height: 8),
                 SegmentedButton<AppLanguage>(
                   segments: AppLanguage.values
                       .map(
@@ -222,6 +201,30 @@ class _PreferencesCard extends StatelessWidget {
                   selected: {settings.language},
                   onSelectionChanged: (selection) {
                     context.read<SettingsCubit>().setLanguage(selection.first);
+                  },
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  strings.recruiterLanguageHint,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                const Divider(),
+                Text(strings.recruiterVoiceLabel, style: Theme.of(context).textTheme.labelLarge),
+                const SizedBox(height: 8),
+                SegmentedButton<RecruiterVoice>(
+                  segments: RecruiterVoice.values
+                      .map(
+                        (voice) => ButtonSegment(
+                          value: voice,
+                          label: Text(voice.label(settings.language)),
+                        ),
+                      )
+                      .toList(),
+                  selected: {settings.recruiterVoice},
+                  onSelectionChanged: (selection) {
+                    context.read<SettingsCubit>().setRecruiterVoice(
+                      selection.first,
+                    );
                   },
                 ),
               ],

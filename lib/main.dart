@@ -27,7 +27,9 @@ import 'features/interview_call/data/services/interview_report_service.dart';
 import 'features/interview_call/domain/repositories/interview_loop_repository.dart';
 import 'features/interview_call/presentation/cubit/interview_call_cubit.dart';
 import 'features/loops/data/repositories/firestore_loops_repository.dart';
+import 'features/loops/data/repositories/firestore_tracks_repository.dart';
 import 'features/loops/domain/repositories/loops_repository.dart';
+import 'features/loops/domain/repositories/tracks_repository.dart';
 import 'features/loops/domain/usecases/get_loop_tracks.dart';
 import 'features/loops/presentation/cubit/loops_cubit.dart';
 import 'features/profile/data/repositories/firestore_profile_repository.dart';
@@ -83,9 +85,15 @@ class LoopApp extends StatelessWidget {
             context.read<AuthRepository>(),
           ),
         ),
+        RepositoryProvider<TracksRepository>(
+          create: (context) => FirestoreTracksRepository(
+            context.read<FirebaseFirestore>(),
+            context.read<AuthRepository>(),
+          ),
+        ),
         RepositoryProvider<LoopsRepository>(
           create: (context) =>
-              FirestoreLoopsRepository(context.read<InterviewLoopRepository>()),
+              FirestoreLoopsRepository(context.read<TracksRepository>()),
         ),
         RepositoryProvider<HomeDashboardRepository>(
           create: (context) => FirestoreHomeDashboardRepository(
@@ -164,6 +172,7 @@ class _LoopAppViewState extends State<_LoopAppView> {
           create: (context) =>
               RecapCubit(GetLatestRecap(context.read<RecapRepository>())),
         ),
+        BlocProvider(create: (_) => SettingsCubit()),
         BlocProvider(
           create: (context) => InterviewCallCubit(
             GeminiLiveService(),
@@ -171,9 +180,10 @@ class _LoopAppViewState extends State<_LoopAppView> {
             InterviewReportService(),
             context.read<InterviewLoopRepository>(),
             context.read<ProfileRepository>(),
+            context.read<TracksRepository>(),
+            context.read<SettingsCubit>(),
           ),
         ),
-        BlocProvider(create: (_) => SettingsCubit()),
       ],
       child: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, settings) {

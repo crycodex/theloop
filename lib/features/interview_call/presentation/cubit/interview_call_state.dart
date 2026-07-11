@@ -1,6 +1,9 @@
 import '../../domain/entities/interview_report.dart';
 import '../../domain/entities/transcript_turn.dart';
 
+const int kLoopDurationSeconds = 300;
+const int kMinReportSeconds = 10;
+
 enum InterviewCallPhase {
   idle,
   connecting,
@@ -16,9 +19,11 @@ class InterviewCallState {
     required this.isMicEnabled,
     required this.isPaused,
     required this.isAiSpeaking,
-    required this.elapsedSeconds,
+    required this.remainingSeconds,
     required this.transcript,
     this.loopId,
+    this.trackId,
+    this.isPrep = false,
     this.report,
     this.errorMessage,
   });
@@ -28,9 +33,11 @@ class InterviewCallState {
       isMicEnabled = true,
       isPaused = false,
       isAiSpeaking = false,
-      elapsedSeconds = 0,
+      remainingSeconds = kLoopDurationSeconds,
       transcript = const [],
       loopId = null,
+      trackId = null,
+      isPrep = false,
       report = null,
       errorMessage = null;
 
@@ -38,15 +45,19 @@ class InterviewCallState {
   final bool isMicEnabled;
   final bool isPaused;
   final bool isAiSpeaking;
-  final int elapsedSeconds;
+  final int remainingSeconds;
   final List<TranscriptTurn> transcript;
   final String? loopId;
+  final String? trackId;
+  final bool isPrep;
   final InterviewReport? report;
   final String? errorMessage;
 
-  String get elapsedLabel {
-    final minutes = elapsedSeconds ~/ 60;
-    final seconds = elapsedSeconds % 60;
+  int get elapsedSeconds => kLoopDurationSeconds - remainingSeconds;
+
+  String get timerLabel {
+    final minutes = remainingSeconds ~/ 60;
+    final seconds = remainingSeconds % 60;
     return '${minutes.toString().padLeft(2, '0')}:'
         '${seconds.toString().padLeft(2, '0')}';
   }
@@ -56,9 +67,11 @@ class InterviewCallState {
     bool? isMicEnabled,
     bool? isPaused,
     bool? isAiSpeaking,
-    int? elapsedSeconds,
+    int? remainingSeconds,
     List<TranscriptTurn>? transcript,
     String? loopId,
+    String? trackId,
+    bool? isPrep,
     InterviewReport? report,
     String? errorMessage,
     bool clearError = false,
@@ -68,9 +81,11 @@ class InterviewCallState {
       isMicEnabled: isMicEnabled ?? this.isMicEnabled,
       isPaused: isPaused ?? this.isPaused,
       isAiSpeaking: isAiSpeaking ?? this.isAiSpeaking,
-      elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
+      remainingSeconds: remainingSeconds ?? this.remainingSeconds,
       transcript: transcript ?? this.transcript,
       loopId: loopId ?? this.loopId,
+      trackId: trackId ?? this.trackId,
+      isPrep: isPrep ?? this.isPrep,
       report: report ?? this.report,
       errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
     );

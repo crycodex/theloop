@@ -159,8 +159,8 @@ class AppStrings {
       ? 'Cada loop mide tu progreso frente a un puesto objetivo concreto.'
       : 'Each loop measures your progress against a specific target role.';
   String get createCustomTrack => _es
-      ? 'Crear trayecto a medida pegando una descripción de oferta'
-      : 'Create a custom track by pasting a job description';
+      ? 'Crear trayecto: pegar oferta o describirlo con IA'
+      : 'Create a track: paste a job post or describe it with AI';
 
   String get cvAnalysis => 'CV Analysis';
   String get cvDescription => _es
@@ -207,9 +207,53 @@ class AppStrings {
       : 'Export data or delete account';
   String get preferences => _es ? 'Preferencias' : 'Preferences';
   String get preferencesSubtitle =>
-      _es ? 'Tema e idioma' : 'Theme and language';
+      _es ? 'Tema, idioma y voz del reclutador' : 'Theme, language and recruiter voice';
   String get darkMode => _es ? 'Modo oscuro' : 'Dark mode';
   String get languageLabel => _es ? 'Idioma' : 'Language';
+  String get recruiterVoiceLabel =>
+      _es ? 'Voz del reclutador' : 'Recruiter voice';
+  String get recruiterLanguageHint => _es
+      ? 'El idioma de la app también define el idioma de la entrevista.'
+      : 'App language also sets the interview language.';
+  String get prepBadge => _es ? 'PREP' : 'PREP';
+  String get preparingPrep =>
+      _es ? 'Guardando preparación…' : 'Saving preparation…';
+
+  String get createTrackTitle =>
+      _es ? 'Nuevo trayecto' : 'New track';
+  String get createTrackPasteTab =>
+      _es ? 'Pegar oferta' : 'Paste job post';
+  String get createTrackAiTab =>
+      _es ? 'Describir con IA' : 'Describe with AI';
+  String get createTrackPasteHint => _es
+      ? 'Pega el título y la descripción del puesto para crear tu primer loop de preparación.'
+      : 'Paste the role title and job description to create your first prep loop.';
+  String get trackJobTitle => _es ? 'Título del puesto' : 'Job title';
+  String get trackCompany => _es ? 'Empresa' : 'Company';
+  String get trackJobDescription =>
+      _es ? 'Descripción del puesto' : 'Job description';
+  String get createTrackCta =>
+      _es ? 'Crear trayecto y preparar' : 'Create track and prepare';
+  String get createTrackAiHint => _es
+      ? 'Cuéntale a la IA el rol que buscas y generará el trayecto automáticamente.'
+      : 'Tell the AI about the role you want and it will generate the track.';
+  String get createTrackAiInput => _es
+      ? 'Ej: Quiero practicar para backend en fintech…'
+      : 'E.g. I want to practice for a backend role in fintech…';
+  String get createTrackAiGenerate =>
+      _es ? 'Generar trayecto con IA' : 'Generate track with AI';
+  String get trackFormRequired => _es
+      ? 'Completa título y descripción.'
+      : 'Fill in title and description.';
+  String get trackAiRequired => _es
+      ? 'Escribe una descripción para la IA.'
+      : 'Write a description for the AI.';
+  String get trackAiUnavailable => _es
+      ? 'La generación con IA no está disponible.'
+      : 'AI generation is unavailable.';
+  String get trackUntitled => _es ? 'Puesto objetivo' : 'Target role';
+  String get trackPrepPending => _es ? 'Preparación pendiente' : 'Prep pending';
+  String get trackPrepDone => _es ? 'Listo para entrevista' : 'Ready to interview';
 
   String get logout => _es ? 'Cerrar sesión' : 'Sign out';
   String get logoutConfirmTitle =>

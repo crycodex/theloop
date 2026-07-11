@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../../../../core/settings/cubit/settings_state.dart';
 import '../../domain/entities/interview_report.dart';
 import '../../domain/entities/transcript_turn.dart';
 import 'gemini_config.dart';
@@ -30,6 +31,7 @@ class InterviewReportService {
 
   Future<InterviewReport> generateReport({
     required List<TranscriptTurn> transcript,
+    AppLanguage language = AppLanguage.spanish,
   }) async {
     if (kGeminiApiKey.isEmpty) {
       throw const InterviewReportException(
@@ -47,15 +49,29 @@ class InterviewReportService {
         )
         .join('\n');
     final prompt = [
-      'Analiza esta entrevista y responde exclusivamente con JSON válido.',
+      language == AppLanguage.spanish
+          ? 'Analiza esta entrevista y responde exclusivamente con JSON válido.'
+          : 'Analyze this interview and reply only with valid JSON.',
       'Esquema: {"role":string,"summary":string,"strengths":string[],"improvements":string[],"score":number,"recommendation":string,"memorySummary":string}.',
-      'Reglas de brevedad (obligatorio):',
-      '- summary: máximo 2 frases cortas.',
-      '- strengths: máximo 2 ítems, cada uno máximo 10 palabras.',
-      '- improvements: máximo 2 ítems, cada uno máximo 10 palabras.',
-      '- recommendation: 1 frase corta.',
-      '- memorySummary: 1 frase corta para repetir la práctica.',
-      'El puntaje debe estar entre 1 y 10. Escribe todo en español.',
+      language == AppLanguage.spanish ? 'Reglas de brevedad (obligatorio):' : 'Brevity rules (required):',
+      language == AppLanguage.spanish
+          ? '- summary: máximo 2 frases cortas.'
+          : '- summary: max 2 short sentences.',
+      language == AppLanguage.spanish
+          ? '- strengths: máximo 2 ítems, cada uno máximo 10 palabras.'
+          : '- strengths: max 2 items, 10 words each.',
+      language == AppLanguage.spanish
+          ? '- improvements: máximo 2 ítems, cada uno máximo 10 palabras.'
+          : '- improvements: max 2 items, 10 words each.',
+      language == AppLanguage.spanish
+          ? '- recommendation: 1 frase corta.'
+          : '- recommendation: 1 short sentence.',
+      language == AppLanguage.spanish
+          ? '- memorySummary: 1 frase corta para repetir la práctica.'
+          : '- memorySummary: 1 short sentence for future practice.',
+      language == AppLanguage.spanish
+          ? 'El puntaje debe estar entre 1 y 10. Escribe todo en español.'
+          : 'Score must be between 1 and 10. Write everything in English.',
       '',
       conversation,
     ].join('\n');

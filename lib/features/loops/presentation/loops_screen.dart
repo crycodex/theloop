@@ -56,12 +56,17 @@ class _LoopsScreenState extends State<LoopsScreen> {
               if (tracks.isEmpty)
                 LoopCard(
                   color: LoopColors.lightGreen,
-                  onTap: () => context.go('/interview'),
+                  onTap: () => context.go('/loops/create'),
                   child: Text(strings.noCallsDescription),
                 ),
               for (final track in tracks) ...[
                 LoopCard(
-                  onTap: () => context.go('/recap?loopId=${track.id}'),
+                  onTap: () {
+                    final route = track.prepCompleted
+                        ? '/interview?trackId=${track.id}&loopType=interview'
+                        : '/interview?trackId=${track.id}&loopType=prep';
+                    context.go(route);
+                  },
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -90,6 +95,13 @@ class _LoopsScreenState extends State<LoopsScreen> {
                             ),
                             const SizedBox(height: 12),
                             Text(
+                              track.prepCompleted
+                                  ? strings.trackPrepDone
+                                  : strings.trackPrepPending,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
                               strings.trackFocus(track.focus),
                               style: Theme.of(
                                 context,
@@ -110,6 +122,7 @@ class _LoopsScreenState extends State<LoopsScreen> {
               ],
               LoopCard(
                 color: LoopColors.lightGreen,
+                onTap: () => context.go('/loops/create'),
                 child: Row(
                   children: [
                     const Icon(

@@ -2,8 +2,12 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/settings/cubit/settings_cubit.dart';
+import '../../../loops/domain/entities/interview_track.dart';
+import '../../../loops/domain/repositories/tracks_repository.dart';
 import '../../../profile/domain/repositories/profile_repository.dart';
 import '../../data/services/audio_service.dart';
+import '../../data/services/gemini_config.dart';
 import '../../data/services/gemini_live_service.dart';
 import '../../data/services/interview_prompt.dart';
 import '../../data/services/interview_report_service.dart';
@@ -17,6 +21,8 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
     this._reports,
     this._loops,
     this._profiles,
+    this._tracks,
+    this._settings,
   ) : super(const InterviewCallState.initial());
 
   final GeminiLiveService _live;
@@ -24,18 +30,30 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
   final InterviewReportService _reports;
   final InterviewLoopRepository _loops;
   final ProfileRepository _profiles;
+  final TracksRepository _tracks;
+  final SettingsCubit _settings;
   StreamSubscription<LiveEvent>? _liveSubscription;
   Timer? _timer;
 
-  Future<void> start({String? sourceLoopId}) async {
+  Future<void> start({
+    String? sourceLoopId,
+    String? trackId,
+    LoopType loopType = LoopType.interview,
+  }) async {
     if (state.phase == InterviewCallPhase.connecting ||
         state.phase == InterviewCallPhase.inCall) {
       return;
     }
 
+    final settings = _settings.state;
+    final isPrep = loopType == LoopType.prep;
+
     emit(
-      const InterviewCallState.initial().copyWith(
+      InterviewCallState.initial().copyWith(
         phase: InterviewCallPhase.connecting,
+        trackId: trackId,
+        isPrep: isPrep,
+        remainingSeconds: kLoopDurationSeconds,
       ),
     );
 
@@ -50,13 +68,37 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
       final previousLoop = sourceLoopId == null
           ? null
           : await _loops.getLoop(sourceLoopId);
-      final systemPrompt = buildInterviewSystemPrompt(
-        profile: profile,
-        previousLoop: previousLoop,
-      );
+      InterviewTrack? track;
+      if (trackId != null && trackId.isNotEmpty) {
+        track = await _tracks.getTrack(trackId);
+      }
+
+      final systemPrompt = isPrep
+          ? buildPrepSystemPrompt(
+              profile: profile,
+              language: settings.language,
+              track: track ??
+                  InterviewTrack(
+                    id: '',
+                    title: profile.target,
+                    company: '',
+                    jobDescription: profile.customGoal ?? '',
+                    prepCompleted: false,
+                    cyclesCompleted: 0,
+                    createdAt: DateTime.now(),
+                  ),
+            )
+          : buildInterviewSystemPrompt(
+              profile: profile,
+              language: settings.language,
+              previousLoop: previousLoop,
+              track: track,
+            );
 
       final loopId = await _loops.createActiveLoop(
         sourceLoopId: sourceLoopId,
+        trackId: trackId,
+        loopType: loopType,
         profileSnapshot: {
           'name': profile.name,
           'goal': profile.target,
@@ -68,7 +110,10 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
       emit(state.copyWith(loopId: loopId));
       await _liveSubscription?.cancel();
       _liveSubscription = _live.events.listen(_onLiveEvent);
-      await _live.connect(systemPrompt: systemPrompt);
+      await _live.connect(
+        systemPrompt: systemPrompt,
+        voice: settings.recruiterVoice,
+      );
     } catch (error) {
       await _fail(error);
     }
@@ -92,7 +137,9 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
   Future<String?> end() async {
     if (state.phase != InterviewCallPhase.inCall) return state.loopId;
     final loopId = state.loopId;
+    final trackId = state.trackId;
     final elapsed = state.elapsedSeconds;
+    final isPrep = state.isPrep;
     emit(state.copyWith(phase: InterviewCallPhase.ending));
     await _stopRealtime();
 
@@ -100,15 +147,36 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
       await _fail(const GeminiLiveException('La llamada no tiene sesión.'));
       return null;
     }
-    if (state.transcript.isEmpty) {
+
+    final tooShort = elapsed < kMinReportSeconds;
+    if (state.transcript.isEmpty || tooShort) {
       await _loops.abandonLoop(loopId);
       emit(const InterviewCallState.initial());
       return null;
     }
 
+    if (isPrep) {
+      await _loops.completePrepLoop(
+        loopId: loopId,
+        transcript: state.transcript,
+        durationSeconds: elapsed,
+      );
+      if (trackId != null && trackId.isNotEmpty) {
+        await _tracks.markPrepCompleted(trackId);
+      }
+      emit(
+        state.copyWith(
+          phase: InterviewCallPhase.completed,
+          isAiSpeaking: false,
+        ),
+      );
+      return trackId ?? loopId;
+    }
+
     try {
       final report = await _reports.generateReport(
         transcript: state.transcript,
+        language: _settings.state.language,
       );
       await _loops.completeLoop(
         loopId: loopId,
@@ -116,6 +184,9 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
         report: report,
         durationSeconds: elapsed,
       );
+      if (trackId != null && trackId.isNotEmpty) {
+        await _tracks.incrementCycle(trackId);
+      }
       emit(
         state.copyWith(
           phase: InterviewCallPhase.completed,
@@ -138,9 +209,7 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
         state.transcript.isEmpty) {
       try {
         await _loops.abandonLoop(loopId);
-      } catch (_) {
-        // The loop may not exist yet.
-      }
+      } catch (_) {}
     }
     emit(const InterviewCallState.initial());
   }
@@ -148,6 +217,7 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
   Future<void> _onLiveEvent(LiveEvent event) async {
     switch (event) {
       case LiveSetupComplete():
+        final language = _settings.state.language;
         await _audio.setupPlayer();
         _audio.onPlaybackDone = () {
           if (!isClosed) emit(state.copyWith(isAiSpeaking: false));
@@ -160,12 +230,20 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
             _live.sendAudio(pcm);
           }
         });
-        _live.startConversation();
+        _live.startConversation(
+          message: state.isPrep
+              ? prepStartMessage(language)
+              : liveStartMessage(language),
+        );
         _timer?.cancel();
-        _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-          if (!isClosed && state.phase == InterviewCallPhase.inCall) {
-            emit(state.copyWith(elapsedSeconds: state.elapsedSeconds + 1));
+        _timer = Timer.periodic(const Duration(seconds: 1), (_) async {
+          if (isClosed || state.phase != InterviewCallPhase.inCall) return;
+          final next = state.remainingSeconds - 1;
+          if (next <= 0) {
+            await end();
+            return;
           }
+          emit(state.copyWith(remainingSeconds: next));
         });
         emit(state.copyWith(phase: InterviewCallPhase.inCall));
       case LiveAudioChunk(:final pcm):
@@ -199,9 +277,7 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
     if (abandon && loopId != null) {
       try {
         await _loops.abandonLoop(loopId);
-      } catch (_) {
-        // Preserve the original connection error.
-      }
+      } catch (_) {}
     }
     emit(
       state.copyWith(

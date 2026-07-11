@@ -1,3 +1,4 @@
+import '../../../loops/domain/entities/interview_track.dart';
 import '../entities/interview_loop.dart';
 import '../entities/interview_report.dart';
 import '../entities/transcript_turn.dart';
@@ -9,6 +10,8 @@ abstract interface class InterviewLoopRepository {
 
   Future<String> createActiveLoop({
     String? sourceLoopId,
+    String? trackId,
+    LoopType loopType = LoopType.interview,
     required Map<String, dynamic> profileSnapshot,
   });
 
@@ -16,6 +19,12 @@ abstract interface class InterviewLoopRepository {
     required String loopId,
     required List<TranscriptTurn> transcript,
     required InterviewReport report,
+    required int durationSeconds,
+  });
+
+  Future<void> completePrepLoop({
+    required String loopId,
+    required List<TranscriptTurn> transcript,
     required int durationSeconds,
   });
 

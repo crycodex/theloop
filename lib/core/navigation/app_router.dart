@@ -7,6 +7,7 @@ import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../features/cv_analysis/presentation/cv_analysis_screen.dart';
 import '../../features/home_dashboard/presentation/home_screen.dart';
 import '../../features/interview_call/presentation/interview_call_screen.dart';
+import '../../features/loops/presentation/create_track_screen.dart';
 import '../../features/loops/presentation/loops_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screens.dart';
 import '../../features/profile/presentation/profile_screen.dart';
@@ -99,6 +100,13 @@ final routes = [
         path: '/loops',
         pageBuilder: (context, state) =>
             _navPage(state: state, child: const LoopsScreen()),
+        routes: [
+          GoRoute(
+            path: 'create',
+            pageBuilder: (context, state) =>
+                _navPage(state: state, child: const CreateTrackScreen()),
+          ),
+        ],
       ),
       GoRoute(
         path: '/cv',
@@ -123,6 +131,8 @@ final routes = [
       state: state,
       child: InterviewCallScreen(
         sourceLoopId: state.uri.queryParameters['sourceLoopId'],
+        trackId: state.uri.queryParameters['trackId'],
+        loopType: state.uri.queryParameters['loopType'] ?? 'interview',
       ),
     ),
   ),

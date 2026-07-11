@@ -8,6 +8,7 @@ class LoopTrack {
     required this.delta,
     required this.progress,
     required this.focus,
+    this.prepCompleted = false,
   });
 
   final String id;
@@ -18,4 +19,5 @@ class LoopTrack {
   final double delta;
   final double progress;
   final String focus;
+  final bool prepCompleted;
 }
