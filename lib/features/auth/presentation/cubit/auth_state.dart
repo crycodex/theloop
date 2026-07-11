@@ -37,6 +37,12 @@ class EmailVerificationSent extends AuthState {
   final String email;
 }
 
+class GoogleOnboardingRequired extends AuthState {
+  const GoogleOnboardingRequired(this.user);
+
+  final AuthUser user;
+}
+
 class AuthFailure extends AuthState {
   const AuthFailure(this.reason);
 

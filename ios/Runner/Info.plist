@@ -26,6 +26,19 @@
 		<true/>
 		<key>NSMicrophoneUsageDescription</key>
 		<string>Se necesita el micrófono para practicar entrevistas por voz con la IA.</string>
+		<key>GIDClientID</key>
+		<string>1009082169764-v7fp2e06lk8j9vobkdeqci8m0aq4j4jk.apps.googleusercontent.com</string>
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>com.googleusercontent.apps.1009082169764-v7fp2e06lk8j9vobkdeqci8m0aq4j4jk</string>
+				</array>
+			</dict>
+		</array>
 		<key>UILaunchStoryboardName</key>
 		<string>LaunchScreen</string>
 		<key>UIMainStoryboardFile</key>

@@ -19,6 +19,17 @@ class FirestoreProfileRepository implements ProfileRepository {
   }
 
   @override
+  Future<bool> isProfileComplete() async {
+    final user = _authRepository.currentUser;
+    if (user == null) return false;
+
+    final doc = await _firestore.collection('users').doc(user.uid).get();
+    if (!doc.exists) return false;
+    final data = doc.data();
+    return data?['goal'] != null && data?['experience'] != null;
+  }
+
+  @override
   Future<Profile> getProfile() async {
     final user = _authRepository.currentUser;
     if (user == null) {

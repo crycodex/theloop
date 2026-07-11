@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart' show debugPrint;
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../domain/entities/auth_user.dart';
+import '../../domain/entities/google_sign_in_result.dart';
 import '../../domain/repositories/auth_repository.dart';
 
 class FirebaseAuthRepository implements AuthRepository {
@@ -13,8 +15,14 @@ class FirebaseAuthRepository implements AuthRepository {
   static const _firestoreTimeout = Duration(seconds: 15);
   static const _rollbackTimeout = Duration(seconds: 10);
 
+  static const _iosGoogleClientId =
+      '1009082169764-v7fp2e06lk8j9vobkdeqci8m0aq4j4jk.apps.googleusercontent.com';
+  static const _googleServerClientId =
+      '1009082169764-9dkdb304dnim6ohpdsvoresdn0e4359d.apps.googleusercontent.com';
+
   final FirebaseAuth _auth;
   final FirebaseFirestore _firestore;
+  Future<void>? _googleSignInInit;
 
   @override
   Stream<AuthUser?> authStateChanges() =>
@@ -127,8 +135,108 @@ class FirebaseAuthRepository implements AuthRepository {
     return AuthUser(uid: user.uid, email: user.email, emailVerified: true);
   }
 
+  Future<void> _ensureGoogleSignInInitialized() async {
+    _googleSignInInit ??= GoogleSignIn.instance.initialize(
+      clientId: _iosGoogleClientId,
+      serverClientId: _googleServerClientId,
+    );
+    await _googleSignInInit;
+  }
+
   @override
-  Future<void> signOut() => _auth.signOut();
+  Future<GoogleSignInResult> signInWithGoogle() async {
+    await _ensureGoogleSignInInitialized();
+
+    final googleUser = await GoogleSignIn.instance.authenticate();
+    final googleAuth = googleUser.authentication;
+    final idToken = googleAuth.idToken;
+    if (idToken == null) {
+      throw FirebaseAuthException(code: 'invalid-credential');
+    }
+
+    final credential = GoogleAuthProvider.credential(idToken: idToken);
+    final userCredential = await _auth.signInWithCredential(credential);
+    final user = userCredential.user!;
+    final mappedUser = _mapUser(user)!;
+
+    final needsOnboarding = await _needsOnboarding(user.uid);
+    debugPrint(
+      '[signInWithGoogle] uid=${user.uid} needsOnboarding=$needsOnboarding',
+    );
+
+    return GoogleSignInResult(
+      user: mappedUser,
+      needsOnboarding: needsOnboarding,
+    );
+  }
+
+  @override
+  Future<AuthUser> completeGoogleOnboarding({
+    required String name,
+    required String goalId,
+    String? customGoal,
+    required String experienceId,
+  }) async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw StateError('No hay un usuario autenticado.');
+    }
+
+    final uid = user.uid;
+    final email = user.email ?? '';
+    final userDoc = _firestore.collection('users').doc(uid);
+
+    final batch = _firestore.batch()
+      ..set(userDoc, {
+        'uid': uid,
+        'name': name,
+        'email': email,
+        'goal': goalId,
+        if (customGoal != null && customGoal.trim().isNotEmpty)
+          'customGoal': customGoal.trim(),
+        'experience': experienceId,
+        'createdAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true))
+      ..set(
+        userDoc.collection('settings').doc('preferences'),
+        <String, dynamic>{},
+        SetOptions(merge: true),
+      )
+      ..set(
+        userDoc.collection('cv').doc('current'),
+        <String, dynamic>{},
+        SetOptions(merge: true),
+      )
+      ..set(
+        userDoc.collection('roadmap').doc('current'),
+        <String, dynamic>{},
+        SetOptions(merge: true),
+      );
+
+    await batch.commit().timeout(_firestoreTimeout);
+
+    if (user.displayName != name) {
+      await user.updateDisplayName(name);
+    }
+
+    return _mapUser(user)!;
+  }
+
+  Future<bool> _needsOnboarding(String uid) async {
+    final doc = await _firestore.collection('users').doc(uid).get();
+    if (!doc.exists) return true;
+    final data = doc.data();
+    return data?['goal'] == null || data?['experience'] == null;
+  }
+
+  @override
+  Future<void> signOut() async {
+    await _ensureGoogleSignInInitialized();
+    await Future.wait([
+      _auth.signOut(),
+      GoogleSignIn.instance.signOut(),
+    ]);
+  }
 
   @override
   Future<void> sendPasswordResetEmail(String email) =>

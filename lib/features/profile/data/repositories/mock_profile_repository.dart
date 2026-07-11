@@ -16,6 +16,9 @@ class MockProfileRepository implements ProfileRepository {
   Future<Profile> getProfile() async => _profile;
 
   @override
+  Future<bool> isProfileComplete() async => _profile.target.isNotEmpty;
+
+  @override
   Future<void> updateProfile({
     required String name,
     required String goalId,

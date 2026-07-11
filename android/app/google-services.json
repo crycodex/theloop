@@ -12,7 +12,12 @@
           "package_name": "com.lopp.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1009082169764-9dkdb304dnim6ohpdsvoresdn0e4359d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyDoj7rbHP5fxe9zu1QfGpzyzVlIfpAqHJE"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1009082169764-9dkdb304dnim6ohpdsvoresdn0e4359d.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1009082169764-v7fp2e06lk8j9vobkdeqci8m0aq4j4jk.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.lopp.app"
+              }
+            }
+          ]
         }
       }
     }

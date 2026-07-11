@@ -59,6 +59,8 @@ class _LoginScreenState extends State<LoginScreen> {
       listener: (context, state) {
         if (state is AuthSuccess) {
           context.go('/');
+        } else if (state is GoogleOnboardingRequired) {
+          context.go('/google-onboarding');
         } else if (state is AuthFailure) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(_errorMessage(strings, state.reason))),

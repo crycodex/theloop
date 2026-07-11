@@ -26,7 +26,7 @@ class _TestApp extends StatelessWidget {
       providers: [
         RepositoryProvider<AuthRepository>(create: (_) => FakeAuthRepository()),
         RepositoryProvider<ProfileRepository>(
-          create: (_) => const MockProfileRepository(),
+          create: (_) => MockProfileRepository(),
         ),
       ],
       child: const _TestAppView(),
@@ -47,7 +47,10 @@ class _TestAppViewState extends State<_TestAppView> {
   @override
   void initState() {
     super.initState();
-    _appRouter = AppRouter(context.read<AuthRepository>());
+    _appRouter = AppRouter(
+      context.read<AuthRepository>(),
+      context.read<ProfileRepository>(),
+    );
   }
 
   @override
@@ -64,8 +67,11 @@ class _TestAppViewState extends State<_TestAppView> {
           create: (context) => AuthCubit(context.read<AuthRepository>()),
         ),
         BlocProvider(
-          create: (context) =>
-              ProfileCubit(GetProfile(context.read<ProfileRepository>())),
+          create: (context) => ProfileCubit(
+            GetProfile(context.read<ProfileRepository>()),
+            context.read<ProfileRepository>(),
+            context.read<AuthRepository>(),
+          ),
         ),
         BlocProvider(
           create: (_) => SettingsCubit(InMemorySettingsStorage()),

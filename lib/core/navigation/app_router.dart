@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/domain/repositories/auth_repository.dart';
+import '../../features/profile/domain/repositories/profile_repository.dart';
 import '../../features/cv_analysis/presentation/cv_analysis_screen.dart';
 import '../../features/home_dashboard/presentation/home_screen.dart';
 import '../../features/interview_call/presentation/interview_call_screen.dart';
@@ -16,9 +17,10 @@ import '../../features/roadmap/presentation/roadmap_screen.dart';
 import 'app_shell.dart';
 
 const _authRoutes = {'/welcome', '/login', '/forgot-password', '/register'};
+const _onboardingRoutes = {'/google-onboarding'};
 
 class AppRouter {
-  AppRouter(this._authRepository)
+  AppRouter(this._authRepository, this._profileRepository)
     : refresh = GoRouterRefreshStream(_authRepository.authStateChanges()) {
     router = GoRouter(
       initialLocation: '/welcome',
@@ -29,19 +31,34 @@ class AppRouter {
   }
 
   final AuthRepository _authRepository;
+  final ProfileRepository _profileRepository;
   final GoRouterRefreshStream refresh;
   late final GoRouter router;
 
-  String? _redirect(BuildContext context, GoRouterState state) {
+  Future<String?> _redirect(BuildContext context, GoRouterState state) async {
     final user = _authRepository.currentUser;
     final loggedIn = user != null && user.emailVerified;
     final goingToAuthRoute = _authRoutes.contains(state.matchedLocation);
+    final goingToOnboarding = _onboardingRoutes.contains(state.matchedLocation);
 
     if (user != null && !user.emailVerified && !goingToAuthRoute) {
       return '/login';
     }
-    if (!loggedIn && !goingToAuthRoute) return '/welcome';
-    if (loggedIn && goingToAuthRoute) return '/';
+    if (!loggedIn && !goingToAuthRoute) {
+      return '/welcome';
+    }
+
+    if (loggedIn) {
+      final profileComplete = await _profileRepository.isProfileComplete();
+      if (!profileComplete && !goingToOnboarding) {
+        return '/google-onboarding';
+      }
+      if (profileComplete && goingToOnboarding) {
+        return '/';
+      }
+      if (goingToAuthRoute) return '/';
+    }
+
     return null;
   }
 
@@ -83,6 +100,11 @@ final routes = [
     path: '/register',
     pageBuilder: (context, state) =>
         _instantPage(state: state, child: const RegisterScreen()),
+  ),
+  GoRoute(
+    path: '/google-onboarding',
+    pageBuilder: (context, state) =>
+        _instantPage(state: state, child: const GoogleOnboardingScreen()),
   ),
   ShellRoute(
     builder: (context, state, child) {

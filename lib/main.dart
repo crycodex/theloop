@@ -158,7 +158,10 @@ class _LoopAppViewState extends State<_LoopAppView> {
   @override
   void initState() {
     super.initState();
-    _appRouter = AppRouter(context.read<AuthRepository>());
+    _appRouter = AppRouter(
+      context.read<AuthRepository>(),
+      context.read<ProfileRepository>(),
+    );
   }
 
   @override
