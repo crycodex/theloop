@@ -91,10 +91,13 @@ class InterviewApiService {
       },
       body: jsonEncode(body),
     );
-    final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+    final decoded = response.body.isNotEmpty
+        ? jsonDecode(response.body) as Map<String, dynamic>
+        : <String, dynamic>{};
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw InterviewApiException(
-        decoded['error'] as String? ?? 'Error ${response.statusCode}.',
+        decoded['error'] as String? ??
+            'Error del servidor (${response.statusCode}).',
       );
     }
     return decoded;

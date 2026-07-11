@@ -22,6 +22,7 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
   final InterviewLoopRepository _loops;
   StreamSubscription<LiveEvent>? _liveSubscription;
   Timer? _timer;
+  String _systemPrompt = '';
 
   Future<void> start({String? sourceLoopId}) async {
     if (state.phase == InterviewCallPhase.connecting ||
@@ -42,6 +43,7 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
       final credentials = await _api.createLiveToken(
         sourceLoopId: sourceLoopId,
       );
+      _systemPrompt = credentials.systemPrompt;
       emit(state.copyWith(loopId: credentials.loopId));
       await _liveSubscription?.cancel();
       _liveSubscription = _live.events.listen(_onLiveEvent);
@@ -131,7 +133,7 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
             _live.sendAudio(pcm);
           }
         });
-        _live.startConversation();
+        _live.startConversation(systemPrompt: _systemPrompt);
         _timer?.cancel();
         _timer = Timer.periodic(const Duration(seconds: 1), (_) {
           if (!isClosed && state.phase == InterviewCallPhase.inCall) {
