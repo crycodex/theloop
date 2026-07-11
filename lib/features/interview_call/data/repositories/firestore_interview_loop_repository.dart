@@ -46,6 +46,19 @@ class FirestoreInterviewLoopRepository implements InterviewLoopRepository {
   }
 
   @override
+  Future<InterviewLoop?> getLatestCompletedInterviewLoop(String trackId) async {
+    final loops = await getLoopsForTrack(trackId);
+    for (final loop in loops) {
+      if (loop.loopType == LoopType.interview.name &&
+          loop.status == 'completed' &&
+          loop.report != null) {
+        return loop;
+      }
+    }
+    return null;
+  }
+
+  @override
   Future<String> createActiveLoop({
     required String trackId,
     String? sourceLoopId,
@@ -119,6 +132,7 @@ class FirestoreInterviewLoopRepository implements InterviewLoopRepository {
       batch.update(trackRef, {
         'latestScore': report.score,
         'latestLevel': report.score / 2,
+        if (report.improvements.isNotEmpty) 'lastFocus': report.improvements.first,
         'updatedAt': FieldValue.serverTimestamp(),
       });
     }

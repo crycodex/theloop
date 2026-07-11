@@ -11,6 +11,9 @@ abstract interface class InterviewLoopRepository {
     required String loopId,
   });
 
+  /// Última entrevista completada con reporte (para memoria del siguiente ciclo).
+  Future<InterviewLoop?> getLatestCompletedInterviewLoop(String trackId);
+
   Future<String> createActiveLoop({
     required String trackId,
     String? sourceLoopId,

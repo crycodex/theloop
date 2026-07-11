@@ -34,13 +34,25 @@ class _InterviewCallScreenState extends State<InterviewCallScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<InterviewCallCubit>().start(
-        sourceLoopId: widget.sourceLoopId,
-        trackId: widget.trackId,
-        loopType: widget.loopType == 'prep' ? LoopType.prep : LoopType.interview,
-      );
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _startSession());
+  }
+
+  @override
+  void didUpdateWidget(covariant InterviewCallScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.trackId != widget.trackId ||
+        oldWidget.loopType != widget.loopType ||
+        oldWidget.sourceLoopId != widget.sourceLoopId) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _startSession());
+    }
+  }
+
+  void _startSession() {
+    context.read<InterviewCallCubit>().start(
+      sourceLoopId: widget.sourceLoopId,
+      trackId: widget.trackId,
+      loopType: widget.loopType == 'prep' ? LoopType.prep : LoopType.interview,
+    );
   }
 
   @override
@@ -75,8 +87,31 @@ class _InterviewCallScreenState extends State<InterviewCallScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<InterviewCallCubit, InterviewCallState>(
       listenWhen: (previous, current) =>
-          _transcriptChanged(previous.transcript, current.transcript),
-      listener: (_, _) => _scrollToEnd(),
+          _transcriptChanged(previous.transcript, current.transcript) ||
+          (previous.phase != current.phase &&
+              (current.phase == InterviewCallPhase.completed ||
+                  (previous.phase == InterviewCallPhase.ending &&
+                      current.phase == InterviewCallPhase.idle))),
+      listener: (context, state) {
+        if (state.phase == InterviewCallPhase.completed) {
+          final trackId = state.trackId ?? widget.trackId;
+          if (state.isPrep && trackId != null) {
+            context.go('/interview?trackId=$trackId&loopType=interview');
+            return;
+          }
+          final loopId = state.loopId;
+          if (loopId != null && trackId != null) {
+            context.read<HomeDashboardCubit>().load();
+            context.go('/recap?trackId=$trackId&loopId=$loopId');
+          }
+          return;
+        }
+        if (state.phase == InterviewCallPhase.idle) {
+          _goHome(context);
+          return;
+        }
+        _scrollToEnd();
+      },
       builder: (context, state) {
         final strings = AppStrings.of(context);
         final busy =
@@ -189,9 +224,7 @@ class _InterviewCallScreenState extends State<InterviewCallScreen> {
                   ),
                   if (state.phase == InterviewCallPhase.error)
                     FilledButton.icon(
-                      onPressed: () => context
-                          .read<InterviewCallCubit>()
-                          .start(sourceLoopId: widget.sourceLoopId),
+                      onPressed: () => _startSession(),
                       icon: const Icon(Icons.refresh_rounded),
                       label: Text(strings.retry),
                     )
@@ -221,27 +254,7 @@ class _InterviewCallScreenState extends State<InterviewCallScreen> {
                         color: LoopColors.danger,
                         onTap: state.phase != InterviewCallPhase.inCall
                             ? () {}
-                            : () async {
-                                final isPrep = state.isPrep;
-                                final trackId = widget.trackId;
-                                final resultId = await context
-                                    .read<InterviewCallCubit>()
-                                    .end();
-                                if (!context.mounted) return;
-                                if (resultId == null) {
-                                  _goHome(context);
-                                  return;
-                                }
-                                if (isPrep && trackId != null) {
-                                  context.go(
-                                    '/interview?trackId=$trackId&loopType=interview',
-                                  );
-                                  return;
-                                }
-                                context.go(
-                                  '/recap?trackId=$trackId&loopId=$resultId',
-                                );
-                              },
+                            : () => context.read<InterviewCallCubit>().end(),
                       ),
                     ],
                   ),

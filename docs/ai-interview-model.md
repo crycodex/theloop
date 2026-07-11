@@ -189,6 +189,12 @@ Los fragmentos de `inputTranscription` y `outputTranscription` se concatenan por
 3. Si es **prep** → `completePrepLoop` + `markPrepCompleted`
 4. Si es **entrevista** → `InterviewReportService.generateReport()` → `completeLoop` + `incrementCycle`
 
+También se llama a `end()` (con reporte si aplica) cuando:
+
+- el temporizador llega a 0
+- el reclutador/coach cierra la sesión (frase explícita o despedida)
+- la conexión Live se cierra inesperadamente durante la llamada
+
 ---
 
 ## Seguridad y límites actuales

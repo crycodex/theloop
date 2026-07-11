@@ -11,6 +11,8 @@ import '../../data/services/gemini_config.dart';
 import '../../data/services/gemini_live_service.dart';
 import '../../data/services/interview_prompt.dart';
 import '../../data/services/interview_report_service.dart';
+import '../../data/services/interview_session_end.dart';
+import '../../domain/entities/interview_loop.dart';
 import '../../domain/repositories/interview_loop_repository.dart';
 import 'interview_call_state.dart';
 
@@ -34,6 +36,23 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
   final SettingsCubit _settings;
   StreamSubscription<LiveEvent>? _liveSubscription;
   Timer? _timer;
+  bool _endAfterSpeech = false;
+  bool _endingInFlight = false;
+  InterviewTrack? _activeTrack;
+  bool _isFollowUpInterview = false;
+  DateTime? _micOpensAt;
+
+  /// Half-duplex: no enviar audio del candidato mientras el reclutador habla.
+  bool get _canSendCandidateAudio {
+    if (_micOpensAt != null && DateTime.now().isBefore(_micOpensAt!)) {
+      return false;
+    }
+    return !_audio.isPlaying && !state.isAiSpeaking;
+  }
+
+  void _scheduleMicOpen({Duration delay = const Duration(milliseconds: 300)}) {
+    _micOpensAt = DateTime.now().add(delay);
+  }
 
   Future<void> start({
     String? sourceLoopId,
@@ -41,7 +60,8 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
     LoopType loopType = LoopType.interview,
   }) async {
     if (state.phase == InterviewCallPhase.connecting ||
-        state.phase == InterviewCallPhase.inCall) {
+        state.phase == InterviewCallPhase.inCall ||
+        state.phase == InterviewCallPhase.ending) {
       return;
     }
 
@@ -56,6 +76,9 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
         remainingSeconds: kLoopDurationSeconds,
       ),
     );
+    _endAfterSpeech = false;
+    _endingInFlight = false;
+    _micOpensAt = null;
 
     try {
       if (!await _audio.requestMicrophonePermission()) {
@@ -71,36 +94,50 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
       }
 
       final profile = await _profiles.getProfile();
-      final previousLoop = sourceLoopId == null
-          ? null
-          : await _loops.getLoop(trackId: trackId, loopId: sourceLoopId);
       final track = await _tracks.getTrack(trackId);
+      _activeTrack = track ??
+          InterviewTrack(
+            id: trackId,
+            title: profile.target,
+            company: '',
+            jobDescription: profile.customGoal ?? '',
+            prepCompleted: false,
+            cyclesCompleted: 0,
+            createdAt: DateTime.now(),
+          );
+
+      InterviewLoop? previousLoop;
+      String? resolvedSourceLoopId = sourceLoopId;
+      if (!isPrep) {
+        if (resolvedSourceLoopId != null) {
+          previousLoop = await _loops.getLoop(
+            trackId: trackId,
+            loopId: resolvedSourceLoopId,
+          );
+        } else {
+          previousLoop =
+              await _loops.getLatestCompletedInterviewLoop(trackId);
+          resolvedSourceLoopId = previousLoop?.id;
+        }
+      }
+      _isFollowUpInterview = !isPrep && previousLoop?.report != null;
 
       final systemPrompt = isPrep
           ? buildPrepSystemPrompt(
               profile: profile,
               language: settings.language,
-              track: track ??
-                  InterviewTrack(
-                    id: trackId,
-                    title: profile.target,
-                    company: '',
-                    jobDescription: profile.customGoal ?? '',
-                    prepCompleted: false,
-                    cyclesCompleted: 0,
-                    createdAt: DateTime.now(),
-                  ),
+              track: _activeTrack!,
             )
           : buildInterviewSystemPrompt(
               profile: profile,
               language: settings.language,
               previousLoop: previousLoop,
-              track: track,
+              track: _activeTrack,
             );
 
       final loopId = await _loops.createActiveLoop(
         trackId: trackId,
-        sourceLoopId: sourceLoopId,
+        sourceLoopId: resolvedSourceLoopId,
         loopType: loopType,
         profileSnapshot: {
           'name': profile.name,
@@ -127,22 +164,28 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
   }
 
   Future<String?> end() async {
+    if (_endingInFlight) return state.loopId;
     if (state.phase != InterviewCallPhase.inCall) return state.loopId;
+    _endingInFlight = true;
+    _endAfterSpeech = false;
     final loopId = state.loopId;
     final trackId = state.trackId;
     final elapsed = state.elapsedSeconds;
     final isPrep = state.isPrep;
+    final transcript = List.of(state.transcript);
     emit(state.copyWith(phase: InterviewCallPhase.ending));
     await _stopRealtime();
 
     if (loopId == null || trackId == null || trackId.isEmpty) {
+      _endingInFlight = false;
       await _fail(const GeminiLiveException('La llamada no tiene sesión.'));
       return null;
     }
 
     final tooShort = elapsed < kMinReportSeconds;
-    if (state.transcript.isEmpty || tooShort) {
+    if (transcript.isEmpty || tooShort) {
       await _loops.abandonLoop(trackId: trackId, loopId: loopId);
+      _endingInFlight = false;
       emit(const InterviewCallState.initial());
       return null;
     }
@@ -151,14 +194,16 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
       await _loops.completePrepLoop(
         trackId: trackId,
         loopId: loopId,
-        transcript: state.transcript,
+        transcript: transcript,
         durationSeconds: elapsed,
       );
       await _tracks.markPrepCompleted(trackId);
+      _endingInFlight = false;
       emit(
         state.copyWith(
           phase: InterviewCallPhase.completed,
           isAiSpeaking: false,
+          transcript: transcript,
         ),
       );
       return trackId;
@@ -166,26 +211,29 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
 
     try {
       final report = await _reports.generateReport(
-        transcript: state.transcript,
+        transcript: transcript,
         language: _settings.state.language,
       );
       await _loops.completeLoop(
         trackId: trackId,
         loopId: loopId,
-        transcript: state.transcript,
+        transcript: transcript,
         report: report,
         durationSeconds: elapsed,
       );
       await _tracks.incrementCycle(trackId);
+      _endingInFlight = false;
       emit(
         state.copyWith(
           phase: InterviewCallPhase.completed,
           report: report,
           isAiSpeaking: false,
+          transcript: transcript,
         ),
       );
       return loopId;
     } catch (error) {
+      _endingInFlight = false;
       await _fail(error, abandon: false);
       return null;
     }
@@ -194,6 +242,9 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
   Future<void> cancel() async {
     final loopId = state.loopId;
     final trackId = state.trackId;
+    _endAfterSpeech = false;
+    _endingInFlight = false;
+    _micOpensAt = null;
     await _stopRealtime();
     if (loopId != null &&
         trackId != null &&
@@ -213,19 +264,34 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
         final language = _settings.state.language;
         await _audio.setupPlayer();
         _audio.onPlaybackDone = () {
-          if (!isClosed) emit(state.copyWith(isAiSpeaking: false));
+          if (isClosed) return;
+          _scheduleMicOpen();
+          emit(state.copyWith(isAiSpeaking: false));
+          if (_endAfterSpeech && state.phase == InterviewCallPhase.inCall) {
+            _endAfterSpeech = false;
+            unawaited(end());
+          }
         };
         await _audio.startMic((pcm) {
           if (state.phase == InterviewCallPhase.inCall &&
               state.isMicEnabled &&
-              !_audio.isPlaying) {
+              _canSendCandidateAudio) {
             _live.sendAudio(pcm);
           }
         });
         _live.startConversation(
           message: state.isPrep
-              ? prepStartMessage(language)
-              : liveStartMessage(language),
+              ? prepStartMessage(
+                  language,
+                  title: _activeTrack?.title,
+                  company: _activeTrack?.company,
+                )
+              : liveStartMessage(
+                  language,
+                  title: _activeTrack?.title,
+                  company: _activeTrack?.company,
+                  isFollowUp: _isFollowUpInterview,
+                ),
         );
         _timer?.cancel();
         _timer = Timer.periodic(const Duration(seconds: 1), (_) async {
@@ -239,18 +305,43 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
         });
         emit(state.copyWith(phase: InterviewCallPhase.inCall));
       case LiveAudioChunk(:final pcm):
+        _scheduleMicOpen(delay: _audio.estimatedPlaybackDelay(pcm));
         _audio.play(pcm);
         emit(state.copyWith(isAiSpeaking: true));
       case LiveInterrupted():
         _audio.clearPlayback();
+        _scheduleMicOpen();
         emit(state.copyWith(isAiSpeaking: false));
       case LiveTranscriptUpdated(:final transcript):
         emit(state.copyWith(transcript: transcript));
+        _maybeAutoEnd();
       case LiveTurnComplete():
-        break;
+        _maybeAutoEnd();
       case LiveClosed(:final reason):
+        if (state.phase != InterviewCallPhase.inCall) return;
+        // Only finalize when the session had real content; otherwise surface error.
+        if (state.transcript.isNotEmpty &&
+            state.elapsedSeconds >= kMinReportSeconds) {
+          await end();
+          return;
+        }
         await _fail(GeminiLiveException(reason));
     }
+  }
+
+  void _maybeAutoEnd() {
+    if (state.phase != InterviewCallPhase.inCall || _endingInFlight) return;
+    if (!isSessionClosingTranscript(
+      state.transcript,
+      isPrep: state.isPrep,
+    )) {
+      return;
+    }
+    if (_audio.isPlaying || state.isAiSpeaking) {
+      _endAfterSpeech = true;
+      return;
+    }
+    unawaited(end());
   }
 
   Future<void> _stopRealtime() async {

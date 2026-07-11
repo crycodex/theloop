@@ -139,6 +139,7 @@ class FirestoreTracksRepository implements TracksRepository {
       createdAt: createdAt?.toDate() ?? DateTime.fromMillisecondsSinceEpoch(0),
       latestScore: (data['latestScore'] as num?)?.toDouble() ?? 0,
       latestLevel: (data['latestLevel'] as num?)?.toDouble() ?? 0,
+      lastFocus: data['lastFocus'] as String?,
     );
   }
 }

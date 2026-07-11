@@ -24,7 +24,10 @@ class FirestoreLoopsRepository implements LoopsRepository {
             progress: track.prepCompleted
                 ? (track.cyclesCompleted / 5).clamp(0, 1)
                 : 0.1,
-            focus: track.jobDescription,
+            focus: track.cyclesCompleted > 0 &&
+                    track.lastFocus?.trim().isNotEmpty == true
+                ? track.lastFocus!.trim()
+                : track.jobDescription,
             prepCompleted: track.prepCompleted,
           ),
         )

@@ -13,12 +13,21 @@ class InterviewAudioService {
   final AudioRecorder _recorder;
   final List<Uint8List> _playQueue = [];
   StreamSubscription<Uint8List>? _micSubscription;
+  Timer? _playbackIdleTimer;
+  int _pendingPlaybackBytes = 0;
   bool _playerReady = false;
   bool _isPlaying = false;
 
   void Function()? onPlaybackDone;
 
   bool get isPlaying => _isPlaying;
+
+  /// Estima cuánto dura reproducir un chunk PCM 16-bit mono a 24 kHz.
+  Duration estimatedPlaybackDelay(Uint8List chunk) {
+    if (chunk.isEmpty) return const Duration(milliseconds: 300);
+    final ms = (chunk.length / (24000 * 2) * 1000).ceil() + 200;
+    return Duration(milliseconds: ms.clamp(250, 8000));
+  }
 
   Future<bool> requestMicrophonePermission() =>
       _recorder.hasPermission();
@@ -60,34 +69,59 @@ class InterviewAudioService {
 
   void play(Uint8List chunk) {
     if (!_playerReady || chunk.isEmpty) return;
+    _playbackIdleTimer?.cancel();
+    _pendingPlaybackBytes += chunk.length;
     _playQueue.add(Uint8List.fromList(chunk));
     _isPlaying = true;
     FlutterPcmSound.start();
   }
 
   void clearPlayback() {
+    _playbackIdleTimer?.cancel();
     _playQueue.clear();
-    _isPlaying = false;
+    _pendingPlaybackBytes = 0;
+    _markPlaybackIdle();
   }
 
   void _onFeed(int remainingFrames) {
-    if (_playQueue.isEmpty) {
-      if (remainingFrames == 0 && _isPlaying) {
-        _isPlaying = false;
-        onPlaybackDone?.call();
-      }
+    while (_playQueue.isNotEmpty) {
+      final chunk = _playQueue.removeAt(0);
+      unawaited(
+        FlutterPcmSound.feed(
+          PcmArrayInt16(bytes: ByteData.sublistView(chunk)),
+        ),
+      );
+    }
+
+    if (!_isPlaying) return;
+
+    _playbackIdleTimer?.cancel();
+    if (remainingFrames == 0 && _playQueue.isEmpty) {
+      _markPlaybackIdle();
       return;
     }
 
-    final chunk = _playQueue.removeAt(0);
-    unawaited(
-      FlutterPcmSound.feed(
-        PcmArrayInt16(bytes: ByteData.sublistView(chunk)),
-      ),
-    );
+    if (_playQueue.isEmpty) {
+      final ms = (_pendingPlaybackBytes / (24000 * 2) * 1000).ceil() + 150;
+      _playbackIdleTimer = Timer(
+        Duration(milliseconds: ms.clamp(200, 8000)),
+        () {
+          if (_playQueue.isEmpty) _markPlaybackIdle();
+        },
+      );
+    }
+  }
+
+  void _markPlaybackIdle() {
+    if (!_isPlaying) return;
+    _playbackIdleTimer?.cancel();
+    _pendingPlaybackBytes = 0;
+    _isPlaying = false;
+    onPlaybackDone?.call();
   }
 
   Future<void> dispose() async {
+    _playbackIdleTimer?.cancel();
     await stopMic();
     _playQueue.clear();
     FlutterPcmSound.setFeedCallback(null);

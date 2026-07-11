@@ -153,7 +153,7 @@ El reclutador Live **no ve** el historial de chat anterior en el WebSocket; solo
 - La memoria es **por loop fuente** (`sourceLoopId`), típicamente el último completado
 - Solo aplica a loops tipo **interview**, no a prep
 - El candidato no ve la memoria en UI; solo el feedback del recap del loop actual
-- Si el usuario inicia un loop nuevo sin `sourceLoopId`, no hay memoria previa (solo contexto del trayecto y perfil)
+- Si el usuario inicia un loop nuevo sin `sourceLoopId`, la app **resuelve automáticamente** el último loop de entrevista completado del trayecto
 
 ---
 

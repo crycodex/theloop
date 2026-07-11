@@ -11,6 +11,7 @@ class InterviewTrack {
     required this.createdAt,
     this.latestScore = 0,
     this.latestLevel = 0,
+    this.lastFocus,
   });
 
   final String id;
@@ -22,4 +23,5 @@ class InterviewTrack {
   final DateTime createdAt;
   final double latestScore;
   final double latestLevel;
+  final String? lastFocus;
 }

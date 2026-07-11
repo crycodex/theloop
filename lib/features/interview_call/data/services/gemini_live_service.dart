@@ -154,7 +154,23 @@ class GeminiLiveService {
 
   void handleServerMessage(dynamic raw) {
     final text = _decodeRawMessage(raw);
-    final message = jsonDecode(text) as Map<String, dynamic>;
+    Map<String, dynamic> message;
+    try {
+      message = jsonDecode(text) as Map<String, dynamic>;
+    } catch (_) {
+      return;
+    }
+
+    if (message.containsKey('error')) {
+      final error = message['error'];
+      final reason = error is Map
+          ? error['message'] as String? ?? error.toString()
+          : error.toString();
+      if (!_disconnecting) {
+        _events.add(LiveClosed(reason));
+      }
+      return;
+    }
 
     if (message.containsKey('setupComplete')) {
       _events.add(const LiveSetupComplete());
@@ -221,7 +237,6 @@ class GeminiLiveService {
       }
     }
   }
-
   String _decodeRawMessage(dynamic raw) {
     if (raw is String) return raw;
     if (raw is Uint8List) return utf8.decode(raw);
@@ -230,8 +245,12 @@ class GeminiLiveService {
   }
 
   void _appendTranscription(dynamic raw, TranscriptSpeaker speaker) {
-    if (raw is! Map) return;
-    final fragment = raw['text'] as String? ?? '';
+    if (raw == null) return;
+    final fragment = switch (raw) {
+      final Map map => map['text'] as String? ?? '',
+      final String text => text,
+      _ => '',
+    };
     if (fragment.isEmpty) return;
     if (_transcript.isNotEmpty && _transcript.last.speaker == speaker) {
       final previous = _transcript.removeLast();
