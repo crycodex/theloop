@@ -17,7 +17,7 @@ class HomeDashboard {
   final int streakDays;
   final int totalLoops;
   final List<CriterionProgress> criteria;
-  final LoopTrack latestTrack;
+  final LoopTrack? latestTrack;
 }
 
 class CriterionProgress {

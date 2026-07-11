@@ -1,34 +1,78 @@
+import '../../domain/entities/interview_report.dart';
+import '../../domain/entities/transcript_turn.dart';
+
+enum InterviewCallPhase {
+  idle,
+  connecting,
+  inCall,
+  ending,
+  completed,
+  error,
+}
+
 class InterviewCallState {
   const InterviewCallState({
+    required this.phase,
     required this.isMicEnabled,
     required this.isPaused,
-    required this.elapsedLabel,
-    required this.prompt,
+    required this.isAiSpeaking,
+    required this.elapsedSeconds,
+    required this.transcript,
+    this.loopId,
+    this.report,
+    this.errorMessage,
   });
 
   const InterviewCallState.initial()
-    : isMicEnabled = true,
+    : phase = InterviewCallPhase.idle,
+      isMicEnabled = true,
       isPaused = false,
-      elapsedLabel = '04:32',
-      prompt =
-          'Cuéntame de una vez en la que tuviste que liderar una decisión técnica con información incompleta.';
+      isAiSpeaking = false,
+      elapsedSeconds = 0,
+      transcript = const [],
+      loopId = null,
+      report = null,
+      errorMessage = null;
 
+  final InterviewCallPhase phase;
   final bool isMicEnabled;
   final bool isPaused;
-  final String elapsedLabel;
-  final String prompt;
+  final bool isAiSpeaking;
+  final int elapsedSeconds;
+  final List<TranscriptTurn> transcript;
+  final String? loopId;
+  final InterviewReport? report;
+  final String? errorMessage;
+
+  String get elapsedLabel {
+    final minutes = elapsedSeconds ~/ 60;
+    final seconds = elapsedSeconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:'
+        '${seconds.toString().padLeft(2, '0')}';
+  }
 
   InterviewCallState copyWith({
+    InterviewCallPhase? phase,
     bool? isMicEnabled,
     bool? isPaused,
-    String? elapsedLabel,
-    String? prompt,
+    bool? isAiSpeaking,
+    int? elapsedSeconds,
+    List<TranscriptTurn>? transcript,
+    String? loopId,
+    InterviewReport? report,
+    String? errorMessage,
+    bool clearError = false,
   }) {
     return InterviewCallState(
+      phase: phase ?? this.phase,
       isMicEnabled: isMicEnabled ?? this.isMicEnabled,
       isPaused: isPaused ?? this.isPaused,
-      elapsedLabel: elapsedLabel ?? this.elapsedLabel,
-      prompt: prompt ?? this.prompt,
+      isAiSpeaking: isAiSpeaking ?? this.isAiSpeaking,
+      elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
+      transcript: transcript ?? this.transcript,
+      loopId: loopId ?? this.loopId,
+      report: report ?? this.report,
+      errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
     );
   }
 }

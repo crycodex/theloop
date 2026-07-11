@@ -4,13 +4,17 @@ import '../../domain/usecases/get_latest_recap.dart';
 import 'recap_state.dart';
 
 class RecapCubit extends Cubit<RecapState> {
-  RecapCubit(this._getLatestRecap) : super(const RecapInitial()) {
-    load();
-  }
+  RecapCubit(this._getLatestRecap) : super(const RecapInitial());
 
   final GetLatestRecap _getLatestRecap;
 
-  void load() {
-    emit(RecapLoaded(_getLatestRecap()));
+  Future<void> load([String? loopId]) async {
+    emit(const RecapInitial());
+    try {
+      final recap = await _getLatestRecap(loopId);
+      emit(recap == null ? const RecapEmpty() : RecapLoaded(recap));
+    } catch (error) {
+      emit(RecapError(error.toString()));
+    }
   }
 }

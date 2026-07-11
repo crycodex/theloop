@@ -119,13 +119,19 @@ final routes = [
   ),
   GoRoute(
     path: '/interview',
-    pageBuilder: (context, state) =>
-        _callPage(state: state, child: const InterviewCallScreen()),
+    pageBuilder: (context, state) => _callPage(
+      state: state,
+      child: InterviewCallScreen(
+        sourceLoopId: state.uri.queryParameters['sourceLoopId'],
+      ),
+    ),
   ),
   GoRoute(
     path: '/recap',
-    pageBuilder: (context, state) =>
-        _recapPage(state: state, child: const RecapScreen()),
+    pageBuilder: (context, state) => _recapPage(
+      state: state,
+      child: RecapScreen(loopId: state.uri.queryParameters['loopId']),
+    ),
   ),
 ];
 

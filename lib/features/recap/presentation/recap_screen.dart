@@ -8,16 +8,54 @@ import '../../../core/widgets/delta_badge.dart';
 import '../../../core/widgets/level_circle.dart';
 import '../../../core/widgets/loop_card.dart';
 import '../../../core/widgets/metric_progress_bar.dart';
+import '../domain/entities/session_recap.dart';
 import 'cubit/recap_cubit.dart';
 import 'cubit/recap_state.dart';
 
-class RecapScreen extends StatelessWidget {
-  const RecapScreen({super.key});
+class RecapScreen extends StatefulWidget {
+  const RecapScreen({super.key, this.loopId});
+
+  final String? loopId;
+
+  @override
+  State<RecapScreen> createState() => _RecapScreenState();
+}
+
+class _RecapScreenState extends State<RecapScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<RecapCubit>().load(widget.loopId);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<RecapCubit, RecapState>(
       builder: (context, state) {
+        if (state is RecapEmpty || state is RecapError) {
+          return Scaffold(
+            backgroundColor: LoopColors.surface,
+            appBar: AppBar(
+              leading: IconButton(
+                onPressed: () => context.go('/'),
+                icon: const Icon(Icons.close_rounded),
+              ),
+            ),
+            body: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  state is RecapError
+                      ? state.message
+                      : 'Todavía no hay un reporte disponible.',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          );
+        }
         if (state is! RecapLoaded) {
           return const Scaffold(
             backgroundColor: LoopColors.surface,
@@ -120,12 +158,14 @@ class RecapScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 22),
                 FilledButton(
-                  onPressed: () => context.go('/interview'),
+                  onPressed: () => context.go(
+                    '/interview?sourceLoopId=${recap.loopId}',
+                  ),
                   child: Text(strings.practiceAgain),
                 ),
                 const SizedBox(height: 10),
                 OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () => _showTranscript(context, recap),
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size.fromHeight(52),
                     shape: RoundedRectangleBorder(
@@ -139,6 +179,39 @@ class RecapScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  void _showTranscript(BuildContext context, SessionRecap recap) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (context) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.75,
+        maxChildSize: 0.92,
+        builder: (context, controller) => ListView.separated(
+          controller: controller,
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
+          itemCount: recap.transcript.length,
+          separatorBuilder: (_, _) => const SizedBox(height: 12),
+          itemBuilder: (context, index) {
+            final turn = recap.transcript[index];
+            final candidate = turn.role == 'candidate';
+            return ListTile(
+              tileColor: candidate
+                  ? LoopColors.lightGreen
+                  : Theme.of(context).colorScheme.surfaceContainerHighest,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              title: Text(candidate ? 'Candidato' : 'Reclutador'),
+              subtitle: Text(turn.text),
+            );
+          },
+        ),
+      ),
     );
   }
 }

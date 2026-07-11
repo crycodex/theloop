@@ -8,8 +8,8 @@ class MockHomeDashboardRepository implements HomeDashboardRepository {
   final LoopsRepository _loopsRepository;
 
   @override
-  HomeDashboard getDashboard() {
-    final tracks = _loopsRepository.getTracks();
+  Future<HomeDashboard> getDashboard() async {
+    final tracks = await _loopsRepository.getTracks();
 
     return HomeDashboard(
       userName: 'Cristhian',

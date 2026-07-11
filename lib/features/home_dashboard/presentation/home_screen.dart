@@ -13,8 +13,21 @@ import '../../../core/widgets/section_header.dart';
 import 'cubit/home_dashboard_cubit.dart';
 import 'cubit/home_dashboard_state.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<HomeDashboardCubit>().load();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +41,45 @@ class HomeScreen extends StatelessWidget {
         final latestTrack = dashboard.latestTrack;
         final strings = AppStrings.of(context);
 
+        if (latestTrack == null) {
+          return ShellPagePadding(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  dashboard.userName.isEmpty
+                      ? strings.noCallsTitle
+                      : '${strings.noCallsTitle}, ${dashboard.userName}',
+                  style: Theme.of(context).textTheme.displaySmall,
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  strings.noCallsDescription,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 24),
+                LoopCard(
+                  color: LoopColors.lightGreen,
+                  onTap: () => context.go('/interview'),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.call_rounded,
+                        color: LoopColors.brandGreen,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        strings.startFirstCall,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
         return ShellPagePadding(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -38,7 +90,7 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                dashboard.target,
+                strings.goalLabel(dashboard.target),
                 style: Theme.of(context).textTheme.displaySmall,
               ),
               const SizedBox(height: 24),

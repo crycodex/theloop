@@ -7,14 +7,57 @@ import '../../../core/theme/loop_colors.dart';
 import 'cubit/interview_call_cubit.dart';
 import 'cubit/interview_call_state.dart';
 
-class InterviewCallScreen extends StatelessWidget {
-  const InterviewCallScreen({super.key});
+class InterviewCallScreen extends StatefulWidget {
+  const InterviewCallScreen({super.key, this.sourceLoopId});
+
+  final String? sourceLoopId;
+
+  @override
+  State<InterviewCallScreen> createState() => _InterviewCallScreenState();
+}
+
+class _InterviewCallScreenState extends State<InterviewCallScreen> {
+  final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<InterviewCallCubit>().start(
+        sourceLoopId: widget.sourceLoopId,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToEnd() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 220),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<InterviewCallCubit, InterviewCallState>(
+    return BlocConsumer<InterviewCallCubit, InterviewCallState>(
+      listenWhen: (previous, current) =>
+          previous.transcript.length != current.transcript.length,
+      listener: (_, _) => _scrollToEnd(),
       builder: (context, state) {
         final strings = AppStrings.of(context);
+        final busy =
+            state.phase == InterviewCallPhase.connecting ||
+            state.phase == InterviewCallPhase.ending;
 
         return Scaffold(
           backgroundColor: LoopColors.surfaceBlack,
@@ -31,7 +74,14 @@ class InterviewCallScreen extends StatelessWidget {
                       ),
                       const Spacer(),
                       IconButton(
-                        onPressed: () => context.go('/'),
+                        onPressed: busy
+                            ? null
+                            : () async {
+                                await context
+                                    .read<InterviewCallCubit>()
+                                    .cancel();
+                                if (context.mounted) context.go('/');
+                              },
                         icon: const Icon(
                           Icons.close_rounded,
                           color: Colors.white70,
@@ -39,27 +89,84 @@ class InterviewCallScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const Spacer(),
-                  const _Orb(),
-                  const SizedBox(height: 34),
+                  const SizedBox(height: 20),
+                  _Orb(speaking: state.isAiSpeaking),
+                  const SizedBox(height: 18),
                   Text(
-                    strings.interviewerAi,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.headlineMedium?.copyWith(color: Colors.white),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    state.isPaused
-                        ? strings.interviewPaused
-                        : strings.interviewPrompt(state.prompt),
+                    switch (state.phase) {
+                      InterviewCallPhase.connecting =>
+                        strings.connectingCall,
+                      InterviewCallPhase.ending => strings.preparingReport,
+                      InterviewCallPhase.error =>
+                        state.errorMessage ?? strings.authErrorUnknown,
+                      _ when state.isPaused => strings.interviewPaused,
+                      _ when state.isAiSpeaking => strings.recruiterSpeaking,
+                      _ => strings.recruiterListening,
+                    },
                     textAlign: TextAlign.center,
                     style: Theme.of(
                       context,
-                    ).textTheme.bodyLarge?.copyWith(color: Colors.white70),
+                    ).textTheme.titleLarge?.copyWith(color: Colors.white),
                   ),
-                  const Spacer(),
-                  Row(
+                  const SizedBox(height: 18),
+                  Expanded(
+                    child: state.transcript.isEmpty
+                        ? Center(
+                            child: busy
+                                ? const CircularProgressIndicator(
+                                    color: LoopColors.accentGreen,
+                                  )
+                                : const SizedBox.shrink(),
+                          )
+                        : ListView.builder(
+                            controller: _scrollController,
+                            itemCount: state.transcript.length,
+                            itemBuilder: (context, index) {
+                              final turn = state.transcript[index];
+                              final candidate =
+                                  turn.speaker.name == 'candidate';
+                              return Align(
+                                alignment: candidate
+                                    ? Alignment.centerRight
+                                    : Alignment.centerLeft,
+                                child: Container(
+                                  constraints: const BoxConstraints(
+                                    maxWidth: 310,
+                                  ),
+                                  margin: const EdgeInsets.only(bottom: 10),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 14,
+                                    vertical: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: candidate
+                                        ? LoopColors.accentGreen
+                                        : Colors.white12,
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: Text(
+                                    turn.text,
+                                    style: TextStyle(
+                                      color: candidate
+                                          ? LoopColors.brandGreen
+                                          : Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                  ),
+                  if (state.phase == InterviewCallPhase.error)
+                    FilledButton.icon(
+                      onPressed: () => context
+                          .read<InterviewCallCubit>()
+                          .start(sourceLoopId: widget.sourceLoopId),
+                      icon: const Icon(Icons.refresh_rounded),
+                      label: Text(strings.retry),
+                    )
+                  else
+                    Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       _CallControl(
@@ -73,7 +180,9 @@ class InterviewCallScreen extends StatelessWidget {
                         iconColor: state.isMicEnabled
                             ? Colors.white
                             : LoopColors.brandGreen,
-                        onTap: context.read<InterviewCallCubit>().toggleMic,
+                        onTap: busy
+                            ? () {}
+                            : context.read<InterviewCallCubit>().toggleMic,
                       ),
                       const SizedBox(width: 18),
                       _CallControl(
@@ -87,14 +196,27 @@ class InterviewCallScreen extends StatelessWidget {
                         iconColor: state.isPaused
                             ? LoopColors.brandGreen
                             : Colors.white,
-                        onTap: context.read<InterviewCallCubit>().togglePause,
+                        onTap: busy
+                            ? () {}
+                            : context.read<InterviewCallCubit>().togglePause,
                       ),
                       const SizedBox(width: 18),
                       _CallControl(
                         icon: Icons.call_end_rounded,
                         label: strings.endCall,
                         color: LoopColors.danger,
-                        onTap: () => context.go('/recap'),
+                        onTap: state.phase != InterviewCallPhase.inCall
+                            ? () {}
+                            : () async {
+                                final loopId = await context
+                                    .read<InterviewCallCubit>()
+                                    .end();
+                                if (context.mounted && loopId != null) {
+                                  context.go('/recap?loopId=$loopId');
+                                } else if (context.mounted) {
+                                  context.go('/');
+                                }
+                              },
                       ),
                     ],
                   ),
@@ -148,30 +270,34 @@ class _LiveBadge extends StatelessWidget {
 }
 
 class _Orb extends StatelessWidget {
-  const _Orb();
+  const _Orb({required this.speaking});
+
+  final bool speaking;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox.square(
-      dimension: 210,
+      dimension: 128,
       child: Stack(
         alignment: Alignment.center,
         children: [
-          for (final size in [210.0, 164.0, 118.0])
+          for (final size in [128.0, 100.0, 76.0])
             Container(
               width: size,
               height: size,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: LoopColors.accentGreen.withValues(alpha: 0.08),
+                color: LoopColors.accentGreen.withValues(
+                  alpha: speaking ? 0.16 : 0.08,
+                ),
                 border: Border.all(
                   color: LoopColors.accentGreen.withValues(alpha: 0.18),
                 ),
               ),
             ),
           Container(
-            width: 94,
-            height: 94,
+            width: 62,
+            height: 62,
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
               gradient: LinearGradient(
@@ -183,7 +309,7 @@ class _Orb extends StatelessWidget {
             child: const Icon(
               Icons.graphic_eq_rounded,
               color: LoopColors.brandGreen,
-              size: 42,
+              size: 30,
             ),
           ),
         ],

@@ -13,3 +13,9 @@ class LoopsLoaded extends LoopsState {
 
   final List<LoopTrack> tracks;
 }
+
+class LoopsError extends LoopsState {
+  const LoopsError(this.message);
+
+  final String message;
+}

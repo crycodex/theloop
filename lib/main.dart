@@ -16,12 +16,17 @@ import 'features/cv_analysis/data/repositories/mock_cv_analysis_repository.dart'
 import 'features/cv_analysis/domain/repositories/cv_analysis_repository.dart';
 import 'features/cv_analysis/domain/usecases/get_cv_analysis.dart';
 import 'features/cv_analysis/presentation/cubit/cv_analysis_cubit.dart';
-import 'features/home_dashboard/data/repositories/mock_home_dashboard_repository.dart';
+import 'features/home_dashboard/data/repositories/firestore_home_dashboard_repository.dart';
 import 'features/home_dashboard/domain/repositories/home_dashboard_repository.dart';
 import 'features/home_dashboard/domain/usecases/get_home_dashboard.dart';
 import 'features/home_dashboard/presentation/cubit/home_dashboard_cubit.dart';
+import 'features/interview_call/data/repositories/firestore_interview_loop_repository.dart';
+import 'features/interview_call/data/services/audio_service.dart';
+import 'features/interview_call/data/services/gemini_live_service.dart';
+import 'features/interview_call/data/services/interview_api_service.dart';
+import 'features/interview_call/domain/repositories/interview_loop_repository.dart';
 import 'features/interview_call/presentation/cubit/interview_call_cubit.dart';
-import 'features/loops/data/repositories/mock_loops_repository.dart';
+import 'features/loops/data/repositories/firestore_loops_repository.dart';
 import 'features/loops/domain/repositories/loops_repository.dart';
 import 'features/loops/domain/usecases/get_loop_tracks.dart';
 import 'features/loops/presentation/cubit/loops_cubit.dart';
@@ -29,7 +34,7 @@ import 'features/profile/data/repositories/firestore_profile_repository.dart';
 import 'features/profile/domain/repositories/profile_repository.dart';
 import 'features/profile/domain/usecases/get_profile.dart';
 import 'features/profile/presentation/cubit/profile_cubit.dart';
-import 'features/recap/data/repositories/mock_recap_repository.dart';
+import 'features/recap/data/repositories/firestore_recap_repository.dart';
 import 'features/recap/domain/repositories/recap_repository.dart';
 import 'features/recap/domain/usecases/get_latest_recap.dart';
 import 'features/recap/presentation/cubit/recap_cubit.dart';
@@ -66,12 +71,27 @@ class LoopApp extends StatelessWidget {
             context.read<FirebaseFirestore>(),
           ),
         ),
+        RepositoryProvider<ProfileRepository>(
+          create: (context) => FirestoreProfileRepository(
+            context.read<FirebaseFirestore>(),
+            context.read<AuthRepository>(),
+          ),
+        ),
+        RepositoryProvider<InterviewLoopRepository>(
+          create: (context) => FirestoreInterviewLoopRepository(
+            context.read<FirebaseFirestore>(),
+            context.read<AuthRepository>(),
+          ),
+        ),
         RepositoryProvider<LoopsRepository>(
-          create: (_) => const MockLoopsRepository(),
+          create: (context) =>
+              FirestoreLoopsRepository(context.read<InterviewLoopRepository>()),
         ),
         RepositoryProvider<HomeDashboardRepository>(
-          create: (context) =>
-              MockHomeDashboardRepository(context.read<LoopsRepository>()),
+          create: (context) => FirestoreHomeDashboardRepository(
+            context.read<ProfileRepository>(),
+            context.read<LoopsRepository>(),
+          ),
         ),
         RepositoryProvider<CvAnalysisRepository>(
           create: (_) => const MockCvAnalysisRepository(),
@@ -79,14 +99,9 @@ class LoopApp extends StatelessWidget {
         RepositoryProvider<RoadmapRepository>(
           create: (_) => const MockRoadmapRepository(),
         ),
-        RepositoryProvider<ProfileRepository>(
-          create: (context) => FirestoreProfileRepository(
-            context.read<FirebaseFirestore>(),
-            context.read<AuthRepository>(),
-          ),
-        ),
         RepositoryProvider<RecapRepository>(
-          create: (_) => const MockRecapRepository(),
+          create: (context) =>
+              FirestoreRecapRepository(context.read<InterviewLoopRepository>()),
         ),
       ],
       child: const _LoopAppView(),
@@ -149,7 +164,14 @@ class _LoopAppViewState extends State<_LoopAppView> {
           create: (context) =>
               RecapCubit(GetLatestRecap(context.read<RecapRepository>())),
         ),
-        BlocProvider(create: (_) => InterviewCallCubit()),
+        BlocProvider(
+          create: (context) => InterviewCallCubit(
+            InterviewApiService(FirebaseAuth.instance),
+            GeminiLiveService(),
+            InterviewAudioService(),
+            context.read<InterviewLoopRepository>(),
+          ),
+        ),
         BlocProvider(create: (_) => SettingsCubit()),
       ],
       child: BlocBuilder<SettingsCubit, SettingsState>(

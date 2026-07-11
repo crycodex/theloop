@@ -6,7 +6,19 @@ service cloud.firestore {
       allow read, write: if request.auth != null && request.auth.uid == userId;
 
       match /{subcollection}/{docId} {
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+        allow read, write: if request.auth != null
+          && request.auth.uid == userId
+          && subcollection in ['settings', 'cv', 'roadmap'];
+      }
+
+      match /loops/{loopId} {
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow update: if request.auth != null
+          && request.auth.uid == userId
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['status', 'endedAt', 'updatedAt'])
+          && request.resource.data.status == 'abandoned';
+        allow create, delete: if false;
       }
     }
   }

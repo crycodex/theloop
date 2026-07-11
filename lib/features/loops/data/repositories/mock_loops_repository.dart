@@ -5,7 +5,7 @@ class MockLoopsRepository implements LoopsRepository {
   const MockLoopsRepository();
 
   @override
-  List<LoopTrack> getTracks() {
+  Future<List<LoopTrack>> getTracks() async {
     return const [
       LoopTrack(
         roleTitle: 'Mobile Engineer',

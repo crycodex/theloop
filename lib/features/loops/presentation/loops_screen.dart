@@ -12,8 +12,21 @@ import '../../../core/widgets/metric_progress_bar.dart';
 import 'cubit/loops_cubit.dart';
 import 'cubit/loops_state.dart';
 
-class LoopsScreen extends StatelessWidget {
+class LoopsScreen extends StatefulWidget {
   const LoopsScreen({super.key});
+
+  @override
+  State<LoopsScreen> createState() => _LoopsScreenState();
+}
+
+class _LoopsScreenState extends State<LoopsScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<LoopsCubit>().load();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +53,15 @@ class LoopsScreen extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               const SizedBox(height: 22),
+              if (tracks.isEmpty)
+                LoopCard(
+                  color: LoopColors.lightGreen,
+                  onTap: () => context.go('/interview'),
+                  child: Text(strings.noCallsDescription),
+                ),
               for (final track in tracks) ...[
                 LoopCard(
-                  onTap: () => context.go('/interview'),
+                  onTap: () => context.go('/recap?loopId=${track.id}'),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

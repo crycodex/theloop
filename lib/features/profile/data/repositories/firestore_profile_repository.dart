@@ -25,6 +25,8 @@ class FirestoreProfileRepository implements ProfileRepository {
       email: data['email'] as String? ?? user.email ?? '',
       target: data['goal'] as String? ?? '',
       plan: 'Plan Gratis',
+      experience: data['experience'] as String? ?? '',
+      customGoal: data['customGoal'] as String?,
     );
   }
 }

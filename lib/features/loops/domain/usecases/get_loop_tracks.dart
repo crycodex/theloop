@@ -6,5 +6,5 @@ class GetLoopTracks {
 
   final LoopsRepository _repository;
 
-  List<LoopTrack> call() => _repository.getTracks();
+  Future<List<LoopTrack>> call() => _repository.getTracks();
 }

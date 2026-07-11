@@ -6,5 +6,5 @@ class GetHomeDashboard {
 
   final HomeDashboardRepository _repository;
 
-  HomeDashboard call() => _repository.getDashboard();
+  Future<HomeDashboard> call() => _repository.getDashboard();
 }

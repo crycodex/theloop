@@ -1,5 +1,6 @@
 class LoopTrack {
   const LoopTrack({
+    this.id = '',
     required this.roleTitle,
     required this.company,
     required this.level,
@@ -9,6 +10,7 @@ class LoopTrack {
     required this.focus,
   });
 
+  final String id;
   final String roleTitle;
   final String company;
   final double level;

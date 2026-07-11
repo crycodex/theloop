@@ -255,6 +255,24 @@ class AppStrings {
   String get pause => _es ? 'Pausar' : 'Pause';
   String get resume => _es ? 'Seguir' : 'Resume';
   String get endCall => _es ? 'Terminar' : 'End';
+  String get connectingCall =>
+      _es ? 'Conectando con tu reclutador…' : 'Connecting to your recruiter…';
+  String get recruiterSpeaking =>
+      _es ? 'El reclutador está hablando' : 'The recruiter is speaking';
+  String get recruiterListening =>
+      _es ? 'Te está escuchando' : 'Listening to you';
+  String get preparingReport =>
+      _es ? 'Preparando tu reporte…' : 'Preparing your report…';
+  String get retry => _es ? 'Reintentar' : 'Retry';
+  String get noTranscript =>
+      _es ? 'La llamada terminó sin conversación.' : 'The call ended without a conversation.';
+  String get noCallsTitle =>
+      _es ? 'Aún no tienes llamadas' : 'You have no calls yet';
+  String get noCallsDescription => _es
+      ? 'Haz tu primera práctica y aquí verás el resumen y tu progreso.'
+      : 'Complete your first practice to see its summary and your progress here.';
+  String get startFirstCall =>
+      _es ? 'Iniciar primera llamada' : 'Start first call';
 
   String criterion(String value) {
     if (_es) return value;

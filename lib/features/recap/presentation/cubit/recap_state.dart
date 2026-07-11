@@ -13,3 +13,13 @@ class RecapLoaded extends RecapState {
 
   final SessionRecap recap;
 }
+
+class RecapEmpty extends RecapState {
+  const RecapEmpty();
+}
+
+class RecapError extends RecapState {
+  const RecapError(this.message);
+
+  final String message;
+}
