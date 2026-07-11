@@ -31,6 +31,7 @@ class _LoopBootstrapState extends State<LoopBootstrap> {
   late final ConnectivityService _connectivity;
   StreamSubscription<List<ConnectivityResult>>? _subscription;
 
+  late SettingsState _settings;
   bool? _connected;
   bool _checking = true;
   bool _firebaseReady = false;
@@ -38,6 +39,7 @@ class _LoopBootstrapState extends State<LoopBootstrap> {
   @override
   void initState() {
     super.initState();
+    _settings = widget.initialSettings;
     _connectivity = widget.connectivityService ?? ConnectivityService();
     _subscription = _connectivity.onConnectivityChanged.listen((_) {
       _evaluateConnectivity();
@@ -53,6 +55,7 @@ class _LoopBootstrapState extends State<LoopBootstrap> {
 
   Future<void> _evaluateConnectivity() async {
     setState(() => _checking = true);
+    final settings = await widget.settingsStorage.load();
     final connected = await _connectivity.hasWifiConnection();
     if (!mounted) return;
 
@@ -64,6 +67,7 @@ class _LoopBootstrapState extends State<LoopBootstrap> {
     }
 
     setState(() {
+      _settings = settings;
       _connected = connected;
       _checking = false;
     });
@@ -73,14 +77,14 @@ class _LoopBootstrapState extends State<LoopBootstrap> {
   Widget build(BuildContext context) {
     if (_connected != true) {
       return NoConnectionScreen(
-        settings: widget.initialSettings,
+        settingsStorage: widget.settingsStorage,
         checking: _checking,
         onRetry: _evaluateConnectivity,
       );
     }
 
     return LoopApp(
-      initialSettings: widget.initialSettings,
+      initialSettings: _settings,
       settingsStorage: widget.settingsStorage,
     );
   }
