@@ -81,7 +81,9 @@ class FirestoreTracksRepository implements TracksRepository {
     required AppLanguage language,
   }) async {
     if (kGeminiApiKey.isEmpty) {
-      throw StateError('Falta GEMINI_API_KEY.');
+      throw StateError(
+        'Falta GEMINI_API_KEY. Copia env.example.json a env.json en la raíz del proyecto.',
+      );
     }
     final prompt = language == AppLanguage.spanish
         ? 'A partir de este texto del usuario, extrae datos para un trayecto de entrevista. '

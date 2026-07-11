@@ -1,6 +1,7 @@
+import '../../../../core/config/app_env.dart';
 import '../../../../core/settings/cubit/settings_state.dart';
 
-const String kGeminiApiKey = String.fromEnvironment('GEMINI_API_KEY');
+String get kGeminiApiKey => AppEnv.geminiApiKey;
 
 const String kGeminiLiveModel = 'models/gemini-3.1-flash-live-preview';
 

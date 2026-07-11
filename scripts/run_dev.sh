@@ -9,4 +9,5 @@ if [[ ! -f env.json ]]; then
   exit 1
 fi
 
+# Opcional: --dart-define-from-file sobreescribe el asset empaquetado.
 flutter run --dart-define-from-file=env.json "$@"

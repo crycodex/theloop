@@ -66,7 +66,7 @@ class GeminiLiveService {
   }) async {
     if (kGeminiApiKey.isEmpty) {
       throw const GeminiLiveException(
-        'Falta GEMINI_API_KEY. Corre con --dart-define=GEMINI_API_KEY=...',
+        'Falta GEMINI_API_KEY. Copia env.example.json a env.json en la raíz del proyecto.',
       );
     }
 
