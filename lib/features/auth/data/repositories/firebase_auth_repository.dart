@@ -133,4 +133,26 @@ class FirebaseAuthRepository implements AuthRepository {
   @override
   Future<void> sendPasswordResetEmail(String email) =>
       _auth.sendPasswordResetEmail(email: email);
+
+  @override
+  Future<void> reauthenticateWithPassword(String password) async {
+    final user = _auth.currentUser;
+    if (user == null) throw StateError('No hay un usuario autenticado.');
+    final email = user.email;
+    if (email == null || email.isEmpty) {
+      throw StateError('La cuenta no tiene correo asociado.');
+    }
+    final credential = EmailAuthProvider.credential(
+      email: email,
+      password: password,
+    );
+    await user.reauthenticateWithCredential(credential);
+  }
+
+  @override
+  Future<void> deleteCurrentUser() async {
+    final user = _auth.currentUser;
+    if (user == null) throw StateError('No hay un usuario autenticado.');
+    await user.delete();
+  }
 }

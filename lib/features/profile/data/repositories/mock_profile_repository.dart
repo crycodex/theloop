@@ -2,15 +2,47 @@ import '../../domain/entities/profile.dart';
 import '../../domain/repositories/profile_repository.dart';
 
 class MockProfileRepository implements ProfileRepository {
-  const MockProfileRepository();
+  MockProfileRepository();
+
+  Profile _profile = const Profile(
+    name: 'Cristhian',
+    email: 'cristhian@example.com',
+    target: 'bigTech',
+    plan: 'Plan Gratis',
+    experience: 'none',
+  );
 
   @override
-  Future<Profile> getProfile() async {
-    return const Profile(
-      name: 'Cristhian',
-      email: 'cristhian@example.com',
-      target: 'Mobile Engineer · Meta',
-      plan: 'Plan Pro mock · \$50/mes',
+  Future<Profile> getProfile() async => _profile;
+
+  @override
+  Future<void> updateProfile({
+    required String name,
+    required String goalId,
+    String? customGoal,
+    required String experienceId,
+  }) async {
+    _profile = Profile(
+      name: name,
+      email: _profile.email,
+      target: goalId,
+      plan: _profile.plan,
+      experience: experienceId,
+      customGoal: customGoal,
     );
   }
+
+  @override
+  Future<Map<String, dynamic>> exportUserData() async => {
+        'exportedAt': DateTime.now().toUtc().toIso8601String(),
+        'profile': {
+          'name': _profile.name,
+          'email': _profile.email,
+          'goal': _profile.target,
+        },
+        'tracks': <Map<String, dynamic>>[],
+      };
+
+  @override
+  Future<void> deleteUserData() async {}
 }

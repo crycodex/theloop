@@ -240,6 +240,36 @@ class AppStrings {
       : 'Level achieved ${level.toStringAsFixed(1)} of 5';
   String get practiceNow => _es ? 'Practicar ahora' : 'Practice now';
 
+  String get profileUpdated =>
+      _es ? 'Perfil actualizado' : 'Profile updated';
+  String get editProfile => _es ? 'Editar perfil' : 'Edit profile';
+  String get experienceLabel => _es ? 'Experiencia' : 'Experience';
+  String get saveChanges => _es ? 'Guardar cambios' : 'Save changes';
+  String get exportData => _es ? 'Exportar datos (JSON)' : 'Export data (JSON)';
+  String get exportDataHint => _es
+      ? 'Descarga tu perfil, trayectos y loops en JSON.'
+      : 'Download your profile, tracks and loops as JSON.';
+  String get exportDataSuccess => _es
+      ? 'Datos exportados correctamente.'
+      : 'Data exported successfully.';
+  String get deleteAccount => _es ? 'Eliminar cuenta' : 'Delete account';
+  String get deleteAccountWarning => _es
+      ? 'Esta acción borra tu perfil, trayectos, loops y cuenta de forma permanente.'
+      : 'This permanently deletes your profile, tracks, loops and account.';
+  String get deleteAccountConfirmTitle =>
+      _es ? '¿Eliminar cuenta?' : 'Delete account?';
+  String get deleteAccountPasswordHint => _es
+      ? 'Confirma tu contraseña para continuar'
+      : 'Confirm your password to continue';
+  String get cancel => _es ? 'Cancelar' : 'Cancel';
+  String get confirmDelete => _es ? 'Eliminar' : 'Delete';
+  String get subscriptionFreeTitle => _es ? 'Plan Gratis' : 'Free plan';
+  String get subscriptionFreeDetail => _es
+      ? 'Acceso a loops de práctica, reportes y trayectorias sugeridas.'
+      : 'Access to practice loops, reports and suggested tracks.';
+  String get subscriptionStatusActive =>
+      _es ? 'Suscripción activa' : 'Active subscription';
+  String get tapToExpand => _es ? 'Toca para expandir' : 'Tap to expand';
   String get profile => _es ? 'Perfil' : 'Profile';
   String get careerGoal => _es ? 'Objetivo profesional' : 'Career goal';
   String get careerGoalSubtitle => _es

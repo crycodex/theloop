@@ -193,8 +193,11 @@ class _LoopAppViewState extends State<_LoopAppView> {
               RoadmapCubit(GetRoadmap(context.read<RoadmapRepository>())),
         ),
         BlocProvider(
-          create: (context) =>
-              ProfileCubit(GetProfile(context.read<ProfileRepository>())),
+          create: (context) => ProfileCubit(
+            GetProfile(context.read<ProfileRepository>()),
+            context.read<ProfileRepository>(),
+            context.read<AuthRepository>(),
+          ),
         ),
         BlocProvider(
           create: (context) =>
