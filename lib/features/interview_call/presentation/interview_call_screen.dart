@@ -1,9 +1,12 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/localization/app_strings.dart';
 import '../../../core/theme/loop_colors.dart';
+import '../domain/entities/transcript_turn.dart';
 import '../../loops/domain/entities/interview_track.dart';
 import '../../home_dashboard/presentation/cubit/home_dashboard_cubit.dart';
 import 'cubit/interview_call_cubit.dart';
@@ -48,21 +51,31 @@ class _InterviewCallScreenState extends State<InterviewCallScreen> {
 
   void _scrollToEnd() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 220),
-          curve: Curves.easeOut,
-        );
-      }
+      if (!_scrollController.hasClients) return;
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+      );
     });
+  }
+
+  bool _transcriptChanged(
+    List<TranscriptTurn> previous,
+    List<TranscriptTurn> current,
+  ) {
+    if (previous.length != current.length) return true;
+    if (previous.isEmpty || current.isEmpty) return false;
+    final prevLast = previous.last;
+    final curLast = current.last;
+    return prevLast.text != curLast.text;
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<InterviewCallCubit, InterviewCallState>(
       listenWhen: (previous, current) =>
-          previous.transcript.length != current.transcript.length,
+          _transcriptChanged(previous.transcript, current.transcript),
       listener: (_, _) => _scrollToEnd(),
       builder: (context, state) {
         final strings = AppStrings.of(context);
@@ -102,7 +115,10 @@ class _InterviewCallScreenState extends State<InterviewCallScreen> {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  _Orb(speaking: state.isAiSpeaking),
+                  _SpeakingOrb(
+                    speaking: state.isAiSpeaking,
+                    inCall: state.phase == InterviewCallPhase.inCall,
+                  ),
                   const SizedBox(height: 18),
                   Text(
                     switch (state.phase) {
@@ -133,6 +149,7 @@ class _InterviewCallScreenState extends State<InterviewCallScreen> {
                           )
                         : ListView.builder(
                             controller: _scrollController,
+                            padding: const EdgeInsets.only(bottom: 8),
                             itemCount: state.transcript.length,
                             itemBuilder: (context, index) {
                               final turn = state.transcript[index];
@@ -282,52 +299,176 @@ class _LiveBadge extends StatelessWidget {
   }
 }
 
-class _Orb extends StatelessWidget {
-  const _Orb({required this.speaking});
+class _SpeakingOrb extends StatefulWidget {
+  const _SpeakingOrb({required this.speaking, required this.inCall});
 
   final bool speaking;
+  final bool inCall;
+
+  @override
+  State<_SpeakingOrb> createState() => _SpeakingOrbState();
+}
+
+class _SpeakingOrbState extends State<_SpeakingOrb>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1400),
+    );
+    _syncAnimation();
+  }
+
+  @override
+  void didUpdateWidget(covariant _SpeakingOrb oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _syncAnimation();
+  }
+
+  void _syncAnimation() {
+    if (widget.speaking) {
+      if (!_controller.isAnimating) _controller.repeat();
+    } else if (widget.inCall) {
+      _controller
+        ..stop()
+        ..value = 0;
+    } else {
+      _controller.stop();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox.square(
-      dimension: 128,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          for (final size in [128.0, 100.0, 76.0])
-            Container(
-              width: size,
-              height: size,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: LoopColors.accentGreen.withValues(
-                  alpha: speaking ? 0.16 : 0.08,
+      dimension: 148,
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, child) {
+          return CustomPaint(
+            painter: _FlameWavePainter(
+              progress: _controller.value,
+              speaking: widget.speaking,
+              inCall: widget.inCall,
+            ),
+            child: Center(
+              child: Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: widget.speaking
+                        ? [
+                            const Color(0xFFFFB347),
+                            LoopColors.accentGreen,
+                            LoopColors.lightGreen,
+                          ]
+                        : [LoopColors.accentGreen, LoopColors.lightGreen],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  boxShadow: widget.speaking
+                      ? [
+                          BoxShadow(
+                            color: LoopColors.accentGreen.withValues(alpha: 0.45),
+                            blurRadius: 24,
+                            spreadRadius: 2,
+                          ),
+                        ]
+                      : null,
                 ),
-                border: Border.all(
-                  color: LoopColors.accentGreen.withValues(alpha: 0.18),
+                child: Icon(
+                  widget.speaking
+                      ? Icons.local_fire_department_rounded
+                      : Icons.graphic_eq_rounded,
+                  color: LoopColors.brandGreen,
+                  size: 30,
                 ),
               ),
             ),
-          Container(
-            width: 62,
-            height: 62,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [LoopColors.accentGreen, LoopColors.lightGreen],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-            child: const Icon(
-              Icons.graphic_eq_rounded,
-              color: LoopColors.brandGreen,
-              size: 30,
-            ),
-          ),
-        ],
+          );
+        },
       ),
     );
+  }
+}
+
+class _FlameWavePainter extends CustomPainter {
+  _FlameWavePainter({
+    required this.progress,
+    required this.speaking,
+    required this.inCall,
+  });
+
+  final double progress;
+  final bool speaking;
+  final bool inCall;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final maxRadius = size.width * 0.48;
+
+    if (!speaking) {
+      final idlePaint = Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2
+        ..color = LoopColors.accentGreen.withValues(alpha: inCall ? 0.22 : 0.1);
+      canvas.drawCircle(center, maxRadius * 0.72, idlePaint);
+      canvas.drawCircle(center, maxRadius * 0.56, idlePaint);
+      return;
+    }
+
+    const waveCount = 4;
+    for (var i = 0; i < waveCount; i++) {
+      final waveProgress = (progress + i / waveCount) % 1.0;
+      final radius = maxRadius * (0.42 + waveProgress * 0.58);
+      final alpha = (1 - waveProgress) * 0.42;
+      final paint = Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3.5 - waveProgress * 1.8
+        ..color = Color.lerp(
+          const Color(0xFFFF9A3C),
+          LoopColors.accentGreen,
+          waveProgress,
+        )!.withValues(alpha: alpha);
+
+      canvas.drawCircle(center, radius, paint);
+    }
+
+    for (var i = 0; i < 12; i++) {
+      final angle = (i / 12) * 3.1415926535 * 2 + progress * 3.1415926535 * 2;
+      final sparkRadius = maxRadius * (0.34 + (i % 3) * 0.04);
+      final sparkSize = 2.5 + (i % 2);
+      final offset = Offset(
+        center.dx + sparkRadius * math.cos(angle),
+        center.dy + sparkRadius * math.sin(angle),
+      );
+      final sparkPaint = Paint()
+        ..color = Color.lerp(
+          const Color(0xFFFFD166),
+          LoopColors.accentGreen,
+          (i % 4) / 4,
+        )!.withValues(alpha: 0.35 + (i % 3) * 0.15);
+      canvas.drawCircle(offset, sparkSize, sparkPaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _FlameWavePainter oldDelegate) {
+    return oldDelegate.progress != progress ||
+        oldDelegate.speaking != speaking ||
+        oldDelegate.inCall != inCall;
   }
 }
 
