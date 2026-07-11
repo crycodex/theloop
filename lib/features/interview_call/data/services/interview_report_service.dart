@@ -49,8 +49,13 @@ class InterviewReportService {
     final prompt = [
       'Analiza esta entrevista y responde exclusivamente con JSON válido.',
       'Esquema: {"role":string,"summary":string,"strengths":string[],"improvements":string[],"score":number,"recommendation":string,"memorySummary":string}.',
+      'Reglas de brevedad (obligatorio):',
+      '- summary: máximo 2 frases cortas.',
+      '- strengths: máximo 2 ítems, cada uno máximo 10 palabras.',
+      '- improvements: máximo 2 ítems, cada uno máximo 10 palabras.',
+      '- recommendation: 1 frase corta.',
+      '- memorySummary: 1 frase corta para repetir la práctica.',
       'El puntaje debe estar entre 1 y 10. Escribe todo en español.',
-      'memorySummary debe ser breve y útil para personalizar una repetición futura.',
       '',
       conversation,
     ].join('\n');
@@ -114,22 +119,35 @@ class InterviewReportService {
 
   InterviewReport _parseReport(String raw) {
     final decoded = jsonDecode(raw) as Map<String, dynamic>;
-    List<String> strings(String key) =>
+    List<String> strings(String key, {int maxItems = 2}) =>
         (decoded[key] as List<dynamic>? ?? const [])
             .whereType<String>()
             .map((item) => item.trim())
             .where((item) => item.isNotEmpty)
+            .take(maxItems)
             .toList(growable: false);
 
     return InterviewReport(
-      role: decoded['role'] as String? ?? '',
-      summary: decoded['summary'] as String? ?? '',
+      role: _shortText(decoded['role'] as String? ?? '', maxLength: 60),
+      summary: _shortText(decoded['summary'] as String? ?? '', maxLength: 220),
       strengths: strings('strengths'),
       improvements: strings('improvements'),
       score: (decoded['score'] as num?)?.toDouble() ?? 0,
-      recommendation: decoded['recommendation'] as String? ?? '',
-      memorySummary: decoded['memorySummary'] as String? ?? '',
+      recommendation: _shortText(
+        decoded['recommendation'] as String? ?? '',
+        maxLength: 140,
+      ),
+      memorySummary: _shortText(
+        decoded['memorySummary'] as String? ?? '',
+        maxLength: 120,
+      ),
     );
+  }
+
+  String _shortText(String value, {required int maxLength}) {
+    final text = value.trim();
+    if (text.length <= maxLength) return text;
+    return '${text.substring(0, maxLength).trimRight()}…';
   }
 
   void dispose() => _client.close();

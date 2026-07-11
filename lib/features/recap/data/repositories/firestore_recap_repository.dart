@@ -33,10 +33,10 @@ class FirestoreRecapRepository implements RecapRepository {
       ],
       strength: report.strengths.isEmpty
           ? report.summary
-          : report.strengths.join('\n'),
+          : report.strengths.first,
       improvement: report.improvements.isEmpty
           ? report.recommendation
-          : report.improvements.join('\n'),
+          : report.improvements.first,
       recommendation: report.recommendation,
       transcript: loop.transcript,
     );
