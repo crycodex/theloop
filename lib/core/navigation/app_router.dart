@@ -49,7 +49,14 @@ class AppRouter {
     }
 
     if (loggedIn) {
-      final profileComplete = await _profileRepository.isProfileComplete();
+      final bool profileComplete;
+      try {
+        profileComplete = await _profileRepository.isProfileComplete();
+      } catch (_) {
+        // Sesión inválida o Firestore inaccesible: no navegar; el listener
+        // de auth reejecuta el redirect cuando el estado se estabiliza.
+        return null;
+      }
       if (!profileComplete && !goingToOnboarding) {
         return '/google-onboarding';
       }
