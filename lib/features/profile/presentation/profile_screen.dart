@@ -77,8 +77,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _nameController.text = profile.name;
     _customGoalController.text = profile.customGoal ?? '';
     _goalIndex = _goalIds.indexOf(profile.target).clamp(0, _goalIds.length - 1);
-    if (_goalIds[_goalIndex] != profile.target)
+    if (_goalIds[_goalIndex] != profile.target) {
       _goalIndex = _goalIds.length - 1;
+    }
     _experienceIndex = _experienceIds
         .indexOf(profile.experience)
         .clamp(0, _experienceIds.length - 1);

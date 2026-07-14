@@ -8,6 +8,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/bootstrap/loop_bootstrap.dart';
 import 'core/config/app_env.dart';
 import 'core/navigation/app_router.dart';
+import 'core/services/gemini_json_client.dart';
 import 'core/settings/cubit/settings_cubit.dart';
 import 'core/settings/cubit/settings_state.dart';
 import 'core/settings/data/settings_storage.dart';
@@ -15,9 +16,9 @@ import 'core/theme/loop_theme.dart';
 import 'features/auth/data/repositories/firebase_auth_repository.dart';
 import 'features/auth/domain/repositories/auth_repository.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
-import 'features/cv_analysis/data/repositories/mock_cv_analysis_repository.dart';
+import 'features/cv_analysis/data/repositories/firestore_cv_analysis_repository.dart';
+import 'features/cv_analysis/data/services/cv_analysis_service.dart';
 import 'features/cv_analysis/domain/repositories/cv_analysis_repository.dart';
-import 'features/cv_analysis/domain/usecases/get_cv_analysis.dart';
 import 'features/cv_analysis/presentation/cubit/cv_analysis_cubit.dart';
 import 'features/home_dashboard/data/repositories/firestore_home_dashboard_repository.dart';
 import 'features/home_dashboard/domain/repositories/home_dashboard_repository.dart';
@@ -43,9 +44,9 @@ import 'features/recap/data/repositories/firestore_recap_repository.dart';
 import 'features/recap/domain/repositories/recap_repository.dart';
 import 'features/recap/domain/usecases/get_latest_recap.dart';
 import 'features/recap/presentation/cubit/recap_cubit.dart';
-import 'features/roadmap/data/repositories/mock_roadmap_repository.dart';
+import 'features/roadmap/data/repositories/firestore_roadmap_repository.dart';
+import 'features/roadmap/data/services/roadmap_service.dart';
 import 'features/roadmap/domain/repositories/roadmap_repository.dart';
-import 'features/roadmap/domain/usecases/get_roadmap.dart';
 import 'features/roadmap/presentation/cubit/roadmap_cubit.dart';
 
 const _firestoreDatabaseId = 'default';
@@ -121,10 +122,16 @@ class LoopApp extends StatelessWidget {
           ),
         ),
         RepositoryProvider<CvAnalysisRepository>(
-          create: (_) => const MockCvAnalysisRepository(),
+          create: (context) => FirestoreCvAnalysisRepository(
+            context.read<FirebaseFirestore>(),
+            context.read<AuthRepository>(),
+          ),
         ),
         RepositoryProvider<RoadmapRepository>(
-          create: (_) => const MockRoadmapRepository(),
+          create: (context) => FirestoreRoadmapRepository(
+            context.read<FirebaseFirestore>(),
+            context.read<AuthRepository>(),
+          ),
         ),
         RepositoryProvider<RecapRepository>(
           create: (context) =>
@@ -187,13 +194,28 @@ class _LoopAppViewState extends State<_LoopAppView> {
               LoopsCubit(GetLoopTracks(context.read<LoopsRepository>())),
         ),
         BlocProvider(
-          create: (context) => CvAnalysisCubit(
-            GetCvAnalysis(context.read<CvAnalysisRepository>()),
+          create: (_) => SettingsCubit(
+            widget.settingsStorage,
+            initialState: widget.initialSettings,
           ),
         ),
         BlocProvider(
-          create: (context) =>
-              RoadmapCubit(GetRoadmap(context.read<RoadmapRepository>())),
+          create: (context) => CvAnalysisCubit(
+            context.read<CvAnalysisRepository>(),
+            CvAnalysisService(GeminiJsonClient()),
+            context.read<ProfileRepository>(),
+            context.read<TracksRepository>(),
+            context.read<SettingsCubit>(),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => RoadmapCubit(
+            context.read<RoadmapRepository>(),
+            RoadmapService(GeminiJsonClient()),
+            context.read<ProfileRepository>(),
+            context.read<TracksRepository>(),
+            context.read<SettingsCubit>(),
+          ),
         ),
         BlocProvider(
           create: (context) => ProfileCubit(
@@ -205,12 +227,6 @@ class _LoopAppViewState extends State<_LoopAppView> {
         BlocProvider(
           create: (context) =>
               RecapCubit(GetLatestRecap(context.read<RecapRepository>())),
-        ),
-        BlocProvider(
-          create: (_) => SettingsCubit(
-            widget.settingsStorage,
-            initialState: widget.initialSettings,
-          ),
         ),
         BlocProvider(
           create: (context) => InterviewCallCubit(

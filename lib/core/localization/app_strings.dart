@@ -197,16 +197,17 @@ class AppStrings {
   String get cvDescription => _es
       ? 'Tu hoja de vida medida contra claridad, impacto y match con ofertas.'
       : 'Your resume measured against clarity, impact, and job fit.';
-  String get cvComingSoonTitle =>
-      _es ? 'Próximamente' : 'Coming soon';
-  String get cvComingSoonBody => _es
-      ? 'Aquí podrás subir tu CV y recibir un score con desglose y match contra ofertas.'
-      : 'Upload your resume here to get a scored breakdown and job-fit match.';
-  String get cvUploadCta => _es ? 'Subir CV' : 'Upload resume';
-  String cvCriterionPlaceholder(String name) => name;
-  String get cvMatchPlaceholder => _es
-      ? 'El match contra una oferta objetivo aparecerá aquí.'
-      : 'Job-fit match against a target role will appear here.';
+  String get cvPickPdfCta => _es ? 'Subir CV (PDF)' : 'Upload resume (PDF)';
+  String get cvNoFileError => _es
+      ? 'Selecciona tu CV en PDF antes de analizar.'
+      : 'Pick your resume PDF before analyzing.';
+  String get cvSelectTrackLabel => _es
+      ? 'Comparar con una oferta (opcional)'
+      : 'Compare against a job (optional)';
+  String get cvNoTrackOption => _es ? 'Ninguna' : 'None';
+  String get cvAnalyzeCta => _es ? 'Analizar CV' : 'Analyze resume';
+  String get cvAnalyzingLabel => _es ? 'Analizando...' : 'Analyzing...';
+  String get cvReanalyzeCta => _es ? 'Re-analizar' : 'Re-analyze';
   String scoreCurrent(int score) =>
       _es ? 'Score actual: $score/100' : 'Current score: $score/100';
   String lastAnalysis(String value) => _es
@@ -217,18 +218,15 @@ class AppStrings {
   String get matchVsJob => _es ? 'Match vs oferta' : 'Match vs job';
 
   String get roadmap => _es ? 'Roadmap' : 'Roadmap';
-  String get roadmapDescriptionPlaceholder => _es
-      ? 'Tu ruta personalizada de preparación paso a paso.'
-      : 'Your personalized step-by-step preparation path.';
-  String get roadmapGoalPlaceholder => _es
-      ? 'Meta final: consigue tu próximo rol objetivo'
-      : 'Final goal: land your next target role';
-  String get roadmapComingSoonBody => _es
-      ? 'Próximamente: hitos, niveles y prácticas recomendadas según tu progreso.'
-      : 'Coming soon: milestones, levels, and recommended practice based on your progress.';
-  String roadmapStepPlaceholder(int step) => _es
-      ? 'Hito $step'
-      : 'Milestone $step';
+  String get roadmapEmptyBody => _es
+      ? 'Genera una trayectoria personalizada según tu objetivo y progreso.'
+      : 'Generate a personalized roadmap from your goal and progress.';
+  String get roadmapGenerateCta =>
+      _es ? 'Generar mi trayectoria' : 'Generate my roadmap';
+  String get roadmapRegenerateCta => _es ? 'Regenerar' : 'Regenerate';
+  String get roadmapGeneratingLabel =>
+      _es ? 'Creando tu trayectoria…' : 'Building your roadmap…';
+  String get roadmapTipsTitle => _es ? 'Cómo practicar' : 'How to practice';
   String roadmapDescription(String target) => _es
       ? 'Preparación paso a paso para $target.'
       : 'Step-by-step preparation for $target.';

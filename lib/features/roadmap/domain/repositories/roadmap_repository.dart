@@ -1,5 +1,7 @@
 import '../entities/roadmap.dart';
 
 abstract interface class RoadmapRepository {
-  Roadmap getRoadmap();
+  Future<Roadmap?> getLatest();
+
+  Future<void> saveLatest(Roadmap roadmap);
 }

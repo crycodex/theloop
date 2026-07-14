@@ -33,6 +33,7 @@ dependencies:
   record: ^6.2.1
   flutter_pcm_sound: ^3.3.3
   http: ^1.6.0
+  file_picker: ^10.3.4
   flutter_native_splash: ^2.4.7
   connectivity_plus: ^7.2.0
   shared_preferences: ^2.5.5
