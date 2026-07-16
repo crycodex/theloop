@@ -560,6 +560,7 @@ class _PreferencesPanel extends StatelessWidget {
               child: ExpansionTile(
                 tilePadding: const EdgeInsets.symmetric(horizontal: 18),
                 childrenPadding: const EdgeInsets.fromLTRB(18, 0, 18, 18),
+                expandedCrossAxisAlignment: CrossAxisAlignment.start,
                 leading: const _IconBadge(icon: Icons.tune_rounded),
                 title: Text(
                   strings.preferences,
@@ -574,61 +575,135 @@ class _PreferencesPanel extends StatelessWidget {
                     activeThumbColor: LoopColors.accentGreen,
                     onChanged: context.read<SettingsCubit>().setDarkMode,
                   ),
-                  const Divider(),
+                  const SizedBox(height: 6),
                   Text(
                     strings.languageLabel,
                     style: Theme.of(context).textTheme.labelLarge,
                   ),
-                  const SizedBox(height: 8),
-                  SegmentedButton<AppLanguage>(
-                    segments: AppLanguage.values
-                        .map(
-                          (language) => ButtonSegment(
-                            value: language,
-                            label: Text(language.label),
-                          ),
-                        )
-                        .toList(),
-                    selected: {settings.language},
-                    onSelectionChanged: (selection) {
-                      context.read<SettingsCubit>().setLanguage(
-                        selection.first,
-                      );
-                    },
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: double.infinity,
+                    child: SegmentedButton<AppLanguage>(
+                      showSelectedIcon: false,
+                      segments: AppLanguage.values
+                          .map(
+                            (language) => ButtonSegment(
+                              value: language,
+                              label: Text(language.label),
+                            ),
+                          )
+                          .toList(),
+                      selected: {settings.language},
+                      onSelectionChanged: (selection) {
+                        context.read<SettingsCubit>().setLanguage(
+                          selection.first,
+                        );
+                      },
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     strings.recruiterLanguageHint,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
-                  const Divider(),
+                  const SizedBox(height: 18),
                   Text(
                     strings.recruiterVoiceLabel,
                     style: Theme.of(context).textTheme.labelLarge,
                   ),
-                  const SizedBox(height: 8),
-                  SegmentedButton<RecruiterVoice>(
-                    segments: RecruiterVoice.values
-                        .map(
-                          (voice) => ButtonSegment(
-                            value: voice,
-                            label: Text(voice.label(settings.language)),
-                          ),
-                        )
-                        .toList(),
-                    selected: {settings.recruiterVoice},
-                    onSelectionChanged: (selection) {
-                      context.read<SettingsCubit>().setRecruiterVoice(
-                        selection.first,
-                      );
-                    },
-                  ),
+                  const SizedBox(height: 10),
+                  for (final voice in RecruiterVoice.values)
+                    _VoiceOptionTile(
+                      voice: voice,
+                      language: settings.language,
+                      selected: settings.recruiterVoice == voice,
+                      onTap: () => context
+                          .read<SettingsCubit>()
+                          .setRecruiterVoice(voice),
+                    ),
                 ],
               ),
             ),
           ),
         );
       },
+    );
+  }
+}
+
+class _VoiceOptionTile extends StatelessWidget {
+  const _VoiceOptionTile({
+    required this.voice,
+    required this.language,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final RecruiterVoice voice;
+  final AppLanguage language;
+  final bool selected;
+  final VoidCallback onTap;
+
+  IconData get _icon => switch (voice) {
+        RecruiterVoice.sadaltager => Icons.business_center_rounded,
+        RecruiterVoice.puck => Icons.emoji_emotions_rounded,
+        RecruiterVoice.kore => Icons.record_voice_over_rounded,
+        RecruiterVoice.fenrir => Icons.bolt_rounded,
+      };
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          decoration: BoxDecoration(
+            color: selected ? LoopColors.lightGreen : Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: selected ? LoopColors.accentGreen : LoopColors.border,
+              width: selected ? 2 : 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                _icon,
+                size: 22,
+                color: selected
+                    ? LoopColors.brandGreen
+                    : LoopColors.textMuted,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${voice.styleName(language)} · ${voice.apiName}',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    Text(
+                      voice.description(language),
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+              if (selected)
+                const Icon(
+                  Icons.check_circle_rounded,
+                  size: 22,
+                  color: LoopColors.brandGreen,
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

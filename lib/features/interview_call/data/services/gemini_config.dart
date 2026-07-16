@@ -20,15 +20,30 @@ enum RecruiterVoice {
 
   final String apiName;
 
-  String label(AppLanguage language) => switch (this) {
+  String label(AppLanguage language) => '${styleName(language)} ($apiName)';
+
+  String styleName(AppLanguage language) => switch (this) {
     RecruiterVoice.sadaltager =>
-      language == AppLanguage.spanish ? 'Profesional (Sadaltager)' : 'Professional (Sadaltager)',
-    RecruiterVoice.puck =>
-      language == AppLanguage.spanish ? 'Cálido (Puck)' : 'Warm (Puck)',
-    RecruiterVoice.kore =>
-      language == AppLanguage.spanish ? 'Claro (Kore)' : 'Clear (Kore)',
+      language == AppLanguage.spanish ? 'Profesional' : 'Professional',
+    RecruiterVoice.puck => language == AppLanguage.spanish ? 'Cálido' : 'Warm',
+    RecruiterVoice.kore => language == AppLanguage.spanish ? 'Claro' : 'Clear',
     RecruiterVoice.fenrir =>
-      language == AppLanguage.spanish ? 'Directo (Fenrir)' : 'Direct (Fenrir)',
+      language == AppLanguage.spanish ? 'Directo' : 'Direct',
+  };
+
+  String description(AppLanguage language) => switch (this) {
+    RecruiterVoice.sadaltager => language == AppLanguage.spanish
+        ? 'Tono formal y neutro'
+        : 'Formal, neutral tone',
+    RecruiterVoice.puck => language == AppLanguage.spanish
+        ? 'Cercano y relajado'
+        : 'Friendly and relaxed',
+    RecruiterVoice.kore => language == AppLanguage.spanish
+        ? 'Articulado y pausado'
+        : 'Articulate and measured',
+    RecruiterVoice.fenrir => language == AppLanguage.spanish
+        ? 'Enérgico y al grano'
+        : 'Energetic, to the point',
   };
 }
 
