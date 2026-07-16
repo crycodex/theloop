@@ -1,0 +1,368 @@
+{
+  "goalId": "bigTech",
+  "target": { "es": "FAANG / Big Tech", "en": "FAANG / Big Tech" },
+  "finalGoal": {
+    "es": "Superar el proceso completo de entrevistas de una Big Tech con confianza técnica y de comunicación.",
+    "en": "Pass a Big Tech full interview loop with technical and communication confidence."
+  },
+  "steps": [
+    {
+      "id": "bigtech_step1_process",
+      "type": "lesson",
+      "category": { "es": "Behavioral", "en": "Behavioral" },
+      "title": { "es": "El proceso y tu pitch", "en": "The process and your pitch" },
+      "guide": {
+        "es": "Entiende cómo funciona el proceso de entrevistas en Big Tech y prepara una presentación personal de 60 segundos.",
+        "en": "Understand how Big Tech interview loops work and prepare a 60-second personal pitch."
+      },
+      "tips": {
+        "es": ["Practica tu pitch en voz alta", "Investiga el proceso de tu empresa objetivo", "Ten 2 preguntas listas para el entrevistador"],
+        "en": ["Practice your pitch out loud", "Research your target company's process", "Have 2 questions ready for the interviewer"]
+      },
+      "lesson": {
+        "sections": [
+          {
+            "title": { "es": "Las etapas del proceso", "en": "The stages of the loop" },
+            "body": {
+              "es": "Un proceso típico de Big Tech tiene: screening con recruiter, entrevista técnica telefónica, y un 'onsite' de 4-5 entrevistas (coding, system design y behavioral). Cada etapa filtra candidatos, así que prepara cada una por separado.",
+              "en": "A typical Big Tech process includes a recruiter screen, a technical phone screen, and an onsite loop of 4-5 interviews (coding, system design, and behavioral). Each stage filters candidates, so prepare for each one separately."
+            }
+          },
+          {
+            "title": { "es": "Tu pitch de 60 segundos", "en": "Your 60-second pitch" },
+            "body": {
+              "es": "'Cuéntame de ti' abre casi toda entrevista. Estructura: presente (rol actual y fortaleza), pasado (logro relevante con impacto medible), futuro (por qué este puesto). Máximo 60-90 segundos: es un tráiler, no la película completa.",
+              "en": "'Tell me about yourself' opens almost every interview. Structure it as present (current role and strength), past (a relevant achievement with measurable impact), future (why this role). Keep it to 60-90 seconds: it's a trailer, not the whole movie."
+            }
+          },
+          {
+            "title": { "es": "Qué evalúan realmente", "en": "What they actually assess" },
+            "body": {
+              "es": "Más allá de resolver el problema, evalúan señales: cómo comunicas tu razonamiento, cómo reaccionas a pistas, y si colaboras o te bloqueas. Pensar en voz alta y hacer preguntas de clarificación suma tanto como la respuesta correcta.",
+              "en": "Beyond solving the problem, they look for signals: how you communicate your reasoning, how you react to hints, and whether you collaborate or freeze. Thinking out loud and asking clarifying questions counts as much as the right answer."
+            }
+          }
+        ],
+        "quiz": [
+          {
+            "question": {
+              "es": "¿Cuál es la mejor estructura para 'cuéntame de ti'?",
+              "en": "What is the best structure for 'tell me about yourself'?"
+            },
+            "options": {
+              "es": ["Presente, pasado y futuro en 60-90 segundos", "Toda tu historia laboral en orden cronológico", "Solo tus títulos académicos", "Una lista de tus hobbies"],
+              "en": ["Present, past, and future in 60-90 seconds", "Your entire work history in chronological order", "Only your academic degrees", "A list of your hobbies"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "El pitch es un tráiler: rol actual, un logro con impacto y por qué este puesto.",
+              "en": "The pitch is a trailer: current role, one achievement with impact, and why this role."
+            }
+          },
+          {
+            "question": {
+              "es": "Durante un problema de coding, ¿qué señal valora más el entrevistador?",
+              "en": "During a coding problem, which signal does the interviewer value most?"
+            },
+            "options": {
+              "es": ["Comunicar tu razonamiento mientras resuelves", "Escribir en silencio hasta terminar", "Responder lo más rápido posible sin preguntar", "Memorizar soluciones exactas"],
+              "en": ["Communicating your reasoning as you solve", "Writing silently until you finish", "Answering as fast as possible without asking", "Memorizing exact solutions"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Evalúan cómo piensas y colaboras, no solo si llegas a la respuesta.",
+              "en": "They assess how you think and collaborate, not just whether you reach the answer."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Qué etapa suele venir justo antes del 'onsite'?",
+              "en": "Which stage usually comes right before the onsite loop?"
+            },
+            "options": {
+              "es": ["Entrevista técnica telefónica", "Negociación de oferta", "Revisión de referencias", "Examen escrito presencial"],
+              "en": ["Technical phone screen", "Offer negotiation", "Reference checks", "In-person written exam"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "El flujo típico es: recruiter screen → phone screen técnico → onsite de 4-5 entrevistas.",
+              "en": "The typical flow is recruiter screen → technical phone screen → onsite of 4-5 interviews."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "bigtech_step2_star",
+      "type": "lesson",
+      "category": { "es": "Behavioral", "en": "Behavioral" },
+      "title": { "es": "Historias STAR con impacto", "en": "STAR stories with impact" },
+      "guide": {
+        "es": "Construye un banco de historias con el método STAR para responder cualquier pregunta behavioral con métricas.",
+        "en": "Build a story bank using the STAR method to answer any behavioral question with metrics."
+      },
+      "tips": {
+        "es": ["Prepara 5-6 historias reutilizables", "Cuantifica el resultado siempre", "Dedica 60% del relato a la acción"],
+        "en": ["Prepare 5-6 reusable stories", "Always quantify the result", "Spend 60% of the story on the action"]
+      },
+      "lesson": {
+        "sections": [
+          {
+            "title": { "es": "El método STAR", "en": "The STAR method" },
+            "body": {
+              "es": "STAR = Situación, Tarea, Acción, Resultado. Situación y Tarea dan contexto breve (20%), la Acción detalla qué hiciste TÚ (60%), y el Resultado cierra con impacto medible (20%). Evita el 'nosotros' genérico: el entrevistador te evalúa a ti.",
+              "en": "STAR = Situation, Task, Action, Result. Situation and Task give brief context (20%), the Action details what YOU did (60%), and the Result closes with measurable impact (20%). Avoid a generic 'we': the interviewer is evaluating you."
+            }
+          },
+          {
+            "title": { "es": "Tu banco de historias", "en": "Your story bank" },
+            "body": {
+              "es": "Con 5-6 historias fuertes cubres el 90% de preguntas: un conflicto resuelto, un fracaso con aprendizaje, un logro técnico, liderazgo sin autoridad, y una decisión con ambigüedad. Adapta la misma historia al ángulo de cada pregunta.",
+              "en": "With 5-6 strong stories you cover 90% of questions: a resolved conflict, a failure with a lesson, a technical achievement, leadership without authority, and a decision under ambiguity. Adapt the same story to each question's angle."
+            }
+          },
+          {
+            "title": { "es": "Métricas que convencen", "en": "Metrics that convince" },
+            "body": {
+              "es": "'Mejoré el rendimiento' no dice nada; 'reduje la latencia p95 de 800ms a 200ms para 2M de usuarios' sí. Si no tienes el número exacto, estima con honestidad ('aproximadamente 30%'). En Amazon, además, mapea cada historia a un Leadership Principle.",
+              "en": "'I improved performance' says nothing; 'I cut p95 latency from 800ms to 200ms for 2M users' does. If you lack the exact number, estimate honestly ('roughly 30%'). At Amazon, also map each story to a Leadership Principle."
+            }
+          }
+        ],
+        "quiz": [
+          {
+            "question": {
+              "es": "¿Qué parte de una historia STAR debe ocupar más tiempo?",
+              "en": "Which part of a STAR story should take the most time?"
+            },
+            "options": {
+              "es": ["La Acción: qué hiciste tú", "La Situación: todo el contexto", "La Tarea: tu responsabilidad", "El Resultado: el final feliz"],
+              "en": ["The Action: what you did", "The Situation: all the context", "The Task: your responsibility", "The Result: the happy ending"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Alrededor del 60% del relato debe ser la acción concreta que tomaste tú.",
+              "en": "About 60% of the story should be the concrete actions you personally took."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Cuál de estos cierres de historia es más fuerte?",
+              "en": "Which of these story endings is strongest?"
+            },
+            "options": {
+              "es": ["Reduje el tiempo de despliegue de 2 horas a 15 minutos", "Mejoré mucho el proceso del equipo", "Todos quedaron contentos con mi trabajo", "Aprendí bastante de la experiencia"],
+              "en": ["I cut deploy time from 2 hours to 15 minutes", "I greatly improved the team's process", "Everyone was happy with my work", "I learned a lot from the experience"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "El impacto medible y específico es lo que hace memorable una historia.",
+              "en": "Specific, measurable impact is what makes a story memorable."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Por qué conviene tener un banco de 5-6 historias?",
+              "en": "Why is a bank of 5-6 stories useful?"
+            },
+            "options": {
+              "es": ["Una historia adaptada cubre múltiples preguntas", "Para recitarlas todas en cada entrevista", "Porque piden exactamente 6 ejemplos", "Para no tener que escuchar la pregunta"],
+              "en": ["One adapted story covers multiple questions", "So you can recite them all in every interview", "Because they ask for exactly 6 examples", "So you don't need to listen to the question"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Las mismas historias, contadas desde ángulos distintos, cubren el 90% de preguntas behavioral.",
+              "en": "The same stories, told from different angles, cover 90% of behavioral questions."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "bigtech_step3_dsa",
+      "type": "lesson",
+      "category": { "es": "Técnica", "en": "Technical" },
+      "title": { "es": "Coding: estrategia y DS&A", "en": "Coding: strategy and DS&A" },
+      "guide": {
+        "es": "Domina el método para atacar problemas de coding: clarificar, planear, codificar, probar, y analizar complejidad.",
+        "en": "Master the method for coding problems: clarify, plan, code, test, and analyze complexity."
+      },
+      "tips": {
+        "es": ["Clarifica antes de codificar", "Di la complejidad sin que pregunten", "Prueba con casos borde al final"],
+        "en": ["Clarify before coding", "State complexity unprompted", "Test edge cases at the end"]
+      },
+      "lesson": {
+        "sections": [
+          {
+            "title": { "es": "El método de 5 pasos", "en": "The 5-step method" },
+            "body": {
+              "es": "1) Clarifica el problema y los casos borde. 2) Propón un enfoque y valídalo con el entrevistador antes de codificar. 3) Codifica hablando en voz alta. 4) Prueba tu solución con un ejemplo y un caso borde. 5) Analiza complejidad en tiempo y espacio. Saltarte el paso 2 es el error más común.",
+              "en": "1) Clarify the problem and edge cases. 2) Propose an approach and validate it with the interviewer before coding. 3) Code while thinking out loud. 4) Test your solution with an example and an edge case. 5) Analyze time and space complexity. Skipping step 2 is the most common mistake."
+            }
+          },
+          {
+            "title": { "es": "Patrones que más caen", "en": "The most common patterns" },
+            "body": {
+              "es": "La mayoría de problemas se resuelven con pocos patrones: two pointers, sliding window, hash maps, BFS/DFS en árboles y grafos, binary search y programación dinámica básica. Estudiar por patrón rinde mucho más que resolver problemas al azar.",
+              "en": "Most problems reduce to a few patterns: two pointers, sliding window, hash maps, BFS/DFS on trees and graphs, binary search, and basic dynamic programming. Studying by pattern pays far more than solving random problems."
+            }
+          },
+          {
+            "title": { "es": "Cuando te atascas", "en": "When you get stuck" },
+            "body": {
+              "es": "Atascarse es normal y está evaluado: verbaliza qué intentaste y por qué no funciona, propón una solución bruta primero y optimízala después. Pedir una pista bien formulada ('¿voy bien con esta estructura?') es mejor que el silencio.",
+              "en": "Getting stuck is normal and is part of the evaluation: verbalize what you tried and why it fails, propose a brute-force solution first, then optimize. Asking for a well-framed hint ('am I on track with this structure?') beats silence."
+            }
+          }
+        ],
+        "quiz": [
+          {
+            "question": {
+              "es": "¿Qué deberías hacer antes de empezar a escribir código?",
+              "en": "What should you do before writing any code?"
+            },
+            "options": {
+              "es": ["Clarificar el problema y validar tu enfoque", "Escribir la solución óptima de memoria", "Pedir otro problema más fácil", "Empezar a codificar para ganar tiempo"],
+              "en": ["Clarify the problem and validate your approach", "Write the optimal solution from memory", "Ask for an easier problem", "Start coding to save time"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Codificar sin validar el enfoque es el error más común en entrevistas de coding.",
+              "en": "Coding without validating the approach is the most common interview mistake."
+            }
+          },
+          {
+            "question": {
+              "es": "Si no encuentras la solución óptima, ¿qué conviene hacer?",
+              "en": "If you can't find the optimal solution, what should you do?"
+            },
+            "options": {
+              "es": ["Proponer la solución bruta y luego optimizar", "Quedarte en silencio hasta que se te ocurra", "Rendirte y pasar a otra pregunta", "Inventar una complejidad mejor de la real"],
+              "en": ["Propose brute force and then optimize", "Stay silent until inspiration strikes", "Give up and move to another question", "Claim a better complexity than the real one"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Una solución que funciona más un camino de optimización demuestra método y honestidad.",
+              "en": "A working solution plus an optimization path shows method and honesty."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Cuál es la forma más eficiente de estudiar DS&A?",
+              "en": "What is the most efficient way to study DS&A?"
+            },
+            "options": {
+              "es": ["Por patrones (sliding window, BFS/DFS, etc.)", "Resolver problemas aleatorios sin orden", "Memorizar soluciones completas", "Leer teoría sin practicar"],
+              "en": ["By pattern (sliding window, BFS/DFS, etc.)", "Solving random problems with no order", "Memorizing complete solutions", "Reading theory without practice"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Los patrones se transfieren entre problemas; las soluciones memorizadas no.",
+              "en": "Patterns transfer across problems; memorized solutions don't."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "bigtech_step4_systemdesign",
+      "type": "lesson",
+      "category": { "es": "Técnica", "en": "Technical" },
+      "title": { "es": "System design esencial", "en": "System design essentials" },
+      "guide": {
+        "es": "Aprende el framework para diseñar sistemas a escala: requisitos, estimación, diseño de alto nivel y profundización.",
+        "en": "Learn the framework for designing systems at scale: requirements, estimation, high-level design, and deep dives."
+      },
+      "tips": {
+        "es": ["Empieza siempre por los requisitos", "Explica trade-offs, no verdades absolutas", "Dibuja el diseño de alto nivel primero"],
+        "en": ["Always start with requirements", "Explain trade-offs, not absolutes", "Draw the high-level design first"]
+      },
+      "lesson": {
+        "sections": [
+          {
+            "title": { "es": "El framework en 4 fases", "en": "The 4-phase framework" },
+            "body": {
+              "es": "1) Requisitos funcionales y no funcionales (usuarios, escala, latencia). 2) Estimación rápida (QPS, almacenamiento). 3) Diseño de alto nivel: API, servicios, base de datos, caché. 4) Profundización donde el entrevistador dirija. Nunca saltes directo a dibujar cajas sin acordar requisitos.",
+              "en": "1) Functional and non-functional requirements (users, scale, latency). 2) Quick estimation (QPS, storage). 3) High-level design: API, services, database, cache. 4) Deep dive wherever the interviewer steers. Never jump straight to drawing boxes without agreeing on requirements."
+            }
+          },
+          {
+            "title": { "es": "Bloques de construcción", "en": "Building blocks" },
+            "body": {
+              "es": "Los componentes que se repiten en casi todo diseño: load balancer, caché (Redis), base de datos SQL vs NoSQL, colas de mensajes (Kafka), CDN y sharding. Conoce cuándo usar cada uno y su trade-off principal (consistencia vs disponibilidad, latencia vs costo).",
+              "en": "Components that appear in almost every design: load balancer, cache (Redis), SQL vs NoSQL databases, message queues (Kafka), CDN, and sharding. Know when to use each and its main trade-off (consistency vs availability, latency vs cost)."
+            }
+          },
+          {
+            "title": { "es": "Comunicar trade-offs", "en": "Communicating trade-offs" },
+            "body": {
+              "es": "En system design no hay respuesta única: evalúan si justificas decisiones. Frases clave: 'elijo NoSQL aquí porque priorizo escritura masiva sobre transacciones' o 'con más tiempo consideraría X'. Reconocer límites de tu diseño suma puntos, no los resta.",
+              "en": "There is no single answer in system design: they assess whether you justify decisions. Key phrases: 'I choose NoSQL here because I prioritize heavy writes over transactions' or 'with more time I would consider X'. Acknowledging your design's limits earns points, it doesn't cost them."
+            }
+          }
+        ],
+        "quiz": [
+          {
+            "question": {
+              "es": "¿Cuál es el primer paso en una entrevista de system design?",
+              "en": "What is the first step in a system design interview?"
+            },
+            "options": {
+              "es": ["Acordar requisitos funcionales y no funcionales", "Dibujar todos los microservicios", "Elegir el lenguaje de programación", "Definir el esquema exacto de la base de datos"],
+              "en": ["Agree on functional and non-functional requirements", "Draw all the microservices", "Choose the programming language", "Define the exact database schema"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Sin requisitos acordados no puedes justificar ninguna decisión de diseño.",
+              "en": "Without agreed requirements you can't justify any design decision."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Qué demuestra decir 'elijo NoSQL porque priorizo escrituras masivas'?",
+              "en": "What does saying 'I choose NoSQL because I prioritize heavy writes' demonstrate?"
+            },
+            "options": {
+              "es": ["Razonamiento por trade-offs", "Que NoSQL siempre es mejor", "Falta de conocimiento de SQL", "Que evitas comprometerte"],
+              "en": ["Trade-off reasoning", "That NoSQL is always better", "Lack of SQL knowledge", "That you avoid commitment"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Justificar decisiones frente a alternativas es la señal principal que buscan.",
+              "en": "Justifying decisions against alternatives is the main signal they look for."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Para qué sirve principalmente una caché como Redis?",
+              "en": "What is a cache like Redis mainly for?"
+            },
+            "options": {
+              "es": ["Reducir latencia y carga en la base de datos", "Reemplazar la base de datos principal", "Garantizar transacciones ACID", "Servir archivos estáticos globalmente"],
+              "en": ["Reducing latency and database load", "Replacing the main database", "Guaranteeing ACID transactions", "Serving static files globally"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "La caché guarda lecturas frecuentes en memoria para no golpear la base de datos.",
+              "en": "A cache keeps hot reads in memory so they don't hit the database."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "bigtech_step5_call",
+      "type": "call",
+      "category": { "es": "Práctica", "en": "Practice" },
+      "title": { "es": "Entrevista simulada en vivo", "en": "Live mock interview" },
+      "guide": {
+        "es": "Pon todo en práctica: inicia un loop de entrevista con IA para tu trayecto Big Tech y recibe un reporte con tu puntaje.",
+        "en": "Put it all into practice: start an AI interview loop for your Big Tech track and get a scored report."
+      },
+      "tips": {
+        "es": ["Usa tus historias STAR preparadas", "Piensa en voz alta como practicaste", "Revisa el reporte y repite el loop"],
+        "en": ["Use your prepared STAR stories", "Think out loud as you practiced", "Review the report and repeat the loop"]
+      }
+    }
+  ]
+}

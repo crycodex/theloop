@@ -1,0 +1,368 @@
+{
+  "goalId": "productManager",
+  "target": { "es": "Product Manager", "en": "Product Manager" },
+  "finalGoal": {
+    "es": "Resolver casos de product sense, métricas y ejecución con estructura para conseguir un rol de PM.",
+    "en": "Solve product sense, metrics, and execution cases with structure to land a PM role."
+  },
+  "steps": [
+    {
+      "id": "pm_step1_productsense",
+      "type": "lesson",
+      "category": { "es": "Producto", "en": "Product" },
+      "title": { "es": "Product sense con estructura", "en": "Product sense with structure" },
+      "guide": {
+        "es": "Aprende el framework para responder 'diseña un producto para X' sin saltar directo a soluciones.",
+        "en": "Learn the framework to answer 'design a product for X' without jumping straight to solutions."
+      },
+      "tips": {
+        "es": ["Clarifica el objetivo antes de diseñar", "Elige un segmento de usuario y justifícalo", "Prioriza una solución, no diez"],
+        "en": ["Clarify the goal before designing", "Pick one user segment and justify it", "Prioritize one solution, not ten"]
+      },
+      "lesson": {
+        "sections": [
+          {
+            "title": { "es": "El framework de diseño", "en": "The design framework" },
+            "body": {
+              "es": "Ante 'diseña un producto para dueños de mascotas': 1) Clarifica objetivo y alcance. 2) Segmenta usuarios y elige uno con justificación. 3) Enumera sus pain points y prioriza el más valioso. 4) Propón 2-3 soluciones y elige una. 5) Define métricas de éxito y riesgos. Saltar al paso 4 sin los anteriores es el fallo que elimina a la mayoría.",
+              "en": "Facing 'design a product for pet owners': 1) Clarify goal and scope. 2) Segment users and pick one with justification. 3) List their pain points and prioritize the most valuable. 4) Propose 2-3 solutions and choose one. 5) Define success metrics and risks. Jumping to step 4 without the others is the failure that eliminates most candidates."
+            }
+          },
+          {
+            "title": { "es": "Usuarios antes que features", "en": "Users before features" },
+            "body": {
+              "es": "Los PMs fuertes hablan de personas antes que de pantallas: quién es el usuario, qué intenta lograr, qué le duele hoy. Un truco que impresiona: describir el 'job to be done' ('el dueño no quiere una app, quiere no preocuparse cuando viaja'). Las features salen solas cuando el problema está bien definido.",
+              "en": "Strong PMs talk about people before screens: who the user is, what they're trying to accomplish, what hurts today. A trick that impresses: describe the 'job to be done' ('the owner doesn't want an app, they want to stop worrying when they travel'). Features fall out naturally once the problem is well defined."
+            }
+          },
+          {
+            "title": { "es": "Cerrar con métricas y riesgos", "en": "Closing with metrics and risks" },
+            "body": {
+              "es": "Todo diseño cierra con: cómo mido el éxito (una métrica norte + 1-2 guardrails), qué riesgos veo (adopción, abuso, canibalización) y qué lanzaría primero como MVP. Este cierre convierte una idea bonita en un plan de PM y es donde se gana la entrevista.",
+              "en": "Every design closes with: how I measure success (one north-star metric + 1-2 guardrails), what risks I see (adoption, abuse, cannibalization), and what I'd ship first as an MVP. This close turns a nice idea into a PM plan, and it's where the interview is won."
+            }
+          }
+        ],
+        "quiz": [
+          {
+            "question": {
+              "es": "¿Cuál es el error más común en preguntas de product sense?",
+              "en": "What is the most common mistake in product sense questions?"
+            },
+            "options": {
+              "es": ["Saltar a soluciones sin definir usuario y problema", "Hacer demasiadas preguntas de clarificación", "Elegir un solo segmento de usuarios", "Mencionar métricas al final"],
+              "en": ["Jumping to solutions without defining user and problem", "Asking too many clarifying questions", "Choosing a single user segment", "Mentioning metrics at the end"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Sin usuario y problema definidos, cualquier solución es una adivinanza.",
+              "en": "Without a defined user and problem, any solution is a guess."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Qué es el 'job to be done' de un producto?",
+              "en": "What is a product's 'job to be done'?"
+            },
+            "options": {
+              "es": ["El progreso que el usuario realmente quiere lograr", "La lista de features del backlog", "El puesto del PM en el organigrama", "El roadmap trimestral"],
+              "en": ["The progress the user actually wants to make", "The backlog's feature list", "The PM's position in the org chart", "The quarterly roadmap"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "El usuario 'contrata' el producto para lograr algo: ese algo guía el diseño.",
+              "en": "Users 'hire' the product to accomplish something: that something guides design."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Con qué debe cerrar una respuesta de diseño de producto?",
+              "en": "How should a product design answer close?"
+            },
+            "options": {
+              "es": ["Métricas de éxito, riesgos y el MVP inicial", "Una lista de todas las features posibles", "El presupuesto exacto de ingeniería", "Los colores de la interfaz"],
+              "en": ["Success metrics, risks, and the initial MVP", "A list of every possible feature", "The exact engineering budget", "The interface colors"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "El cierre con métricas, riesgos y MVP convierte la idea en plan ejecutable.",
+              "en": "Closing with metrics, risks, and an MVP turns the idea into an executable plan."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "pm_step2_metrics",
+      "type": "lesson",
+      "category": { "es": "Analítica", "en": "Analytics" },
+      "title": { "es": "Métricas y experimentos", "en": "Metrics and experiments" },
+      "guide": {
+        "es": "Domina las preguntas de métricas: definir el éxito de un feature, diagnosticar caídas y diseñar A/B tests.",
+        "en": "Master metrics questions: defining feature success, diagnosing drops, and designing A/B tests."
+      },
+      "tips": {
+        "es": ["Una métrica norte, pocas guardrails", "Segmenta antes de concluir en una caída", "Define el criterio de éxito antes del test"],
+        "en": ["One north-star metric, few guardrails", "Segment before concluding on a drop", "Define success criteria before the test"]
+      },
+      "lesson": {
+        "sections": [
+          {
+            "title": { "es": "Elegir métricas de éxito", "en": "Choosing success metrics" },
+            "body": {
+              "es": "Para cualquier feature: una métrica norte que capture el valor real (no vanity metrics: usuarios registrados no es valor, retención sí), métricas de adopción del feature, y guardrails que no deben empeorar (latencia, churn, quejas). El framework AARRR (adquisición, activación, retención, ingresos, referidos) ayuda a no olvidar etapas del funnel.",
+              "en": "For any feature: one north-star metric capturing real value (no vanity metrics: registered users isn't value, retention is), feature adoption metrics, and guardrails that must not degrade (latency, churn, complaints). The AARRR framework (acquisition, activation, retention, revenue, referral) helps cover the funnel."
+            }
+          },
+          {
+            "title": { "es": "Diagnosticar una caída", "en": "Diagnosing a metric drop" },
+            "body": {
+              "es": "'El engagement cayó 15%, ¿qué haces?' Método: 1) Clarifica la métrica y desde cuándo. 2) Descarta problemas de medición (¿cambió el tracking?). 3) Segmenta: ¿plataforma, país, versión de app, tipo de usuario? 4) Busca eventos: lanzamientos, estacionalidad, competencia. La caída casi nunca es uniforme: el segmento afectado apunta a la causa.",
+              "en": "'Engagement dropped 15%, what do you do?' Method: 1) Clarify the metric and since when. 2) Rule out measurement issues (did tracking change?). 3) Segment: platform, country, app version, user type? 4) Look for events: launches, seasonality, competition. The drop is almost never uniform: the affected segment points to the cause."
+            }
+          },
+          {
+            "title": { "es": "A/B tests bien hechos", "en": "A/B tests done right" },
+            "body": {
+              "es": "Diseño mínimo: hipótesis clara ('el nuevo onboarding subirá activación 5%'), criterio de éxito y métricas guardrail definidos ANTES de lanzar, tamaño de muestra y duración suficientes (mínimo un ciclo semanal completo), y un solo cambio por experimento. Cortar el test al primer resultado positivo es el error clásico que infla falsos positivos.",
+              "en": "Minimum design: a clear hypothesis ('the new onboarding will lift activation 5%'), success criteria and guardrail metrics defined BEFORE launch, sufficient sample size and duration (at least one full weekly cycle), and one change per experiment. Stopping the test at the first positive result is the classic error that inflates false positives."
+            }
+          }
+        ],
+        "quiz": [
+          {
+            "question": {
+              "es": "El engagement cayó 15%. ¿Cuál es tu primer paso?",
+              "en": "Engagement dropped 15%. What is your first step?"
+            },
+            "options": {
+              "es": ["Verificar si es un problema de medición o tracking", "Lanzar un rediseño completo de la app", "Culpar al último feature lanzado", "Ignorarlo hasta el próximo trimestre"],
+              "en": ["Check whether it's a measurement or tracking issue", "Launch a full app redesign", "Blame the latest shipped feature", "Ignore it until next quarter"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Muchas 'caídas' son bugs de tracking; descártalo antes de investigar causas reales.",
+              "en": "Many 'drops' are tracking bugs; rule that out before hunting real causes."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Por qué 'usuarios registrados' es una vanity metric?",
+              "en": "Why is 'registered users' a vanity metric?"
+            },
+            "options": {
+              "es": ["Crece siempre y no refleja valor entregado", "Porque es difícil de medir", "Porque es ilegal reportarla", "No lo es: es la mejor métrica"],
+              "en": ["It always grows and doesn't reflect delivered value", "Because it's hard to measure", "Because reporting it is illegal", "It isn't: it's the best metric"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Un registro no implica uso ni valor; la retención sí lo captura.",
+              "en": "A signup implies neither usage nor value; retention captures both."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Cuándo se define el criterio de éxito de un A/B test?",
+              "en": "When should an A/B test's success criteria be defined?"
+            },
+            "options": {
+              "es": ["Antes de lanzar el experimento", "Cuando los resultados se vean bien", "Después de terminar el test", "Nunca: los datos hablan solos"],
+              "en": ["Before launching the experiment", "Once the results look good", "After the test ends", "Never: the data speaks for itself"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Definir el éxito a posteriori permite justificar cualquier resultado: sesgo puro.",
+              "en": "Defining success after the fact lets you justify any result: pure bias."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "pm_step3_execution",
+      "type": "lesson",
+      "category": { "es": "Ejecución", "en": "Execution" },
+      "title": { "es": "Priorización y ejecución", "en": "Prioritization and execution" },
+      "guide": {
+        "es": "Responde casos de priorización con frameworks (RICE) y demuestra cómo ejecutas: trade-offs, deadlines y crisis.",
+        "en": "Answer prioritization cases with frameworks (RICE) and show how you execute: trade-offs, deadlines, and crises."
+      },
+      "tips": {
+        "es": ["Prioriza contra el objetivo del trimestre", "Comunica qué NO harás y por qué", "En crisis: usuario primero, culpas después"],
+        "en": ["Prioritize against the quarter's goal", "Communicate what you will NOT do and why", "In a crisis: user first, blame later"]
+      },
+      "lesson": {
+        "sections": [
+          {
+            "title": { "es": "Priorizar con criterio", "en": "Prioritizing with judgment" },
+            "body": {
+              "es": "RICE (Reach × Impact × Confidence ÷ Effort) ordena ideas, pero el examen real es contra qué priorizas: el objetivo del negocio AHORA. Si el trimestre es retención, el feature de crecimiento espera aunque su RICE sea alto. Priorizar también es decir no: nombra explícitamente lo que dejas fuera y por qué.",
+              "en": "RICE (Reach × Impact × Confidence ÷ Effort) ranks ideas, but the real test is what you prioritize against: the business goal RIGHT NOW. If the quarter is about retention, the growth feature waits even with a high RICE score. Prioritizing is also saying no: explicitly name what you're cutting and why."
+            }
+          },
+          {
+            "title": { "es": "El caso del deadline imposible", "en": "The impossible deadline case" },
+            "body": {
+              "es": "'Ingeniería dice que no llega al lanzamiento, ¿qué haces?' Orden correcto: entender el porqué del retraso, recortar alcance protegiendo el core del feature, comunicar temprano a stakeholders con opciones (no problemas), y solo mover la fecha si recortar no alcanza. Responder 'presiono al equipo para que trabaje más' es descalificatorio.",
+              "en": "'Engineering says they'll miss the launch, what do you do?' Correct order: understand why it slipped, cut scope while protecting the feature's core, communicate early to stakeholders with options (not problems), and only move the date if cutting isn't enough. Answering 'I pressure the team to work harder' is disqualifying."
+            }
+          },
+          {
+            "title": { "es": "Gestión de crisis", "en": "Crisis management" },
+            "body": {
+              "es": "'Acabas de lanzar y hay un bug crítico': primero mitiga el daño al usuario (rollback, feature flag off, comunicado), luego coordina el fix con un responsable claro, y al final el postmortem sin culpas centrado en el proceso. El orden importa: buscar al culpable antes de mitigar es la respuesta que los descarta.",
+              "en": "'You just launched and there's a critical bug': first mitigate user harm (rollback, feature flag off, communication), then coordinate the fix with one clear owner, and finally a blameless postmortem focused on process. Order matters: hunting for the culprit before mitigating is the answer that gets candidates rejected."
+            }
+          }
+        ],
+        "quiz": [
+          {
+            "question": {
+              "es": "En RICE, ¿qué significa la E?",
+              "en": "In RICE, what does the E stand for?"
+            },
+            "options": {
+              "es": ["Effort: el costo de construirlo", "Engagement: cuánto se usará", "Earnings: los ingresos esperados", "Excellence: la calidad del código"],
+              "en": ["Effort: the cost to build it", "Engagement: how much it will be used", "Earnings: expected revenue", "Excellence: code quality"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "RICE = Reach × Impact × Confidence ÷ Effort: el esfuerzo divide, no suma.",
+              "en": "RICE = Reach × Impact × Confidence ÷ Effort: effort divides, it doesn't add."
+            }
+          },
+          {
+            "question": {
+              "es": "Ingeniería no llega al deadline. ¿Cuál es tu primera palanca?",
+              "en": "Engineering will miss the deadline. What is your first lever?"
+            },
+            "options": {
+              "es": ["Recortar alcance protegiendo el core del feature", "Exigir horas extra al equipo", "Cancelar el proyecto entero", "Ocultar el retraso a los stakeholders"],
+              "en": ["Cut scope while protecting the feature's core", "Demand overtime from the team", "Cancel the whole project", "Hide the delay from stakeholders"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Alcance es la palanca sana; presionar con horas quema al equipo y a ti en la entrevista.",
+              "en": "Scope is the healthy lever; pushing overtime burns the team and you in the interview."
+            }
+          },
+          {
+            "question": {
+              "es": "Hay un bug crítico recién lanzado. ¿Qué haces primero?",
+              "en": "There's a critical bug right after launch. What do you do first?"
+            },
+            "options": {
+              "es": ["Mitigar el daño al usuario (rollback o flag off)", "Buscar quién escribió el bug", "Escribir el postmortem inmediatamente", "Esperar a ver si se arregla solo"],
+              "en": ["Mitigate user harm (rollback or flag off)", "Find who wrote the bug", "Write the postmortem immediately", "Wait to see if it fixes itself"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Usuario primero, fix después, postmortem sin culpas al final: el orden es la respuesta.",
+              "en": "User first, fix second, blameless postmortem last: the order is the answer."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "pm_step4_influence",
+      "type": "lesson",
+      "category": { "es": "Behavioral", "en": "Behavioral" },
+      "title": { "es": "Influencia sin autoridad", "en": "Influence without authority" },
+      "guide": {
+        "es": "Prepara las historias behavioral clave del PM: alinear stakeholders, desacuerdos con ingeniería y decisiones con datos incompletos.",
+        "en": "Prepare the key PM behavioral stories: aligning stakeholders, disagreements with engineering, and decisions with incomplete data."
+      },
+      "tips": {
+        "es": ["Convence con datos y usuarios, no con jerarquía", "Prepara una historia de desacuerdo resuelto", "Muestra decisiones bajo ambigüedad"],
+        "en": ["Convince with data and users, not hierarchy", "Prepare a resolved-disagreement story", "Show decisions under ambiguity"]
+      },
+      "lesson": {
+        "sections": [
+          {
+            "title": { "es": "El superpoder del PM", "en": "The PM superpower" },
+            "body": {
+              "es": "El PM no manda sobre ingeniería, diseño ni ventas: influye. Las herramientas: datos que hacen obvia la decisión, la voz del usuario (nada convence más que ver a un usuario atascarse), y objetivos compartidos ('ambos queremos subir la retención'). Tus historias deben mostrar personas que cambiaron de opinión por tu trabajo, no por tu cargo.",
+              "en": "The PM commands neither engineering, design, nor sales: they influence. The tools: data that makes the decision obvious, the user's voice (nothing convinces like watching a user get stuck), and shared goals ('we both want retention up'). Your stories must show people changing their minds because of your work, not your title."
+            }
+          },
+          {
+            "title": { "es": "Desacuerdo con ingeniería", "en": "Disagreeing with engineering" },
+            "body": {
+              "es": "La pregunta favorita: 'cuéntame cuando no estuviste de acuerdo con un ingeniero'. Estructura ganadora: entendiste su posición primero (quizá tenía razón parcial), trajiste evidencia nueva (datos, usuarios, costo de oportunidad), cediste en lo que no era esencial, y el resultado validó la decisión. Ganar la discusión perdiendo la relación es perder.",
+              "en": "The favorite question: 'tell me about disagreeing with an engineer'. Winning structure: you understood their position first (maybe they were partially right), brought new evidence (data, users, opportunity cost), conceded what wasn't essential, and the outcome validated the decision. Winning the argument while losing the relationship is losing."
+            }
+          },
+          {
+            "title": { "es": "Decidir con datos incompletos", "en": "Deciding with incomplete data" },
+            "body": {
+              "es": "Los PMs deciden siempre con información parcial. Muestra tu proceso: qué datos tenías, qué supuestos hiciste explícitos, por qué el costo de esperar superaba el riesgo de decidir, y cómo instrumentaste la decisión para corregir rápido si te equivocabas. La reversibilidad de la decisión define cuánta certeza necesitas.",
+              "en": "PMs always decide with partial information. Show your process: what data you had, which assumptions you made explicit, why the cost of waiting exceeded the risk of deciding, and how you instrumented the decision to correct quickly if wrong. A decision's reversibility defines how much certainty you need."
+            }
+          }
+        ],
+        "quiz": [
+          {
+            "question": {
+              "es": "¿Cuál es la herramienta principal del PM para influir?",
+              "en": "What is the PM's main tool for influence?"
+            },
+            "options": {
+              "es": ["Datos y la voz del usuario", "Su posición en el organigrama", "Escalar todo al CEO", "Aprobar o negar vacaciones"],
+              "en": ["Data and the user's voice", "Their position in the org chart", "Escalating everything to the CEO", "Approving or denying vacations"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "El PM influye con evidencia y objetivos compartidos: no tiene autoridad formal.",
+              "en": "The PM influences with evidence and shared goals: they have no formal authority."
+            }
+          },
+          {
+            "question": {
+              "es": "En una historia de desacuerdo con ingeniería, ¿qué debe aparecer primero?",
+              "en": "In a disagreement-with-engineering story, what should come first?"
+            },
+            "options": {
+              "es": ["Que entendiste la posición del ingeniero", "Que tenías razón desde el principio", "Que escalaste a tu jefe de inmediato", "Que ignoraste su opinión con elegancia"],
+              "en": ["That you understood the engineer's position", "That you were right from the start", "That you escalated to your boss immediately", "That you elegantly ignored their opinion"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Escuchar primero da credibilidad y a menudo revela que la otra parte tenía razón parcial.",
+              "en": "Listening first builds credibility and often reveals the other side was partially right."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Qué define cuánta certeza necesitas antes de decidir?",
+              "en": "What defines how much certainty you need before deciding?"
+            },
+            "options": {
+              "es": ["La reversibilidad de la decisión", "La opinión del stakeholder más ruidoso", "El tamaño de la presentación", "La fecha de tu próxima evaluación"],
+              "en": ["The decision's reversibility", "The loudest stakeholder's opinion", "The size of the slide deck", "The date of your next review"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Decisiones reversibles piden velocidad; las irreversibles piden más evidencia.",
+              "en": "Reversible decisions call for speed; irreversible ones call for more evidence."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "pm_step5_call",
+      "type": "call",
+      "category": { "es": "Práctica", "en": "Practice" },
+      "title": { "es": "Entrevista PM en vivo", "en": "Live PM interview" },
+      "guide": {
+        "es": "Integra product sense, métricas y behavioral: inicia un loop de entrevista en tu trayecto PM y recibe tu reporte con puntaje.",
+        "en": "Integrate product sense, metrics, and behavioral skills: start an interview loop on your PM track and get your scored report."
+      },
+      "tips": {
+        "es": ["Estructura en voz alta cada respuesta", "Cierra siempre con métricas y riesgos", "Repite el loop para subir tu nivel"],
+        "en": ["Structure every answer out loud", "Always close with metrics and risks", "Repeat the loop to raise your level"]
+      }
+    }
+  ]
+}

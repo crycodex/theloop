@@ -32,13 +32,31 @@ class RoadmapCubit extends Cubit<RoadmapState> {
   Future<void> load() async {
     emit(const RoadmapLoading());
     try {
+      final tracks = await _tracksRepository.getTracks();
+
+      final catalog = await _loadCatalogRoadmap();
+      if (catalog != null) {
+        final completed = await _repository.getCompletedStepIds();
+        emit(
+          RoadmapLoaded(
+            _withCatalogStates(catalog, completed, tracks),
+            userLevel: _userLevel(tracks),
+          ),
+        );
+        return;
+      }
+
       final roadmap = await _repository.getLatest();
       if (roadmap == null || roadmap.steps.isEmpty) {
         emit(const RoadmapEmpty());
         return;
       }
-      final tracks = await _tracksRepository.getTracks();
-      emit(RoadmapLoaded(_withDerivedStates(roadmap, tracks)));
+      emit(
+        RoadmapLoaded(
+          _withDerivedStates(roadmap, tracks),
+          userLevel: _userLevel(tracks),
+        ),
+      );
     } catch (_) {
       emit(const RoadmapEmpty());
     }
@@ -62,14 +80,86 @@ class RoadmapCubit extends Cubit<RoadmapState> {
         language: language,
       );
       await _repository.saveLatest(roadmap);
-      emit(RoadmapLoaded(_withDerivedStates(roadmap, tracks)));
+      emit(
+        RoadmapLoaded(
+          _withDerivedStates(roadmap, tracks),
+          userLevel: _userLevel(tracks),
+        ),
+      );
     } catch (error) {
       emit(RoadmapError(error.toString()));
     }
   }
 
-  /// El avance se deriva de los ciclos completados en todos los trayectos:
-  /// el último paso solo se completa avanzando más allá de él.
+  /// Marca la lección como completada y refresca los estados de los pasos
+  /// sin volver a leer el catálogo.
+  Future<void> completeStep(String stepId) async {
+    final current = state;
+    await _repository.markStepCompleted(stepId);
+    if (current is! RoadmapLoaded || !current.roadmap.isCatalog) {
+      await load();
+      return;
+    }
+    final completed = await _repository.getCompletedStepIds();
+    final tracks = await _tracksRepository.getTracks();
+    emit(
+      RoadmapLoaded(
+        _withCatalogStates(current.roadmap, completed, tracks),
+        userLevel: _userLevel(tracks),
+      ),
+    );
+  }
+
+  /// El nivel se identifica con la primera llamada: el mayor nivel logrado
+  /// entre los trayectos con al menos un ciclo completado.
+  double? _userLevel(List<InterviewTrack> tracks) {
+    final levels = tracks
+        .where((track) => track.cyclesCompleted > 0)
+        .map((track) => track.latestLevel);
+    if (levels.isEmpty) return null;
+    return levels.reduce(max);
+  }
+
+  Future<Roadmap?> _loadCatalogRoadmap() async {
+    try {
+      final profile = await _profileRepository.getProfile();
+      if (profile.target == 'custom') return null;
+      return await _repository.getCatalogForGoal(
+        profile.target,
+        _settingsCubit.state.language,
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Catálogo: un paso lección se completa al aprobar su quiz; el paso de
+  /// llamada se completa al terminar al menos un ciclo de loop.
+  Roadmap _withCatalogStates(
+    Roadmap roadmap,
+    Set<String> completedIds,
+    List<InterviewTrack> tracks,
+  ) {
+    final hasCycles = tracks.any((track) => track.cyclesCompleted > 0);
+    var currentAssigned = false;
+    final steps = <RoadmapStep>[];
+    for (final step in roadmap.steps) {
+      final isCompleted = completedIds.contains(step.id) ||
+          (step.type == RoadmapStepType.call && hasCycles);
+      if (isCompleted) {
+        steps.add(step.copyWith(state: RoadmapStepState.completed));
+      } else if (!currentAssigned) {
+        currentAssigned = true;
+        steps.add(step.copyWith(state: RoadmapStepState.current));
+      } else {
+        steps.add(step.copyWith(state: RoadmapStepState.locked));
+      }
+    }
+    return roadmap.copyWith(steps: steps);
+  }
+
+  /// Generado con Gemini: el avance se deriva de los ciclos completados en
+  /// todos los trayectos; el último paso solo se completa avanzando más allá.
   Roadmap _withDerivedStates(Roadmap roadmap, List<InterviewTrack> tracks) {
     final totalCycles = tracks.fold<int>(
       0,

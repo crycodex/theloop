@@ -17,9 +17,13 @@ class RoadmapGenerating extends RoadmapState {
 }
 
 class RoadmapLoaded extends RoadmapState {
-  const RoadmapLoaded(this.roadmap);
+  const RoadmapLoaded(this.roadmap, {this.userLevel});
 
   final Roadmap roadmap;
+
+  /// Nivel identificado tras la primera llamada de loop (null si aún no hay
+  /// ciclos completados).
+  final double? userLevel;
 }
 
 class RoadmapError extends RoadmapState {

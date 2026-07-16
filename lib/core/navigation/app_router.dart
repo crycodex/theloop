@@ -13,6 +13,7 @@ import '../../features/loops/presentation/loops_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screens.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/recap/presentation/recap_screen.dart';
+import '../../features/roadmap/presentation/roadmap_lesson_screen.dart';
 import '../../features/roadmap/presentation/roadmap_screen.dart';
 import 'app_shell.dart';
 
@@ -144,6 +145,15 @@ final routes = [
     path: '/loops/create',
     pageBuilder: (context, state) =>
         _navPage(state: state, child: const CreateTrackScreen()),
+  ),
+  GoRoute(
+    path: '/roadmap/lesson/:stepId',
+    pageBuilder: (context, state) => _navPage(
+      state: state,
+      child: RoadmapLessonScreen(
+        stepId: state.pathParameters['stepId'] ?? '',
+      ),
+    ),
   ),
   GoRoute(
     path: '/profile',

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/localization/app_strings.dart';
 import '../../../core/navigation/app_shell.dart';
 import '../../../core/theme/loop_colors.dart';
+import '../../../core/widgets/level_circle.dart';
 import '../../../core/widgets/loop_card.dart';
 import '../domain/entities/roadmap.dart';
 import 'cubit/roadmap_cubit.dart';
@@ -40,10 +42,7 @@ class RoadmapScreen extends StatelessWidget {
                     strings: strings,
                     message: message,
                   ),
-                RoadmapLoaded(:final roadmap) => _LoadedView(
-                    strings: strings,
-                    roadmap: roadmap,
-                  ),
+                RoadmapLoaded() => _LoadedView(strings: strings, state: state),
               };
             },
           ),
@@ -165,13 +164,18 @@ class _ErrorView extends StatelessWidget {
 }
 
 class _LoadedView extends StatelessWidget {
-  const _LoadedView({required this.strings, required this.roadmap});
+  const _LoadedView({required this.strings, required this.state});
 
   final AppStrings strings;
-  final Roadmap roadmap;
+  final RoadmapLoaded state;
 
   @override
   Widget build(BuildContext context) {
+    final roadmap = state.roadmap;
+    final completedCount = roadmap.steps
+        .where((step) => step.state == RoadmapStepState.completed)
+        .length;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -183,178 +187,404 @@ class _LoadedView extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ),
-            TextButton.icon(
-              onPressed: () => context.read<RoadmapCubit>().generate(),
-              icon: const Icon(Icons.refresh_rounded, size: 18),
-              label: Text(strings.roadmapRegenerateCta),
-            ),
+            if (!roadmap.isCatalog)
+              TextButton.icon(
+                onPressed: () => context.read<RoadmapCubit>().generate(),
+                icon: const Icon(Icons.refresh_rounded, size: 18),
+                label: Text(strings.roadmapRegenerateCta),
+              ),
           ],
         ),
         const SizedBox(height: 14),
-        LoopCard(
-          color: LoopColors.brandGreen,
-          child: Row(
-            children: [
-              const Icon(
-                Icons.flag_rounded,
-                color: LoopColors.accentGreen,
-                size: 34,
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Text(
-                  roadmap.finalGoal,
+        _LevelHeaderCard(
+          strings: strings,
+          userLevel: state.userLevel,
+          finalGoal: roadmap.finalGoal,
+          progressLabel: strings.roadmapStepsProgress(
+            completedCount,
+            roadmap.steps.length,
+          ),
+        ),
+        const SizedBox(height: 26),
+        _RoadmapPath(strings: strings, steps: roadmap.steps),
+      ],
+    );
+  }
+}
+
+class _LevelHeaderCard extends StatelessWidget {
+  const _LevelHeaderCard({
+    required this.strings,
+    required this.userLevel,
+    required this.finalGoal,
+    required this.progressLabel,
+  });
+
+  final AppStrings strings;
+  final double? userLevel;
+  final String finalGoal;
+  final String progressLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final level = userLevel;
+    return LoopCard(
+      color: LoopColors.brandGreen,
+      child: Row(
+        children: [
+          if (level != null)
+            LevelCircle(
+              level: level,
+              size: 74,
+              textColor: Colors.white,
+            )
+          else
+            const Icon(
+              Icons.phone_in_talk_rounded,
+              color: LoopColors.accentGreen,
+              size: 40,
+            ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  level != null
+                      ? strings.levelAchieved(level)
+                      : strings.roadmapLevelPending,
                   style: Theme.of(context)
                       .textTheme
                       .titleMedium
                       ?.copyWith(color: Colors.white),
                 ),
-              ),
-            ],
+                const SizedBox(height: 6),
+                Text(
+                  finalGoal,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Colors.white.withValues(alpha: 0.82),
+                      ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: LoopColors.accentGreen.withValues(alpha: 0.25),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  child: Text(
+                    progressLabel,
+                    style: Theme.of(context)
+                        .textTheme
+                        .labelSmall
+                        ?.copyWith(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: 22),
-        for (var index = 0; index < roadmap.steps.length; index++)
-          _RoadmapStepTile(
-            strings: strings,
-            step: roadmap.steps[index],
-            isLast: index == roadmap.steps.length - 1,
+        ],
+      ),
+    );
+  }
+}
+
+class _RoadmapPath extends StatelessWidget {
+  const _RoadmapPath({required this.strings, required this.steps});
+
+  final AppStrings strings;
+  final List<RoadmapStep> steps;
+
+  /// Alineaciones horizontales que dibujan el camino en S, estilo Duolingo.
+  static const _serpentine = [0.0, -0.6, -0.95, -0.6, 0.0, 0.6, 0.95, 0.6];
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        for (var i = 0; i < steps.length; i++)
+          Align(
+            alignment: Alignment(_serpentine[i % _serpentine.length], 0),
+            child: Padding(
+              padding: EdgeInsets.only(bottom: i == steps.length - 1 ? 0 : 22),
+              child: _PathNode(strings: strings, step: steps[i]),
+            ),
           ),
       ],
     );
   }
 }
 
-class _RoadmapStepTile extends StatelessWidget {
-  const _RoadmapStepTile({
-    required this.strings,
-    required this.step,
-    required this.isLast,
-  });
+class _PathNode extends StatelessWidget {
+  const _PathNode({required this.strings, required this.step});
 
   final AppStrings strings;
   final RoadmapStep step;
-  final bool isLast;
+
+  bool get _isCurrent => step.state == RoadmapStepState.current;
+
+  bool get _isCompleted => step.state == RoadmapStepState.completed;
+
+  IconData get _icon {
+    if (_isCompleted) return Icons.check_rounded;
+    if (step.type == RoadmapStepType.call) return Icons.phone_in_talk_rounded;
+    if (step.state == RoadmapStepState.locked) return Icons.lock_rounded;
+    return Icons.menu_book_rounded;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final isCurrent = step.state == RoadmapStepState.current;
-    final isCompleted = step.state == RoadmapStepState.completed;
+    final circleColor = _isCurrent || _isCompleted
+        ? LoopColors.accentGreen
+        : LoopColors.border;
+    final iconColor = _isCurrent || _isCompleted
+        ? LoopColors.brandGreen
+        : LoopColors.textMuted;
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Column(
+    final circle = Container(
+      width: 68,
+      height: 68,
+      decoration: BoxDecoration(
+        color: circleColor,
+        shape: BoxShape.circle,
+        border: _isCurrent
+            ? Border.all(color: LoopColors.brandGreen, width: 3)
+            : null,
+        boxShadow: [
+          BoxShadow(
+            color: _isCurrent || _isCompleted
+                ? LoopColors.brandGreen.withValues(alpha: 0.35)
+                : Colors.black.withValues(alpha: 0.12),
+            offset: const Offset(0, 5),
+            blurRadius: 0,
+          ),
+        ],
+      ),
+      child: Icon(_icon, size: 30, color: iconColor),
+    );
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(24),
+      onTap: () => _showStepSheet(context),
+      child: SizedBox(
+        width: 130,
+        child: Column(
           children: [
-            Container(
-              width: 34,
-              height: 34,
-              decoration: BoxDecoration(
-                color: isCurrent || isCompleted
-                    ? LoopColors.accentGreen
-                    : LoopColors.border,
-                shape: BoxShape.circle,
+            if (_isCurrent) ...[
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 5,
+                ),
+                decoration: BoxDecoration(
+                  color: LoopColors.surfaceElevated,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: LoopColors.accentGreen, width: 2),
+                ),
+                child: Text(
+                  strings.roadmapStartBadge,
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: LoopColors.brandGreen,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.1,
+                      ),
+                ),
               ),
-              child: Icon(
-                isCompleted
-                    ? Icons.check_rounded
-                    : isCurrent
-                        ? Icons.play_arrow_rounded
-                        : Icons.lock_rounded,
-                size: 20,
-                color: LoopColors.brandGreen,
-              ),
+              const SizedBox(height: 8),
+            ],
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                circle,
+                if (_isCompleted)
+                  Positioned(
+                    right: -4,
+                    bottom: -4,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFF7C948),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.star_rounded,
+                        size: 14,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+              ],
             ),
-            if (!isLast)
-              Container(width: 2, height: 76, color: LoopColors.border),
+            const SizedBox(height: 8),
+            Text(
+              step.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                    color: step.state == RoadmapStepState.locked
+                        ? LoopColors.textMuted
+                        : null,
+                  ),
+            ),
           ],
         ),
-        const SizedBox(width: 14),
-        Expanded(
-          child: Padding(
-            padding: EdgeInsets.only(bottom: isLast ? 0 : 16),
-            child: LoopCard(
-              color: isCurrent
-                  ? LoopColors.lightGreen
-                  : LoopColors.surfaceElevated,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          step.title,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                      ),
-                      if (step.category.isNotEmpty)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: LoopColors.accentGreen.withValues(
-                              alpha: 0.2,
-                            ),
-                            borderRadius: BorderRadius.circular(999),
-                          ),
-                          child: Text(
-                            step.category,
-                            style: Theme.of(context).textTheme.labelSmall,
-                          ),
-                        ),
-                    ],
+      ),
+    );
+  }
+
+  void _showStepSheet(BuildContext context) {
+    final cubit = context.read<RoadmapCubit>();
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => BlocProvider.value(
+        value: cubit,
+        child: _StepSheet(strings: strings, step: step),
+      ),
+    );
+  }
+}
+
+class _StepSheet extends StatelessWidget {
+  const _StepSheet({required this.strings, required this.step});
+
+  final AppStrings strings;
+  final RoadmapStep step;
+
+  @override
+  Widget build(BuildContext context) {
+    final locked = step.state == RoadmapStepState.locked;
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    step.title,
+                    style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  if (isCurrent) ...[
-                    if (step.guide.isNotEmpty) ...[
-                      const SizedBox(height: 10),
-                      Text(
-                        step.guide,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ],
-                    if (step.tips.isNotEmpty) ...[
-                      const SizedBox(height: 12),
-                      Text(
-                        strings.roadmapTipsTitle,
-                        style: Theme.of(context).textTheme.labelLarge,
-                      ),
-                      const SizedBox(height: 6),
-                      for (final tip in step.tips)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 4),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.only(top: 3),
-                                child: Icon(
-                                  Icons.check_circle_outline_rounded,
-                                  size: 16,
-                                  color: LoopColors.brandGreen,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  tip,
-                                  style:
-                                      Theme.of(context).textTheme.bodySmall,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                    ],
-                  ],
+                ),
+                if (step.category.isNotEmpty)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: LoopColors.accentGreen.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Text(
+                      step.category,
+                      style: Theme.of(context).textTheme.labelSmall,
+                    ),
+                  ),
+              ],
+            ),
+            if (locked) ...[
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  const Icon(
+                    Icons.lock_rounded,
+                    size: 18,
+                    color: LoopColors.textMuted,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      strings.roadmapStepLocked,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ),
                 ],
               ),
-            ),
-          ),
+            ] else ...[
+              if (step.guide.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Text(
+                  step.guide,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
+              if (step.tips.isNotEmpty) ...[
+                const SizedBox(height: 14),
+                Text(
+                  strings.roadmapTipsTitle,
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
+                const SizedBox(height: 6),
+                for (final tip in step.tips)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(top: 3),
+                          child: Icon(
+                            Icons.check_circle_outline_rounded,
+                            size: 16,
+                            color: LoopColors.brandGreen,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            tip,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+              const SizedBox(height: 18),
+              SizedBox(
+                width: double.infinity,
+                child: _buildCta(context),
+              ),
+            ],
+          ],
         ),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildCta(BuildContext context) {
+    if (step.type == RoadmapStepType.call) {
+      return FilledButton.icon(
+        onPressed: () {
+          Navigator.of(context).pop();
+          context.go('/loops');
+        },
+        icon: const Icon(Icons.phone_in_talk_rounded),
+        label: Text(strings.roadmapStartCall),
+      );
+    }
+    if (!step.hasLesson) return const SizedBox.shrink();
+    final completed = step.state == RoadmapStepState.completed;
+    return FilledButton.icon(
+      onPressed: () {
+        Navigator.of(context).pop();
+        context.push('/roadmap/lesson/${step.id}');
+      },
+      icon: Icon(
+        completed ? Icons.replay_rounded : Icons.play_arrow_rounded,
+      ),
+      label: Text(
+        completed ? strings.roadmapReviewLesson : strings.roadmapStartLesson,
+      ),
     );
   }
 }

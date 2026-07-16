@@ -227,6 +227,34 @@ class AppStrings {
   String get roadmapGeneratingLabel =>
       _es ? 'Creando tu trayectoria…' : 'Building your roadmap…';
   String get roadmapTipsTitle => _es ? 'Cómo practicar' : 'How to practice';
+  String get roadmapStartLesson => _es ? 'Empezar lección' : 'Start lesson';
+  String get roadmapReviewLesson => _es ? 'Repasar lección' : 'Review lesson';
+  String get roadmapStartCall =>
+      _es ? 'Practicar en llamada' : 'Practice on a call';
+  String get roadmapLessonQuizTitle => _es ? 'Quiz rápido' : 'Quick quiz';
+  String get roadmapQuizCheck => _es ? 'Comprobar' : 'Check';
+  String get roadmapQuizContinue => _es ? 'Continuar' : 'Continue';
+  String get roadmapQuizCorrect => _es ? '¡Correcto!' : 'Correct!';
+  String get roadmapQuizIncorrect => _es ? 'No exactamente' : 'Not quite';
+  String get roadmapLessonDoneTitle =>
+      _es ? 'Lección completada' : 'Lesson completed';
+  String roadmapQuizScore(int correct, int total) => _es
+      ? 'Acertaste $correct de $total'
+      : 'You got $correct of $total right';
+  String get roadmapLessonFinishCta => _es ? 'Completar paso' : 'Complete step';
+  String get roadmapLessonStartQuizCta =>
+      _es ? 'Ir al quiz' : 'Go to the quiz';
+  String roadmapQuestionOf(int index, int total) =>
+      _es ? 'Pregunta $index de $total' : 'Question $index of $total';
+  String get roadmapStartBadge => _es ? 'EMPEZAR' : 'START';
+  String get roadmapStepLocked => _es
+      ? 'Completa el paso anterior para desbloquearlo.'
+      : 'Complete the previous step to unlock it.';
+  String roadmapStepsProgress(int done, int total) =>
+      _es ? '$done de $total pasos' : '$done of $total steps';
+  String get roadmapLevelPending => _es
+      ? 'Haz tu primera llamada para conocer tu nivel'
+      : 'Do your first call to find out your level';
   String roadmapDescription(String target) => _es
       ? 'Preparación paso a paso para $target.'
       : 'Step-by-step preparation for $target.';

@@ -1,0 +1,368 @@
+{
+  "goalId": "startup",
+  "target": { "es": "Startup", "en": "Startup" },
+  "finalGoal": {
+    "es": "Demostrar ownership, pragmatismo y velocidad para conseguir una oferta en una startup o scaleup.",
+    "en": "Demonstrate ownership, pragmatism, and speed to land an offer at a startup or scaleup."
+  },
+  "steps": [
+    {
+      "id": "startup_step1_mindset",
+      "type": "lesson",
+      "category": { "es": "Fit", "en": "Fit" },
+      "title": { "es": "Mentalidad startup y tu pitch", "en": "Startup mindset and your pitch" },
+      "guide": {
+        "es": "Entiende qué buscan las startups (distinto a Big Tech) y adapta tu presentación a impacto y autonomía.",
+        "en": "Understand what startups look for (different from Big Tech) and tailor your pitch to impact and autonomy."
+      },
+      "tips": {
+        "es": ["Lidera con lo que has enviado a producción", "Investiga el producto antes de la entrevista", "Muestra tolerancia a la ambigüedad"],
+        "en": ["Lead with what you've shipped", "Research the product before the interview", "Show tolerance for ambiguity"]
+      },
+      "lesson": {
+        "sections": [
+          {
+            "title": { "es": "Qué buscan las startups", "en": "What startups look for" },
+            "body": {
+              "es": "En una startup cada contratación mueve la aguja: buscan gente que envía a producción rápido, asume ownership end-to-end y tolera ambigüedad sin esperar especificaciones perfectas. Las señales opuestas a las de Big Tech: menos proceso, más iniciativa. Tu pitch debe liderar con features enviadas e impacto medido, no con el prestigio de tu empleador.",
+              "en": "At a startup every hire moves the needle: they want people who ship fast, take end-to-end ownership, and tolerate ambiguity without waiting for perfect specs. The signals are the opposite of Big Tech's: less process, more initiative. Your pitch should lead with shipped features and measured impact, not your employer's prestige."
+            }
+          },
+          {
+            "title": { "es": "Investiga el producto", "en": "Research the product" },
+            "body": {
+              "es": "Antes de la entrevista: usa el producto, lee el blog y los cambios recientes, entiende el modelo de negocio y quién es el cliente. Llegar con una observación concreta ('probé el onboarding y me pregunto por qué X') te separa del 90% de candidatos y demuestra el product sense que valoran.",
+              "en": "Before the interview: use the product, read the blog and recent changes, understand the business model and who the customer is. Arriving with a concrete observation ('I tried the onboarding and wondered why X') separates you from 90% of candidates and shows the product sense they value."
+            }
+          },
+          {
+            "title": { "es": "Evaluación mutua", "en": "Mutual evaluation" },
+            "body": {
+              "es": "Una entrevista de startup es bidireccional: tú también evalúas runway, etapa de financiación, y cómo deciden prioridades. Preguntar '¿cuántos meses de runway tienen?' o '¿cómo se decide el roadmap?' no es descortés: demuestra que entiendes el juego y filtra startups en problemas.",
+              "en": "A startup interview is two-way: you're also assessing runway, funding stage, and how priorities get decided. Asking 'how many months of runway do you have?' or 'how is the roadmap decided?' isn't rude: it shows you understand the game and filters out troubled startups."
+            }
+          }
+        ],
+        "quiz": [
+          {
+            "question": {
+              "es": "¿Con qué debe abrir tu pitch para una startup?",
+              "en": "What should your startup pitch lead with?"
+            },
+            "options": {
+              "es": ["Features que enviaste y su impacto medido", "El prestigio de tus empleadores anteriores", "Tu promedio académico", "Los procesos formales que sigues"],
+              "en": ["Features you shipped and their measured impact", "The prestige of your former employers", "Your GPA", "The formal processes you follow"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Las startups contratan por impacto directo: shipping y resultados medibles.",
+              "en": "Startups hire for direct impact: shipping and measurable results."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Qué deberías hacer siempre antes de entrevistar en una startup?",
+              "en": "What should you always do before interviewing at a startup?"
+            },
+            "options": {
+              "es": ["Usar el producto y traer una observación concreta", "Memorizar su valoración exacta", "Aprender los nombres de todos los inversores", "Nada: la improvisación impresiona más"],
+              "en": ["Use the product and bring a concrete observation", "Memorize their exact valuation", "Learn every investor's name", "Nothing: improvisation impresses more"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Conocer el producto de primera mano demuestra product sense e interés genuino.",
+              "en": "First-hand product knowledge shows product sense and genuine interest."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Es apropiado preguntar por el runway de la startup?",
+              "en": "Is it appropriate to ask about the startup's runway?"
+            },
+            "options": {
+              "es": ["Sí: demuestra criterio y te protege a ti", "No: es de mala educación", "Solo después de firmar la oferta", "Solo si te lo mencionan primero"],
+              "en": ["Yes: it shows judgment and protects you", "No: it's rude", "Only after signing the offer", "Only if they mention it first"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "La entrevista es mutua: runway y prioridades son datos legítimos para tu decisión.",
+              "en": "The interview is mutual: runway and priorities are legitimate inputs to your decision."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "startup_step2_ownership",
+      "type": "lesson",
+      "category": { "es": "Producto", "en": "Product" },
+      "title": { "es": "Ownership y trade-offs de MVP", "en": "Ownership and MVP trade-offs" },
+      "guide": {
+        "es": "Aprende a contar decisiones de velocidad vs calidad y a demostrar ownership end-to-end con ejemplos.",
+        "en": "Learn to narrate speed vs quality decisions and to demonstrate end-to-end ownership with examples."
+      },
+      "tips": {
+        "es": ["Explica el 'porqué' de cada atajo", "Deuda técnica consciente, no accidental", "Muestra cómo mediste el resultado"],
+        "en": ["Explain the 'why' behind each shortcut", "Conscious technical debt, not accidental", "Show how you measured the outcome"]
+      },
+      "lesson": {
+        "sections": [
+          {
+            "title": { "es": "Qué es ownership end-to-end", "en": "What end-to-end ownership is" },
+            "body": {
+              "es": "Ownership significa llevar un feature de la idea a producción y quedarte con las consecuencias: hablar con usuarios, decidir el alcance, implementarlo, desplegarlo, medir el resultado e iterar. Prepara 2-3 historias donde cubriste ese ciclo completo, incluyendo lo que salió mal y cómo respondiste.",
+              "en": "Ownership means taking a feature from idea to production and owning the consequences: talking to users, deciding scope, building it, deploying it, measuring the result, and iterating. Prepare 2-3 stories where you covered that full cycle, including what went wrong and how you responded."
+            }
+          },
+          {
+            "title": { "es": "MVP vs calidad", "en": "MVP vs quality" },
+            "body": {
+              "es": "La pregunta trampa favorita: '¿cuándo sacrificas calidad por velocidad?'. La respuesta madura: depende de la reversibilidad y el costo del error. Un experimento de UI puede salir imperfecto; el sistema de pagos no. Demuestra que eliges deuda técnica conscientemente, la documentas y la pagas cuando el aprendizaje lo justifica.",
+              "en": "The favorite trap question: 'when do you sacrifice quality for speed?'. The mature answer: it depends on reversibility and the cost of failure. A UI experiment can ship imperfect; the payments system cannot. Show that you take on technical debt consciously, document it, and pay it down once the learning justifies it."
+            }
+          },
+          {
+            "title": { "es": "Priorizar con producto", "en": "Prioritizing with product" },
+            "body": {
+              "es": "En startups los ingenieros participan en el roadmap. Espera preguntas tipo '¿cómo decidirías entre dos features?'. Marco simple: impacto en la métrica que importa ahora × confianza ÷ esfuerzo. Y menciona el paso que casi todos olvidan: preguntar a usuarios reales antes de construir.",
+              "en": "At startups engineers help shape the roadmap. Expect questions like 'how would you choose between two features?'. Simple frame: impact on the metric that matters now × confidence ÷ effort. And mention the step almost everyone forgets: asking real users before building."
+            }
+          }
+        ],
+        "quiz": [
+          {
+            "question": {
+              "es": "¿Cuándo es aceptable sacrificar calidad por velocidad?",
+              "en": "When is it acceptable to trade quality for speed?"
+            },
+            "options": {
+              "es": ["Cuando el cambio es reversible y el costo del error es bajo", "Nunca, la calidad es sagrada", "Siempre, la velocidad es lo único que importa", "Solo cuando nadie está mirando el código"],
+              "en": ["When the change is reversible and the cost of failure is low", "Never, quality is sacred", "Always, speed is all that matters", "Only when nobody reviews the code"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Reversibilidad y costo del error definen dónde cabe el atajo consciente.",
+              "en": "Reversibility and cost of failure define where a conscious shortcut fits."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Qué distingue la deuda técnica sana de la peligrosa?",
+              "en": "What separates healthy technical debt from dangerous debt?"
+            },
+            "options": {
+              "es": ["Que sea consciente, documentada y con plan de pago", "Que nadie del equipo la conozca", "Que esté en el sistema de pagos", "Que sea infinita pero rápida"],
+              "en": ["It's conscious, documented, and has a payback plan", "Nobody on the team knows about it", "It lives in the payments system", "It's infinite but fast"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "La deuda elegida y rastreada es una herramienta; la accidental es un riesgo.",
+              "en": "Chosen, tracked debt is a tool; accidental debt is a hazard."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Qué paso olvidan la mayoría al priorizar features?",
+              "en": "Which step do most people forget when prioritizing features?"
+            },
+            "options": {
+              "es": ["Hablar con usuarios reales antes de construir", "Estimar el esfuerzo de desarrollo", "Abrir un ticket en el backlog", "Elegir el nombre del feature"],
+              "en": ["Talking to real users before building", "Estimating development effort", "Opening a backlog ticket", "Choosing the feature's name"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Validar con usuarios evita construir rápido algo que nadie necesita.",
+              "en": "Validating with users prevents building the wrong thing quickly."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "startup_step3_technical",
+      "type": "lesson",
+      "category": { "es": "Técnica", "en": "Technical" },
+      "title": { "es": "La entrevista técnica práctica", "en": "The practical technical interview" },
+      "guide": {
+        "es": "Las startups evalúan con problemas realistas: debugging, diseño de un servicio simple y decisiones de stack.",
+        "en": "Startups assess with realistic problems: debugging, designing a simple service, and stack decisions."
+      },
+      "tips": {
+        "es": ["Narra tu proceso de debugging", "Diseña simple, escala después", "Justifica el stack por contexto"],
+        "en": ["Narrate your debugging process", "Design simple, scale later", "Justify stack choices by context"]
+      },
+      "lesson": {
+        "sections": [
+          {
+            "title": { "es": "Formatos frecuentes", "en": "Common formats" },
+            "body": {
+              "es": "Más que algoritmos abstractos, las startups usan: take-home projects, pair programming sobre un problema realista, debugging de código con errores plantados, y diseño de un servicio pequeño ('diseña el acortador de URLs'). Practica hablar mientras codificas: el formato práctico evalúa colaboración real.",
+              "en": "More than abstract algorithms, startups use: take-home projects, pair programming on a realistic problem, debugging code with planted bugs, and designing a small service ('design a URL shortener'). Practice talking while coding: practical formats evaluate real collaboration."
+            }
+          },
+          {
+            "title": { "es": "Debugging como historia", "en": "Debugging as a story" },
+            "body": {
+              "es": "'Cuéntame un bug difícil en producción' cae casi siempre. Estructura: síntoma → cómo lo acotaste (logs, métricas, reproducción) → causa raíz → fix → qué cambiaste para que no se repita. El último punto (prevención) es el que separa candidatos senior de junior.",
+              "en": "'Tell me about a hard production bug' comes up almost every time. Structure: symptom → how you narrowed it down (logs, metrics, reproduction) → root cause → fix → what you changed so it never recurs. That last point (prevention) is what separates senior from junior candidates."
+            }
+          },
+          {
+            "title": { "es": "Decisiones de stack", "en": "Stack decisions" },
+            "body": {
+              "es": "'¿Qué stack elegirías para nuestro MVP?' no tiene respuesta única: evalúan el criterio. Respuesta fuerte: 'el stack que el equipo ya domina, aburrido y probado (Postgres antes que la base de datos de moda), optimizando velocidad de iteración'. Elegir tecnología nueva por curiosidad en un MVP es la bandera roja que buscan.",
+              "en": "'Which stack would you pick for our MVP?' has no single answer: they're testing judgment. Strong answer: 'the stack the team already knows, boring and proven (Postgres over the trendy database), optimizing for iteration speed'. Picking new tech out of curiosity for an MVP is the red flag they're screening for."
+            }
+          }
+        ],
+        "quiz": [
+          {
+            "question": {
+              "es": "¿Qué parte de una historia de debugging señala seniority?",
+              "en": "Which part of a debugging story signals seniority?"
+            },
+            "options": {
+              "es": ["Qué cambiaste para que el bug no se repita", "Cuántas horas trabajaste sin dormir", "Culpar al código de otra persona", "Reiniciar el servidor hasta que funcionó"],
+              "en": ["What you changed so the bug never recurs", "How many hours you went without sleep", "Blaming someone else's code", "Restarting the server until it worked"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "La prevención sistemática (tests, alertas, guardrails) distingue al senior.",
+              "en": "Systematic prevention (tests, alerts, guardrails) is the senior marker."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Qué stack conviene proponer para un MVP?",
+              "en": "Which stack should you propose for an MVP?"
+            },
+            "options": {
+              "es": ["Tecnología aburrida y probada que el equipo domina", "La base de datos más nueva del mercado", "Microservicios desde el día uno", "Reescribirlo todo en un lenguaje experimental"],
+              "en": ["Boring, proven tech the team already knows", "The newest database on the market", "Microservices from day one", "Rewriting everything in an experimental language"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "En un MVP la velocidad de iteración vale más que la novedad tecnológica.",
+              "en": "In an MVP, iteration speed beats technological novelty."
+            }
+          },
+          {
+            "question": {
+              "es": "En un pair programming de entrevista, ¿qué evalúan sobre todo?",
+              "en": "In an interview pair-programming session, what do they mostly assess?"
+            },
+            "options": {
+              "es": ["Cómo colaboras y comunicas mientras resuelves", "Que no hagas ninguna pregunta", "La velocidad de tecleo", "Que uses los atajos del editor"],
+              "en": ["How you collaborate and communicate while solving", "That you ask no questions", "Your typing speed", "That you use editor shortcuts"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "El formato simula el trabajo diario: colaboración sobre brillantez silenciosa.",
+              "en": "The format simulates daily work: collaboration over silent brilliance."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "startup_step4_closing",
+      "type": "lesson",
+      "category": { "es": "Fit", "en": "Fit" },
+      "title": { "es": "Founder chat y evaluar la oferta", "en": "Founder chat and evaluating the offer" },
+      "guide": {
+        "es": "Prepárate para la conversación con founders y aprende a evaluar equity, etapa y riesgo antes de aceptar.",
+        "en": "Prepare for the founder conversation and learn to evaluate equity, stage, and risk before accepting."
+      },
+      "tips": {
+        "es": ["Pregunta por runway y prioridades", "Entiende tu equity: %, no solo cantidad", "Evalúa al equipo tanto como al producto"],
+        "en": ["Ask about runway and priorities", "Understand your equity: %, not just share count", "Evaluate the team as much as the product"]
+      },
+      "lesson": {
+        "sections": [
+          {
+            "title": { "es": "La conversación con el founder", "en": "The founder conversation" },
+            "body": {
+              "es": "La ronda final suele ser con un founder y evalúa alineación: si crees en la misión, si aportas energía, y si sobrevivirás al caos. Trae opiniones propias sobre el producto y una pregunta incisiva ('¿cuál es el mayor riesgo del negocio hoy?'). Los founders recuerdan a quien piensa como dueño.",
+              "en": "The final round is usually with a founder and tests alignment: whether you believe in the mission, bring energy, and will survive the chaos. Bring your own opinions about the product and one incisive question ('what's the biggest risk to the business today?'). Founders remember people who think like owners."
+            }
+          },
+          {
+            "title": { "es": "Entender tu equity", "en": "Understanding your equity" },
+            "body": {
+              "es": "Las opciones valen según el porcentaje de la empresa, no el número de acciones: pregunta el total de acciones en circulación (fully diluted) para calcular tu %. Conceptos clave: vesting de 4 años con cliff de 1, strike price, y dilución en futuras rondas. Una oferta seria responde estas preguntas sin incomodarse.",
+              "en": "Options are worth a percentage of the company, not a share count: ask for total fully diluted shares outstanding to compute your %. Key concepts: 4-year vesting with a 1-year cliff, strike price, and dilution in future rounds. A serious offer answers these questions without discomfort."
+            }
+          },
+          {
+            "title": { "es": "Señales de la etapa", "en": "Stage signals" },
+            "body": {
+              "es": "Etapa temprana (pre-seed/seed): máximo aprendizaje y equity, máximo riesgo; evalúa a los founders sobre todo. Serie A-B: hay tracción, procesos naciendo; pregunta por retención de usuarios. Serie C+: más estabilidad y menos equity. No hay etapa correcta: hay etapa correcta para ti, según tu tolerancia al riesgo.",
+              "en": "Early stage (pre-seed/seed): maximum learning and equity, maximum risk; evaluate the founders above all. Series A-B: there's traction and emerging process; ask about user retention. Series C+: more stability, less equity. There's no right stage: there's the right stage for you, given your risk tolerance."
+            }
+          }
+        ],
+        "quiz": [
+          {
+            "question": {
+              "es": "¿Qué dato necesitas para saber cuánto vale tu paquete de opciones?",
+              "en": "What do you need to know what your options package is worth?"
+            },
+            "options": {
+              "es": ["El total de acciones fully diluted para calcular tu porcentaje", "Solo el número de opciones que te dan", "El color de las acciones", "El salario del CEO"],
+              "en": ["Total fully diluted shares to compute your percentage", "Only the number of options granted", "The color of the shares", "The CEO's salary"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "100.000 opciones no dicen nada sin saber qué porcentaje representan.",
+              "en": "100,000 options mean nothing without knowing what percentage they represent."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Qué es el 'cliff' de un año en el vesting?",
+              "en": "What is the one-year vesting 'cliff'?"
+            },
+            "options": {
+              "es": ["Antes del año no consolidas ninguna opción", "Un bono extra al cumplir el año", "El precio máximo de la acción", "La fecha límite para renunciar"],
+              "en": ["You vest nothing before the one-year mark", "An extra bonus at the one-year mark", "The maximum share price", "The deadline to resign"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Con cliff de 1 año, si sales antes del año no te llevas equity alguno.",
+              "en": "With a 1-year cliff, leaving before the year means zero vested equity."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Qué pregunta demuestra que piensas como dueño ante un founder?",
+              "en": "Which question shows a founder you think like an owner?"
+            },
+            "options": {
+              "es": ["¿Cuál es el mayor riesgo del negocio hoy?", "¿A qué hora puedo irme los viernes?", "¿Cuándo salen a bolsa exactamente?", "¿Puedo trabajar sin hablar con clientes?"],
+              "en": ["What's the biggest risk to the business today?", "How early can I leave on Fridays?", "When exactly is the IPO?", "Can I work without ever talking to customers?"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Preguntar por riesgos del negocio señala mentalidad de dueño, no de empleado.",
+              "en": "Asking about business risks signals an owner's mindset, not an employee's."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "startup_step5_call",
+      "type": "call",
+      "category": { "es": "Práctica", "en": "Practice" },
+      "title": { "es": "Entrevista startup en vivo", "en": "Live startup interview" },
+      "guide": {
+        "es": "Demuestra ownership en tiempo real: inicia un loop de entrevista en tu trayecto startup y recibe tu reporte con puntaje.",
+        "en": "Show ownership in real time: start an interview loop on your startup track and get your scored report."
+      },
+      "tips": {
+        "es": ["Cuenta features enviadas con métricas", "Da opiniones propias sobre producto", "Repite el loop y compara tu progreso"],
+        "en": ["Tell shipped features with metrics", "Give your own product opinions", "Repeat the loop and compare progress"]
+      }
+    }
+  ]
+}
