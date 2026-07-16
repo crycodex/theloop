@@ -440,6 +440,9 @@ class _PathNode extends StatelessWidget {
     final cubit = context.read<RoadmapCubit>();
     showModalBottomSheet<void>(
       context: context,
+      // El sheet debe abrirse en el navigator raíz: el ShellRoute usa un
+      // navigator anidado y el nav flotante del AppShell quedaría encima.
+      useRootNavigator: true,
       showDragHandle: true,
       builder: (sheetContext) => BlocProvider.value(
         value: cubit,
