@@ -19,6 +19,8 @@ abstract interface class AuthRepository {
 
   Future<GoogleSignInResult> signInWithGoogle();
 
+  Future<GoogleSignInResult> signInWithApple();
+
   Future<AuthUser> completeGoogleOnboarding({
     required String name,
     required String goalId,

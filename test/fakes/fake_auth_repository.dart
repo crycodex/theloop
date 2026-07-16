@@ -53,6 +53,18 @@ class FakeAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<GoogleSignInResult> signInWithApple() async {
+    final user = AuthUser(
+      uid: 'fake-apple-uid',
+      email: 'apple@example.com',
+      emailVerified: true,
+    );
+    _currentUser = user;
+    _controller.add(user);
+    return GoogleSignInResult(user: user, needsOnboarding: false);
+  }
+
+  @override
   Future<AuthUser> completeGoogleOnboarding({
     required String name,
     required String goalId,

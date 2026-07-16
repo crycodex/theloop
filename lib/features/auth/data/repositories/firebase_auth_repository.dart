@@ -171,6 +171,27 @@ class FirebaseAuthRepository implements AuthRepository {
   }
 
   @override
+  Future<GoogleSignInResult> signInWithApple() async {
+    final provider = AppleAuthProvider()
+      ..addScope('email')
+      ..addScope('name');
+
+    final userCredential = await _auth.signInWithProvider(provider);
+    final user = userCredential.user!;
+    final mappedUser = _mapUser(user)!;
+
+    final needsOnboarding = await _needsOnboarding(user.uid);
+    debugPrint(
+      '[signInWithApple] uid=${user.uid} needsOnboarding=$needsOnboarding',
+    );
+
+    return GoogleSignInResult(
+      user: mappedUser,
+      needsOnboarding: needsOnboarding,
+    );
+  }
+
+  @override
   Future<AuthUser> completeGoogleOnboarding({
     required String name,
     required String goalId,

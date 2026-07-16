@@ -7,6 +7,7 @@ import '../../domain/repositories/auth_repository.dart';
 import '../../domain/usecases/complete_google_onboarding.dart';
 import '../../domain/usecases/send_password_reset.dart';
 import '../../domain/usecases/sign_in.dart';
+import '../../domain/usecases/sign_in_with_apple.dart';
 import '../../domain/usecases/sign_in_with_google.dart';
 import '../../domain/usecases/sign_out.dart';
 import '../../domain/usecases/sign_up.dart';
@@ -17,6 +18,7 @@ class AuthCubit extends Cubit<AuthState> {
     : _signUp = SignUp(repository),
       _signIn = SignIn(repository),
       _signInWithGoogle = SignInWithGoogle(repository),
+      _signInWithApple = SignInWithApple(repository),
       _completeGoogleOnboarding = CompleteGoogleOnboarding(repository),
       _signOut = SignOut(repository),
       _sendPasswordReset = SendPasswordReset(repository),
@@ -25,6 +27,7 @@ class AuthCubit extends Cubit<AuthState> {
   final SignUp _signUp;
   final SignIn _signIn;
   final SignInWithGoogle _signInWithGoogle;
+  final SignInWithApple _signInWithApple;
   final CompleteGoogleOnboarding _completeGoogleOnboarding;
   final SignOut _signOut;
   final SendPasswordReset _sendPasswordReset;
@@ -90,6 +93,29 @@ class AuthCubit extends Cubit<AuthState> {
       emit(AuthFailure(_mapError(e.code)));
     } catch (e) {
       debugPrint('[AuthCubit] signInWithGoogle unknown error: $e');
+      emit(const AuthFailure(AuthFailureReason.unknown));
+    }
+  }
+
+  Future<void> signInWithApple() async {
+    emit(const AuthSubmitting());
+    try {
+      final result = await _signInWithApple();
+      if (result.needsOnboarding) {
+        emit(GoogleOnboardingRequired(result.user));
+      } else {
+        emit(AuthSuccess(result.user));
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'canceled' ||
+          e.code == 'web-context-canceled' ||
+          e.code == 'user-cancelled') {
+        emit(const AuthIdle());
+        return;
+      }
+      emit(AuthFailure(_mapError(e.code)));
+    } catch (e) {
+      debugPrint('[AuthCubit] signInWithApple unknown error: $e');
       emit(const AuthFailure(AuthFailureReason.unknown));
     }
   }
