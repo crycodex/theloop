@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -93,30 +94,62 @@ class FirestoreTracksRepository implements TracksRepository {
             'Reply only JSON: {"title":string,"company":string,"jobDescription":string}. '
             'jobDescription must summarize requirements in max 120 words.\n\n$input';
 
-    final response = await _client.post(
-      Uri.parse(
-        'https://generativelanguage.googleapis.com/v1beta/models/'
-        'gemini-flash-latest:generateContent?key=$kGeminiApiKey',
-      ),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'contents': [
-          {
-            'parts': [
-              {'text': prompt},
-            ],
-          },
-        ],
-        'generationConfig': {'responseMimeType': 'application/json'},
-      }),
-    );
+    final http.Response response;
+    try {
+      response = await _client
+          .post(
+            Uri.parse(
+              'https://generativelanguage.googleapis.com/v1beta/models/'
+              'gemini-flash-latest:generateContent?key=$kGeminiApiKey',
+            ),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'contents': [
+                {
+                  'parts': [
+                    {'text': prompt},
+                  ],
+                },
+              ],
+              'generationConfig': {
+                'responseMimeType': 'application/json',
+                'maxOutputTokens': 2048,
+              },
+            }),
+          )
+          .timeout(const Duration(seconds: 30));
+    } on TimeoutException {
+      throw StateError(
+        language == AppLanguage.spanish
+            ? 'La IA tardó demasiado en responder. Revisa tu conexión e intenta de nuevo.'
+            : 'The AI took too long to respond. Check your connection and try again.',
+      );
+    }
     if (response.statusCode != 200) {
       throw StateError('No se pudo generar el trayecto (${response.statusCode}).');
     }
     final json = jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>;
+    final candidate = json['candidates']?[0] as Map<String, dynamic>?;
+    final finishReason = candidate?['finishReason'] as String?;
     final text =
-        json['candidates']?[0]?['content']?['parts']?[0]?['text'] as String? ?? '{}';
-    final parsed = jsonDecode(text) as Map<String, dynamic>;
+        candidate?['content']?['parts']?[0]?['text'] as String? ?? '{}';
+    final Map<String, dynamic> parsed;
+    try {
+      parsed = jsonDecode(text) as Map<String, dynamic>;
+    } on FormatException {
+      if (finishReason == 'MAX_TOKENS') {
+        throw StateError(
+          language == AppLanguage.spanish
+              ? 'La IA no pudo terminar la respuesta. Intenta con una descripción más corta.'
+              : 'The AI could not finish the response. Try a shorter description.',
+        );
+      }
+      throw StateError(
+        language == AppLanguage.spanish
+            ? 'No se pudo interpretar la respuesta de la IA. Intenta de nuevo.'
+            : 'Could not parse the AI response. Please try again.',
+      );
+    }
     return (
       title: (parsed['title'] as String? ?? '').trim(),
       company: (parsed['company'] as String? ?? '').trim(),
