@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
     <application
-        android:label="theloop"
+        android:label="loop"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity
