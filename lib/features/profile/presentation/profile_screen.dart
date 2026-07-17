@@ -12,6 +12,7 @@ import '../../../core/settings/cubit/settings_cubit.dart';
 import '../../../core/settings/cubit/settings_state.dart';
 import '../../../core/theme/loop_colors.dart';
 import '../../../core/widgets/loop_card.dart';
+import '../../../core/widgets/skeleton.dart';
 import '../../../features/interview_call/data/services/gemini_config.dart';
 import '../../auth/presentation/cubit/auth_cubit.dart';
 import '../../onboarding/presentation/widgets/experience_options.dart';
@@ -251,7 +252,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (context, state) {
         if (state is! ProfileLoaded) {
           return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+            body: SafeArea(child: _ProfileSkeleton()),
           );
         }
 
@@ -761,6 +762,26 @@ class _SettingsTile extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _ProfileSkeleton extends StatelessWidget {
+  const _ProfileSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        for (var i = 0; i < 4; i++) ...[
+          if (i > 0) const SizedBox(height: 14),
+          const SkeletonCardRow(
+            circleSize: 42,
+            lineWidths: [140, 200],
+          ),
+        ],
+      ],
     );
   }
 }

@@ -8,6 +8,7 @@ import '../../../core/widgets/delta_badge.dart';
 import '../../../core/widgets/level_circle.dart';
 import '../../../core/widgets/loop_card.dart';
 import '../../../core/widgets/metric_progress_bar.dart';
+import '../../../core/widgets/skeleton.dart';
 import '../../home_dashboard/presentation/cubit/home_dashboard_cubit.dart';
 import '../domain/entities/session_recap.dart';
 import 'cubit/recap_cubit.dart';
@@ -69,7 +70,7 @@ class _RecapScreenState extends State<RecapScreen> {
         if (state is! RecapLoaded) {
           return const Scaffold(
             backgroundColor: LoopColors.surface,
-            body: Center(child: CircularProgressIndicator()),
+            body: _RecapSkeleton(),
           );
         }
 
@@ -251,4 +252,42 @@ class _Insight extends StatelessWidget {
 void _goHome(BuildContext context) {
   context.read<HomeDashboardCubit>().load();
   context.go('/');
+}
+
+class _RecapSkeleton extends StatelessWidget {
+  const _RecapSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SkeletonCardRow(
+            circleSize: 72,
+            lineWidths: [200, 240, 60],
+            color: LoopColors.lightGreen,
+          ),
+          const SizedBox(height: 20),
+          LoopCard(
+            child: Column(
+              children: [
+                for (var i = 0; i < 4; i++) ...[
+                  if (i > 0) const SizedBox(height: 18),
+                  Row(
+                    children: const [
+                      Expanded(child: SkeletonLine(width: 140)),
+                      SizedBox(width: 12),
+                      Expanded(flex: 2, child: SkeletonBox(height: 8, borderRadius: 4)),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

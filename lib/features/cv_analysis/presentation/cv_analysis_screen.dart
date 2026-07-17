@@ -7,6 +7,7 @@ import '../../../core/navigation/app_shell.dart';
 import '../../../core/theme/loop_colors.dart';
 import '../../../core/widgets/loop_card.dart';
 import '../../../core/widgets/section_header.dart';
+import '../../../core/widgets/skeleton.dart';
 import '../../loops/domain/entities/interview_track.dart';
 import '../domain/entities/cv_analysis.dart';
 import 'cubit/cv_analysis_cubit.dart';
@@ -74,12 +75,7 @@ class _CvAnalysisScreenState extends State<CvAnalysisScreen> {
           BlocBuilder<CvAnalysisCubit, CvAnalysisState>(
             builder: (context, state) {
               return switch (state) {
-                CvAnalysisLoading() => const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(40),
-                      child: CircularProgressIndicator(),
-                    ),
-                  ),
+                CvAnalysisLoading() => const _UploadCardSkeleton(),
                 CvAnalysisAnalyzing() => _UploadCard(
                     strings: strings,
                     tracks: const [],
@@ -463,6 +459,32 @@ class _ErrorBanner extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyMedium,
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _UploadCardSkeleton extends StatelessWidget {
+  const _UploadCardSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return LoopCard(
+      color: LoopColors.lightGreen,
+      padding: const EdgeInsets.all(24),
+      child: const Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Center(child: SkeletonCircle(size: 56)),
+          SizedBox(height: 16),
+          SkeletonBox(height: 48, borderRadius: 12),
+          SizedBox(height: 16),
+          SkeletonLine(width: 140),
+          SizedBox(height: 8),
+          SkeletonBox(height: 48, borderRadius: 12),
+          SizedBox(height: 20),
+          SkeletonBox(height: 48, borderRadius: 12),
         ],
       ),
     );

@@ -6,6 +6,7 @@ import '../../../core/localization/app_strings.dart';
 import '../../../core/settings/cubit/settings_cubit.dart';
 import '../../../core/theme/loop_colors.dart';
 import '../../../core/widgets/loop_card.dart';
+import '../../../core/widgets/skeleton.dart';
 import '../../onboarding/presentation/widgets/selection_card.dart';
 import '../../profile/domain/repositories/profile_repository.dart';
 import '../data/predefined_tracks_catalog.dart';
@@ -225,7 +226,7 @@ class _SuggestedTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!goalLoaded) {
-      return const Center(child: CircularProgressIndicator());
+      return const _SuggestedTemplatesSkeleton();
     }
 
     if (templates.isEmpty) {
@@ -412,6 +413,40 @@ class _AiTab extends StatelessWidget {
           icon: const Icon(Icons.auto_awesome_rounded),
           label: Text(strings.createTrackAiGenerate),
         ),
+      ],
+    );
+  }
+}
+
+class _SuggestedTemplatesSkeleton extends StatelessWidget {
+  const _SuggestedTemplatesSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        const SkeletonLine(width: 220),
+        const SizedBox(height: 16),
+        for (var i = 0; i < 3; i++) ...[
+          if (i > 0) const SizedBox(height: 12),
+          LoopCard(
+            child: const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SkeletonLine(width: 160),
+                SizedBox(height: 8),
+                SkeletonLine(width: 120, height: 12),
+                SizedBox(height: 10),
+                SkeletonLine(height: 12),
+                SizedBox(height: 6),
+                SkeletonLine(height: 12),
+                SizedBox(height: 6),
+                SkeletonLine(width: 180, height: 12),
+              ],
+            ),
+          ),
+        ],
       ],
     );
   }

@@ -9,6 +9,7 @@ import '../../../core/widgets/delta_badge.dart';
 import '../../../core/widgets/level_circle.dart';
 import '../../../core/widgets/loop_card.dart';
 import '../../../core/widgets/metric_progress_bar.dart';
+import '../../../core/widgets/skeleton.dart';
 import 'cubit/loops_cubit.dart';
 import 'cubit/loops_state.dart';
 
@@ -33,7 +34,7 @@ class _LoopsScreenState extends State<LoopsScreen> {
     return BlocBuilder<LoopsCubit, LoopsState>(
       builder: (context, state) {
         if (state is! LoopsLoaded) {
-          return const Center(child: CircularProgressIndicator());
+          return const _LoopsSkeleton();
         }
 
         final tracks = state.tracks;
@@ -143,6 +144,34 @@ class _LoopsScreenState extends State<LoopsScreen> {
           ),
         );
       },
+    );
+  }
+}
+
+class _LoopsSkeleton extends StatelessWidget {
+  const _LoopsSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return ShellPagePadding(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SkeletonLine(width: 160, height: 28),
+          const SizedBox(height: 8),
+          const SkeletonLine(width: 240),
+          const SizedBox(height: 22),
+          for (var i = 0; i < 3; i++) ...[
+            SkeletonCardRow(
+              circleSize: 84,
+              lineWidths: const [140, 100, 120, 180],
+            ),
+            const SizedBox(height: 8),
+            const SkeletonBox(height: 8, borderRadius: 4),
+            const SizedBox(height: 14),
+          ],
+        ],
+      ),
     );
   }
 }

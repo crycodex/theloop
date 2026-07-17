@@ -7,6 +7,7 @@ import '../../../core/navigation/app_shell.dart';
 import '../../../core/theme/loop_colors.dart';
 import '../../../core/widgets/level_circle.dart';
 import '../../../core/widgets/loop_card.dart';
+import '../../../core/widgets/skeleton.dart';
 import '../domain/entities/roadmap.dart';
 import 'cubit/roadmap_cubit.dart';
 import 'cubit/roadmap_state.dart';
@@ -30,12 +31,7 @@ class RoadmapScreen extends StatelessWidget {
           BlocBuilder<RoadmapCubit, RoadmapState>(
             builder: (context, state) {
               return switch (state) {
-                RoadmapLoading() => const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(40),
-                      child: CircularProgressIndicator(),
-                    ),
-                  ),
+                RoadmapLoading() => const _RoadmapSkeleton(),
                 RoadmapEmpty() => _EmptyView(strings: strings),
                 RoadmapGenerating() => _GeneratingView(strings: strings),
                 RoadmapError(:final message) => _ErrorView(
@@ -105,7 +101,16 @@ class _GeneratingView extends StatelessWidget {
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            const CircularProgressIndicator(),
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SkeletonCircle(size: 40),
+                SizedBox(width: 12),
+                SkeletonCircle(size: 40),
+                SizedBox(width: 12),
+                SkeletonCircle(size: 40),
+              ],
+            ),
             const SizedBox(height: 16),
             Text(
               strings.roadmapGeneratingLabel,
@@ -588,6 +593,34 @@ class _StepSheet extends StatelessWidget {
       label: Text(
         completed ? strings.roadmapReviewLesson : strings.roadmapStartLesson,
       ),
+    );
+  }
+}
+
+class _RoadmapSkeleton extends StatelessWidget {
+  const _RoadmapSkeleton();
+
+  static const _serpentine = [0.0, -0.6, -0.95, -0.6, 0.0];
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const SkeletonCardRow(
+          circleSize: 74,
+          lineWidths: [160, 200, 70],
+          color: LoopColors.brandGreen,
+        ),
+        const SizedBox(height: 24),
+        for (final align in _serpentine)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 22),
+            child: Align(
+              alignment: Alignment(align, 0),
+              child: const SkeletonCircle(size: 68),
+            ),
+          ),
+      ],
     );
   }
 }
