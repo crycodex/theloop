@@ -26,8 +26,6 @@
 		<true/>
 		<key>NSMicrophoneUsageDescription</key>
 		<string>Se necesita el micrófono para practicar entrevistas por voz con la IA.</string>
-		<key>NSPhotoLibraryUsageDescription</key>
-		<string>Se necesita acceso a la biblioteca de fotos para seleccionar el archivo de tu CV y analizarlo.</string>
 		<key>GIDClientID</key>
 		<string>1009082169764-v7fp2e06lk8j9vobkdeqci8m0aq4j4jk.apps.googleusercontent.com</string>
 		<key>CFBundleURLTypes</key>

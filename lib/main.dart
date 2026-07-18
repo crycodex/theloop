@@ -1,6 +1,10 @@
+import 'dart:async';
+import 'dart:developer' as developer;
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -51,18 +55,43 @@ import 'features/roadmap/presentation/cubit/roadmap_cubit.dart';
 
 const _firestoreDatabaseId = 'default';
 
+void _reportError(Object error, StackTrace stack) {
+  developer.log(
+    'Uncaught error',
+    name: 'loop.crash',
+    error: error,
+    stackTrace: stack,
+    level: 1000,
+  );
+}
+
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await AppEnv.load();
+  runZonedGuarded(
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
 
-  final settingsStorage = SharedPreferencesSettingsStorage();
-  final initialSettings = await settingsStorage.load();
+      FlutterError.onError = (details) {
+        FlutterError.presentError(details);
+        _reportError(details.exception, details.stack ?? StackTrace.current);
+      };
+      PlatformDispatcher.instance.onError = (error, stack) {
+        _reportError(error, stack);
+        return true;
+      };
 
-  runApp(
-    LoopBootstrap(
-      initialSettings: initialSettings,
-      settingsStorage: settingsStorage,
-    ),
+      await AppEnv.load();
+
+      final settingsStorage = SharedPreferencesSettingsStorage();
+      final initialSettings = await settingsStorage.load();
+
+      runApp(
+        LoopBootstrap(
+          initialSettings: initialSettings,
+          settingsStorage: settingsStorage,
+        ),
+      );
+    },
+    (error, stack) => _reportError(error, stack),
   );
 }
 

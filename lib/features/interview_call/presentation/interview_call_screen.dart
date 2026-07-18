@@ -95,7 +95,12 @@ class _InterviewCallScreenState extends State<InterviewCallScreen> {
       listener: (context, state) {
         if (state.phase == InterviewCallPhase.completed) {
           final trackId = state.trackId ?? widget.trackId;
-          if (state.isPrep && trackId != null) {
+          // Only chain straight into the full interview when the prep call
+          // genuinely wrapped up (closing phrase detected) — a timer
+          // expiry or manual hangup must not auto-start a new call.
+          if (state.isPrep &&
+              trackId != null &&
+              state.endReason == CallEndReason.closingPhraseDetected) {
             context.go('/interview?trackId=$trackId&loopType=interview');
             return;
           }

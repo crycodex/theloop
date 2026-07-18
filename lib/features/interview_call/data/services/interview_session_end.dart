@@ -28,7 +28,16 @@ bool isSessionClosingTranscript(
           'that concludes the interview',
         ];
 
-  return explicit.any(lastText.contains);
+  // Only treat it as a genuine close when the phrase sits near the end of
+  // the turn (goodbye follows it) — a mid-turn mention (e.g. the model
+  // explaining the interview format up front) must not trigger an early end.
+  for (final phrase in explicit) {
+    final index = lastText.indexOf(phrase);
+    if (index == -1) continue;
+    final remainder = lastText.length - (index + phrase.length);
+    if (remainder <= 40) return true;
+  }
+  return false;
 }
 
 String _normalize(String raw) {

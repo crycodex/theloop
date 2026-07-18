@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../../../../core/utils/app_logger.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../domain/usecases/complete_google_onboarding.dart';
 import '../../domain/usecases/send_password_reset.dart';
@@ -12,6 +12,8 @@ import '../../domain/usecases/sign_in_with_google.dart';
 import '../../domain/usecases/sign_out.dart';
 import '../../domain/usecases/sign_up.dart';
 import 'auth_state.dart';
+
+const _tag = 'loop.auth.cubit';
 
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit(AuthRepository repository)
@@ -40,7 +42,7 @@ class AuthCubit extends Cubit<AuthState> {
     String? customGoal,
     required String experienceId,
   }) async {
-    debugPrint('[AuthCubit] signUp start');
+    logTrace(_tag, '[AuthCubit] signUp start');
     emit(const AuthSubmitting());
     try {
       final user = await _signUp(
@@ -51,13 +53,16 @@ class AuthCubit extends Cubit<AuthState> {
         customGoal: customGoal,
         experienceId: experienceId,
       );
-      debugPrint('[AuthCubit] signUp success, emitting EmailVerificationSent');
+      logTrace(
+        _tag,
+        '[AuthCubit] signUp success, emitting EmailVerificationSent',
+      );
       emit(EmailVerificationSent(user.email ?? email));
     } on FirebaseAuthException catch (e) {
-      debugPrint('[AuthCubit] signUp FirebaseAuthException: ${e.code}');
+      logTrace(_tag, '[AuthCubit] signUp FirebaseAuthException: ${e.code}');
       emit(AuthFailure(_mapError(e.code)));
     } catch (e) {
-      debugPrint('[AuthCubit] signUp unknown error: $e');
+      logTrace(_tag, '[AuthCubit] signUp unknown error: $e');
       emit(const AuthFailure(AuthFailureReason.unknown));
     }
   }
@@ -92,7 +97,7 @@ class AuthCubit extends Cubit<AuthState> {
     } on FirebaseAuthException catch (e) {
       emit(AuthFailure(_mapError(e.code)));
     } catch (e) {
-      debugPrint('[AuthCubit] signInWithGoogle unknown error: $e');
+      logTrace(_tag, '[AuthCubit] signInWithGoogle unknown error: $e');
       emit(const AuthFailure(AuthFailureReason.unknown));
     }
   }
@@ -115,7 +120,7 @@ class AuthCubit extends Cubit<AuthState> {
       }
       emit(AuthFailure(_mapError(e.code)));
     } catch (e) {
-      debugPrint('[AuthCubit] signInWithApple unknown error: $e');
+      logTrace(_tag, '[AuthCubit] signInWithApple unknown error: $e');
       emit(const AuthFailure(AuthFailureReason.unknown));
     }
   }
@@ -138,7 +143,7 @@ class AuthCubit extends Cubit<AuthState> {
     } on FirebaseAuthException catch (e) {
       emit(AuthFailure(_mapError(e.code)));
     } catch (e) {
-      debugPrint('[AuthCubit] completeGoogleOnboarding error: $e');
+      logTrace(_tag, '[AuthCubit] completeGoogleOnboarding error: $e');
       emit(const AuthFailure(AuthFailureReason.unknown));
     }
   }

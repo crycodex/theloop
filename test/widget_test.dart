@@ -10,12 +10,12 @@ import 'package:theloop/core/settings/data/settings_storage.dart';
 import 'package:theloop/core/theme/loop_theme.dart';
 import 'package:theloop/features/auth/domain/repositories/auth_repository.dart';
 import 'package:theloop/features/auth/presentation/cubit/auth_cubit.dart';
-import 'package:theloop/features/profile/data/repositories/mock_profile_repository.dart';
 import 'package:theloop/features/profile/domain/repositories/profile_repository.dart';
 import 'package:theloop/features/profile/domain/usecases/get_profile.dart';
 import 'package:theloop/features/profile/presentation/cubit/profile_cubit.dart';
 
 import 'fakes/fake_auth_repository.dart';
+import 'fakes/fake_profile_repository.dart';
 
 class _TestApp extends StatelessWidget {
   const _TestApp();
@@ -26,7 +26,7 @@ class _TestApp extends StatelessWidget {
       providers: [
         RepositoryProvider<AuthRepository>(create: (_) => FakeAuthRepository()),
         RepositoryProvider<ProfileRepository>(
-          create: (_) => MockProfileRepository(),
+          create: (_) => FakeProfileRepository(),
         ),
       ],
       child: const _TestAppView(),

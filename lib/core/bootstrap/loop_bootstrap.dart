@@ -35,6 +35,7 @@ class _LoopBootstrapState extends State<LoopBootstrap> {
   bool? _connected;
   bool _checking = true;
   bool _firebaseReady = false;
+  Object? _bootstrapError;
 
   @override
   void initState() {
@@ -60,10 +61,20 @@ class _LoopBootstrapState extends State<LoopBootstrap> {
     if (!mounted) return;
 
     if (connected && !_firebaseReady) {
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
-      _firebaseReady = true;
+      try {
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
+        _firebaseReady = true;
+        _bootstrapError = null;
+      } catch (error) {
+        if (!mounted) return;
+        setState(() {
+          _bootstrapError = error;
+          _checking = false;
+        });
+        return;
+      }
     }
 
     setState(() {
@@ -75,6 +86,43 @@ class _LoopBootstrapState extends State<LoopBootstrap> {
 
   @override
   Widget build(BuildContext context) {
+    if (_bootstrapError != null) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          body: SafeArea(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.error_outline, size: 48),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'No pudimos iniciar la app. Intenta de nuevo.',
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    FilledButton(
+                      onPressed: () {
+                        setState(() {
+                          _bootstrapError = null;
+                          _checking = true;
+                        });
+                        _evaluateConnectivity();
+                      },
+                      child: const Text('Reintentar'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     if (_connected != true) {
       return NoConnectionScreen(
         settingsStorage: widget.settingsStorage,

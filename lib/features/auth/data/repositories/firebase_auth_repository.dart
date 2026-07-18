@@ -2,12 +2,14 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../../../../core/utils/app_logger.dart';
 import '../../domain/entities/auth_user.dart';
 import '../../domain/entities/google_sign_in_result.dart';
 import '../../domain/repositories/auth_repository.dart';
+
+const _tag = 'loop.auth';
 
 class FirebaseAuthRepository implements AuthRepository {
   FirebaseAuthRepository(this._auth, this._firestore);
@@ -48,13 +50,13 @@ class FirebaseAuthRepository implements AuthRepository {
     String? customGoal,
     required String experienceId,
   }) async {
-    debugPrint('[signUp] creating auth user...');
+    logTrace(_tag, '[signUp] creating auth user...');
     final credential = await _auth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
     final uid = credential.user!.uid;
-    debugPrint('[signUp] auth user created uid=$uid');
+    logTrace(_tag, '[signUp] auth user created uid=$uid');
     final userDoc = _firestore.collection('users').doc(uid);
 
     try {
@@ -78,17 +80,17 @@ class FirebaseAuthRepository implements AuthRepository {
           userDoc.collection('roadmap').doc('current'),
           <String, dynamic>{},
         );
-      debugPrint('[signUp] committing firestore batch...');
+      logTrace(_tag, '[signUp] committing firestore batch...');
       await batch.commit().timeout(_firestoreTimeout);
-      debugPrint('[signUp] firestore batch committed');
+      logTrace(_tag, '[signUp] firestore batch committed');
 
-      debugPrint('[signUp] updating display name...');
+      logTrace(_tag, '[signUp] updating display name...');
       await credential.user!.updateDisplayName(name);
-      debugPrint('[signUp] display name updated');
+      logTrace(_tag, '[signUp] display name updated');
 
-      debugPrint('[signUp] sending verification email...');
+      logTrace(_tag, '[signUp] sending verification email...');
       await credential.user!.sendEmailVerification();
-      debugPrint('[signUp] verification email sent');
+      logTrace(_tag, '[signUp] verification email sent');
 
       // Fire-and-forget: signOut() right after a fresh sign-up can hang on
       // some platforms. The router already treats an unverified currentUser
@@ -96,24 +98,26 @@ class FirebaseAuthRepository implements AuthRepository {
       unawaited(
         _auth
             .signOut()
-            .then((_) => debugPrint('[signUp] signOut completed'))
-            .catchError((Object e) => debugPrint('[signUp] signOut error: $e')),
+            .then((_) => logTrace(_tag, '[signUp] signOut completed'))
+            .catchError(
+              (Object e) => logTrace(_tag, '[signUp] signOut error: $e'),
+            ),
       );
     } catch (e, st) {
-      debugPrint('[signUp] ERROR: $e');
-      debugPrint('$st');
+      logTrace(_tag, '[signUp] ERROR: $e');
+      logTrace(_tag, '$st');
       // Roll back the Auth account so a failed sign-up doesn't permanently
       // block retries with "email already in use".
       try {
         await credential.user!.delete().timeout(_rollbackTimeout);
-        debugPrint('[signUp] rolled back orphaned auth user');
+        logTrace(_tag, '[signUp] rolled back orphaned auth user');
       } catch (rollbackError) {
-        debugPrint('[signUp] auth rollback failed: $rollbackError');
+        logTrace(_tag, '[signUp] auth rollback failed: $rollbackError');
       }
       rethrow;
     }
 
-    debugPrint('[signUp] returning success, uid=$uid');
+    logTrace(_tag, '[signUp] returning success, uid=$uid');
     return AuthUser(uid: uid, email: email, emailVerified: false);
   }
 
@@ -160,7 +164,8 @@ class FirebaseAuthRepository implements AuthRepository {
     final mappedUser = _mapUser(user)!;
 
     final needsOnboarding = await _needsOnboarding(user.uid);
-    debugPrint(
+    logTrace(
+      _tag,
       '[signInWithGoogle] uid=${user.uid} needsOnboarding=$needsOnboarding',
     );
 
@@ -181,7 +186,8 @@ class FirebaseAuthRepository implements AuthRepository {
     final mappedUser = _mapUser(user)!;
 
     final needsOnboarding = await _needsOnboarding(user.uid);
-    debugPrint(
+    logTrace(
+      _tag,
       '[signInWithApple] uid=${user.uid} needsOnboarding=$needsOnboarding',
     );
 
@@ -253,10 +259,7 @@ class FirebaseAuthRepository implements AuthRepository {
   @override
   Future<void> signOut() async {
     await _ensureGoogleSignInInitialized();
-    await Future.wait([
-      _auth.signOut(),
-      GoogleSignIn.instance.signOut(),
-    ]);
+    await Future.wait([_auth.signOut(), GoogleSignIn.instance.signOut()]);
   }
 
   @override

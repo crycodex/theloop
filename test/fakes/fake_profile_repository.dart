@@ -1,9 +1,7 @@
-import '../../domain/entities/profile.dart';
-import '../../domain/repositories/profile_repository.dart';
+import 'package:theloop/features/profile/domain/entities/profile.dart';
+import 'package:theloop/features/profile/domain/repositories/profile_repository.dart';
 
-class MockProfileRepository implements ProfileRepository {
-  MockProfileRepository();
-
+class FakeProfileRepository implements ProfileRepository {
   Profile _profile = const Profile(
     name: 'Cristhian',
     email: 'cristhian@example.com',
@@ -37,14 +35,14 @@ class MockProfileRepository implements ProfileRepository {
 
   @override
   Future<Map<String, dynamic>> exportUserData() async => {
-        'exportedAt': DateTime.now().toUtc().toIso8601String(),
-        'profile': {
-          'name': _profile.name,
-          'email': _profile.email,
-          'goal': _profile.target,
-        },
-        'tracks': <Map<String, dynamic>>[],
-      };
+    'exportedAt': DateTime.now().toUtc().toIso8601String(),
+    'profile': {
+      'name': _profile.name,
+      'email': _profile.email,
+      'goal': _profile.target,
+    },
+    'tracks': <Map<String, dynamic>>[],
+  };
 
   @override
   Future<void> deleteUserData() async {}

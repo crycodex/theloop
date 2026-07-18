@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/localization/app_strings.dart';
 import '../../../core/theme/loop_colors.dart';
+import '../../../core/utils/app_logger.dart';
 import '../../auth/presentation/cubit/auth_cubit.dart';
 import '../../auth/presentation/cubit/auth_state.dart';
 import 'validators/auth_validators.dart';
@@ -15,6 +16,8 @@ import 'widgets/auth_form_widgets.dart';
 import 'widgets/experience_options.dart';
 import 'widgets/goal_grid.dart';
 import 'widgets/register_step_page.dart';
+
+const _tag = 'loop.register';
 
 const _goalIds = [
   'bigTech',
@@ -83,7 +86,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
 
     if (nextStep == _totalSteps - 1) {
-      debugPrint('[RegisterScreen] starting signUp');
+      logTrace(_tag, '[RegisterScreen] starting signUp');
       unawaited(
         context.read<AuthCubit>().signUp(
           email: _emailController.text.trim(),
@@ -138,7 +141,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
-        debugPrint('[RegisterScreen] listener state=$state');
+        logTrace(_tag, '[RegisterScreen] listener state=$state');
         if (state is EmailVerificationSent) {
           showCupertinoDialog<void>(
             context: context,

@@ -163,7 +163,7 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
     emit(state.copyWith(isMicEnabled: !state.isMicEnabled));
   }
 
-  Future<String?> end() async {
+  Future<String?> end({CallEndReason? reason}) async {
     if (_endingInFlight) return state.loopId;
     if (state.phase != InterviewCallPhase.inCall) return state.loopId;
     _endingInFlight = true;
@@ -204,6 +204,7 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
           phase: InterviewCallPhase.completed,
           isAiSpeaking: false,
           transcript: transcript,
+          endReason: reason,
         ),
       );
       return trackId;
@@ -229,6 +230,7 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
           report: report,
           isAiSpeaking: false,
           transcript: transcript,
+          endReason: reason,
         ),
       );
       return loopId;
@@ -269,7 +271,7 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
           emit(state.copyWith(isAiSpeaking: false));
           if (_endAfterSpeech && state.phase == InterviewCallPhase.inCall) {
             _endAfterSpeech = false;
-            unawaited(end());
+            unawaited(end(reason: CallEndReason.closingPhraseDetected));
           }
         };
         await _audio.startMic((pcm) {
@@ -314,15 +316,17 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
         emit(state.copyWith(isAiSpeaking: false));
       case LiveTranscriptUpdated(:final transcript):
         emit(state.copyWith(transcript: transcript));
-        _maybeAutoEnd();
       case LiveTurnComplete():
+        // Only a fully finished turn can carry a genuine closing phrase —
+        // interim streamed fragments must not trigger an early end.
         _maybeAutoEnd();
       case LiveClosed(:final reason):
         if (state.phase != InterviewCallPhase.inCall) return;
-        // Only finalize when the session had real content; otherwise surface error.
-        if (state.transcript.isNotEmpty &&
-            state.elapsedSeconds >= kMinReportSeconds) {
-          await end();
+        // A disconnect only counts as a legitimate finish if the model had
+        // actually said the closing phrase; otherwise it's a dropped call
+        // and must surface as a retryable error, not a silent "completed".
+        if (isSessionClosingTranscript(state.transcript, isPrep: state.isPrep)) {
+          await end(reason: CallEndReason.closingPhraseDetected);
           return;
         }
         await _fail(GeminiLiveException(reason));
@@ -341,7 +345,7 @@ class InterviewCallCubit extends Cubit<InterviewCallState> {
       _endAfterSpeech = true;
       return;
     }
-    unawaited(end());
+    unawaited(end(reason: CallEndReason.closingPhraseDetected));
   }
 
   Future<void> _stopRealtime() async {

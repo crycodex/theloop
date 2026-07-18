@@ -13,6 +13,15 @@ enum InterviewCallPhase {
   error,
 }
 
+/// Why an in-progress call moved to [InterviewCallPhase.completed].
+enum CallEndReason {
+  /// The interviewer/coach said the explicit closing phrase.
+  closingPhraseDetected,
+
+  /// The connection dropped after enough content to still produce a report.
+  disconnected,
+}
+
 class InterviewCallState {
   const InterviewCallState({
     required this.phase,
@@ -25,6 +34,7 @@ class InterviewCallState {
     this.isPrep = false,
     this.report,
     this.errorMessage,
+    this.endReason,
   });
 
   const InterviewCallState.initial()
@@ -37,7 +47,8 @@ class InterviewCallState {
       trackId = null,
       isPrep = false,
       report = null,
-      errorMessage = null;
+      errorMessage = null,
+      endReason = null;
 
   final InterviewCallPhase phase;
   final bool isMicEnabled;
@@ -49,6 +60,7 @@ class InterviewCallState {
   final bool isPrep;
   final InterviewReport? report;
   final String? errorMessage;
+  final CallEndReason? endReason;
 
   int get elapsedSeconds => kLoopDurationSeconds - remainingSeconds;
 
@@ -71,6 +83,7 @@ class InterviewCallState {
     InterviewReport? report,
     String? errorMessage,
     bool clearError = false,
+    CallEndReason? endReason,
   }) {
     return InterviewCallState(
       phase: phase ?? this.phase,
@@ -83,6 +96,7 @@ class InterviewCallState {
       isPrep: isPrep ?? this.isPrep,
       report: report ?? this.report,
       errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
+      endReason: endReason ?? this.endReason,
     );
   }
 }

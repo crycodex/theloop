@@ -77,7 +77,13 @@ class GeminiLiveService {
     final uri = Uri.parse('$kGeminiLiveWsUrl?key=$kGeminiApiKey');
     final channel = WebSocketChannel.connect(uri);
     _channel = channel;
-    await channel.ready;
+    try {
+      await channel.ready.timeout(const Duration(seconds: 10));
+    } catch (error) {
+      _channel = null;
+      await channel.sink.close();
+      throw GeminiLiveException('No se pudo conectar: $error');
+    }
 
     _subscription = channel.stream.listen(
       _onData,
