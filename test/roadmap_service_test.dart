@@ -54,6 +54,58 @@ void main() {
     expect(roadmap.steps, hasLength(5));
     expect(roadmap.steps.first.tips, hasLength(3));
     expect(roadmap.steps.first.state, RoadmapStepState.locked);
+    expect(roadmap.steps.first.id, 'step_1');
+    expect(roadmap.steps.last.type, RoadmapStepType.call);
+    expect(roadmap.steps.last.lesson, isNull);
+  });
+
+  test('parsea lesson/quiz de los pasos que no son la llamada final', () async {
+    final client = MockClient((request) async {
+      return _geminiResponse({
+        'target': 'Big Tech',
+        'finalGoal': 'Conseguir una oferta en una Big Tech.',
+        'steps': [
+          for (var i = 0; i < 5; i++)
+            {
+              'title': 'Paso $i',
+              'category': 'Behavioral',
+              'guide': 'Practica con loops.',
+              'tips': ['uno', 'dos'],
+              'lesson': {
+                'sections': [
+                  {'title': 'Sección', 'body': 'Cuerpo de la sección.'},
+                ],
+                'quiz': [
+                  {
+                    'question': '¿Pregunta?',
+                    'options': ['a', 'b', 'c', 'd'],
+                    'correctIndex': 1,
+                    'explanation': 'Porque sí.',
+                  },
+                ],
+              },
+            },
+        ],
+      });
+    });
+    final service = RoadmapService(GeminiJsonClient(client: client, apiKey: 'test-key'));
+
+    final roadmap = await service.generate(
+      goalLabel: 'Faang/BigTech',
+      experience: 'some',
+      tracks: const [],
+    );
+
+    final firstStep = roadmap.steps.first;
+    expect(firstStep.type, RoadmapStepType.lesson);
+    expect(firstStep.hasLesson, isTrue);
+    expect(firstStep.lesson!.quiz.single.correctIndex, 1);
+    expect(roadmap.steps.last.lesson, isNull);
+
+    final restored = Roadmap.fromMap(roadmap.toMap());
+    expect(restored.steps.first.lesson!.sections.single.body, 'Cuerpo de la sección.');
+    expect(restored.steps.first.id, 'step_1');
+    expect(restored.steps.last.type, RoadmapStepType.call);
   });
 
   test('falla si Gemini no devuelve pasos', () async {

@@ -29,10 +29,32 @@ class RoadmapCubit extends Cubit<RoadmapState> {
   final TracksRepository _tracksRepository;
   final SettingsCubit _settingsCubit;
 
+  /// `true` cuando los pasos tienen id estable (catálogo, o un roadmap
+  /// redefinido con IA en su formato nuevo) y por lo tanto su progreso se
+  /// deriva de `completedStepIds` en vez del conteo total de ciclos.
+  bool _hasStepIds(Roadmap roadmap) =>
+      roadmap.steps.isNotEmpty && roadmap.steps.every((step) => step.id.isNotEmpty);
+
   Future<void> load() async {
     emit(const RoadmapLoading());
     try {
       final tracks = await _tracksRepository.getTracks();
+
+      // El roadmap personal (redefinido con IA, o generado para un goal
+      // custom) manda sobre el catálogo global: si el usuario ya lo definió,
+      // esa es su ruta.
+      final personal = await _repository.getLatest();
+      if (personal != null && personal.steps.isNotEmpty) {
+        final derived = _hasStepIds(personal)
+            ? _withCatalogStates(
+                personal,
+                await _repository.getCompletedStepIds(),
+                tracks,
+              )
+            : _withDerivedStates(personal, tracks);
+        emit(RoadmapLoaded(derived, userLevel: _userLevel(tracks)));
+        return;
+      }
 
       final catalog = await _loadCatalogRoadmap();
       if (catalog != null) {
@@ -46,22 +68,15 @@ class RoadmapCubit extends Cubit<RoadmapState> {
         return;
       }
 
-      final roadmap = await _repository.getLatest();
-      if (roadmap == null || roadmap.steps.isEmpty) {
-        emit(const RoadmapEmpty());
-        return;
-      }
-      emit(
-        RoadmapLoaded(
-          _withDerivedStates(roadmap, tracks),
-          userLevel: _userLevel(tracks),
-        ),
-      );
+      emit(const RoadmapEmpty());
     } catch (_) {
       emit(const RoadmapEmpty());
     }
   }
 
+  /// Genera (o redefine) el roadmap del usuario con IA. Al redefinir se
+  /// reemplaza cualquier roadmap anterior (catálogo o personal) y se
+  /// reinicia el progreso, porque los ids de los pasos ya no existen.
   Future<void> generate() async {
     emit(const RoadmapGenerating());
     try {
@@ -79,10 +94,12 @@ class RoadmapCubit extends Cubit<RoadmapState> {
         tracks: tracks,
         language: language,
       );
+      await _repository.resetProgress();
       await _repository.saveLatest(roadmap);
+      final completed = await _repository.getCompletedStepIds();
       emit(
         RoadmapLoaded(
-          _withDerivedStates(roadmap, tracks),
+          _withCatalogStates(roadmap, completed, tracks),
           userLevel: _userLevel(tracks),
         ),
       );
@@ -96,7 +113,7 @@ class RoadmapCubit extends Cubit<RoadmapState> {
   Future<void> completeStep(String stepId) async {
     final current = state;
     await _repository.markStepCompleted(stepId);
-    if (current is! RoadmapLoaded || !current.roadmap.isCatalog) {
+    if (current is! RoadmapLoaded || !_hasStepIds(current.roadmap)) {
       await load();
       return;
     }

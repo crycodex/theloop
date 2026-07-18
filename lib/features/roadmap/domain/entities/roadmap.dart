@@ -114,17 +114,31 @@ class RoadmapStep {
 
   /// `state` no se persiste: se deriva del progreso al cargar.
   Map<String, dynamic> toMap() {
-    return {'title': title, 'category': category, 'guide': guide, 'tips': tips};
+    return {
+      'id': id,
+      'title': title,
+      'category': category,
+      'guide': guide,
+      'tips': tips,
+      'type': type == RoadmapStepType.call ? 'call' : 'lesson',
+      if (lesson != null) 'lesson': lesson!.toMap(),
+    };
   }
 
   factory RoadmapStep.fromMap(Map<String, dynamic> map) {
+    final lessonMap = map['lesson'] as Map<String, dynamic>?;
     return RoadmapStep(
+      id: map['id'] as String? ?? '',
       title: map['title'] as String? ?? '',
       category: map['category'] as String? ?? '',
       guide: map['guide'] as String? ?? '',
       tips: (map['tips'] as List<dynamic>? ?? const [])
           .whereType<String>()
           .toList(growable: false),
+      type: map['type'] == 'call'
+          ? RoadmapStepType.call
+          : RoadmapStepType.lesson,
+      lesson: lessonMap == null ? null : RoadmapLesson.fromMap(lessonMap),
     );
   }
 
@@ -154,6 +168,51 @@ class RoadmapLesson {
 
   final List<LessonSection> sections;
   final List<QuizQuestion> quiz;
+
+  Map<String, dynamic> toMap() {
+    return {
+      'sections': sections
+          .map((section) => {'title': section.title, 'body': section.body})
+          .toList(growable: false),
+      'quiz': quiz
+          .map(
+            (question) => {
+              'question': question.question,
+              'options': question.options,
+              'correctIndex': question.correctIndex,
+              'explanation': question.explanation,
+            },
+          )
+          .toList(growable: false),
+    };
+  }
+
+  factory RoadmapLesson.fromMap(Map<String, dynamic> map) {
+    return RoadmapLesson(
+      sections: (map['sections'] as List<dynamic>? ?? const [])
+          .whereType<Map<String, dynamic>>()
+          .map(
+            (section) => LessonSection(
+              title: section['title'] as String? ?? '',
+              body: section['body'] as String? ?? '',
+            ),
+          )
+          .toList(growable: false),
+      quiz: (map['quiz'] as List<dynamic>? ?? const [])
+          .whereType<Map<String, dynamic>>()
+          .map(
+            (question) => QuizQuestion(
+              question: question['question'] as String? ?? '',
+              options: (question['options'] as List<dynamic>? ?? const [])
+                  .whereType<String>()
+                  .toList(growable: false),
+              correctIndex: question['correctIndex'] as int? ?? 0,
+              explanation: question['explanation'] as String? ?? '',
+            ),
+          )
+          .toList(growable: false),
+    );
+  }
 
   factory RoadmapLesson.fromCatalogMap(
     Map<String, dynamic> map, {

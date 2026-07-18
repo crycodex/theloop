@@ -48,6 +48,28 @@ class RoadmapScreen extends StatelessWidget {
   }
 }
 
+Future<void> _confirmRedefine(BuildContext context, AppStrings strings) async {
+  final cubit = context.read<RoadmapCubit>();
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (dialogContext) => AlertDialog(
+      title: Text(strings.roadmapRedefineConfirmTitle),
+      content: Text(strings.roadmapRedefineConfirmBody),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(dialogContext).pop(false),
+          child: Text(strings.cancel),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(dialogContext).pop(true),
+          child: Text(strings.continueLabel),
+        ),
+      ],
+    ),
+  );
+  if (confirmed == true) cubit.generate();
+}
+
 class _EmptyView extends StatelessWidget {
   const _EmptyView({required this.strings});
 
@@ -192,12 +214,11 @@ class _LoadedView extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ),
-            if (!roadmap.isCatalog)
-              TextButton.icon(
-                onPressed: () => context.read<RoadmapCubit>().generate(),
-                icon: const Icon(Icons.refresh_rounded, size: 18),
-                label: Text(strings.roadmapRegenerateCta),
-              ),
+            TextButton.icon(
+              onPressed: () => _confirmRedefine(context, strings),
+              icon: const Icon(Icons.auto_awesome_rounded, size: 18),
+              label: Text(strings.roadmapRegenerateCta),
+            ),
           ],
         ),
         const SizedBox(height: 14),

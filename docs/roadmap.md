@@ -12,7 +12,7 @@ Este documento describe cómo funciona la pestaña Roadmap: el catálogo predefi
 | **Fuente de verdad** | JSONs en `scripts/roadmap_catalog/*.json` |
 | **Almacenamiento** | Colección global `roadmap_catalog/{goalId}` en Firestore |
 | **Goals con catálogo** | `bigTech`, `consulting`, `banking`, `startup`, `productManager` |
-| **Fallback** | Goal `custom` (o catálogo ausente) → generación con Gemini (`RoadmapService`) |
+| **Fallback / redefinición** | Si el usuario aún no redefinió su roadmap → catálogo (o vacío si el goal es `custom`); "Redefinir con IA" genera uno personalizado con `RoadmapService` para **cualquier** goal |
 | **Progreso** | `users/{uid}/roadmap/progress` → `completedStepIds: string[]` |
 | **UI** | Camino serpenteante estilo Duolingo + lección con quiz + llamada final |
 
@@ -52,20 +52,33 @@ Todos los textos localizados son mapas `{es, en}`. El parsing (`Roadmap.fromCata
 
 ## Flujo de datos
 
+El roadmap **personal** del usuario (`users/{uid}/roadmap/latest`) siempre manda sobre el catálogo: si ya existe (porque el goal es `custom`, o porque el usuario tocó "Redefinir con IA" sobre un roadmap de catálogo), esa es su ruta para siempre. El catálogo global solo se usa como contenido por defecto mientras no exista ese doc personal.
+
 ```
 RoadmapCubit.load()
-  ├── profile.target == 'custom'  ──► roadmap generado (users/{uid}/roadmap/latest)
-  │                                    └── no existe → RoadmapEmpty (CTA generar con Gemini)
-  └── goal con catálogo
-        ├── roadmap_catalog/{goalId}          # contenido (global, solo lectura)
+  ├── users/{uid}/roadmap/latest existe  ──► ese roadmap (personal)
+  │     ├── tiene ids de pasos (redefinido con IA, incluye lesson/quiz)
+  │     │     └── estados por completedStepIds (_withCatalogStates)
+  │     └── formato viejo sin ids (goal custom generado antes de este cambio)
+  │           └── estados derivados del total de ciclos (_withDerivedStates)
+  └── si no existe  ──► goal con catálogo → roadmap_catalog/{goalId} (solo lectura)
+        │                 └── no hay catálogo para el goal (o es `custom`) → RoadmapEmpty (CTA generar con IA)
         ├── users/{uid}/roadmap/progress      # completedStepIds del usuario
         └── tracks del usuario                # ciclos → paso "call" y nivel
               └── RoadmapLoaded(roadmap con estados, userLevel)
 ```
 
+### Redefinir con IA (`RoadmapCubit.generate`)
+
+Disponible para **cualquier** goal (antes solo para `custom`) desde el botón "Redefinir con IA" en la cabecera del roadmap. Al confirmar (hay un diálogo de aviso porque resetea el progreso):
+
+1. `RoadmapService.generate()` le pide a Gemini un roadmap de 5 pasos con el mismo formato que el catálogo: los primeros 4 son `lesson` (3 secciones de teoría + 3 preguntas de quiz), el quinto es `call`.
+2. `RoadmapRepository.resetProgress()` limpia `completedStepIds` (los ids de los pasos anteriores ya no existen).
+3. Se guarda en `users/{uid}/roadmap/latest`, reemplazando el catálogo como fuente para ese usuario de ahí en adelante.
+
 ### Estados de los pasos (no se persisten)
 
-Se derivan en `RoadmapCubit._withCatalogStates`:
+Se derivan en `RoadmapCubit._withCatalogStates` para cualquier roadmap con ids de pasos estables (catálogo o uno redefinido con IA):
 
 | Estado | Regla |
 |--------|-------|
@@ -73,7 +86,7 @@ Se derivan en `RoadmapCubit._withCatalogStates`:
 | `current` | primer paso no completado (solo uno a la vez) |
 | `locked` | todo lo que sigue al paso actual |
 
-Para roadmaps generados con Gemini se mantiene la regla anterior: el avance se deriva del total de ciclos completados (`_withDerivedStates`).
+Los roadmaps `custom` generados antes de este cambio (sin ids ni lesson/quiz) siguen usando la regla anterior hasta que el usuario los redefina: el avance se deriva del total de ciclos completados (`_withDerivedStates`).
 
 ### Nivel del usuario
 

@@ -77,4 +77,14 @@ class FirestoreRoadmapRepository implements RoadmapRepository {
       'updatedAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
   }
+
+  @override
+  Future<void> resetProgress() async {
+    final doc = _userDoc('progress');
+    if (doc == null) return;
+    await doc.set({
+      'completedStepIds': <String>[],
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+  }
 }

@@ -223,9 +223,15 @@ class AppStrings {
       : 'Generate a personalized roadmap from your goal and progress.';
   String get roadmapGenerateCta =>
       _es ? 'Generar mi trayectoria' : 'Generate my roadmap';
-  String get roadmapRegenerateCta => _es ? 'Regenerar' : 'Regenerate';
+  String get roadmapRegenerateCta =>
+      _es ? 'Redefinir con IA' : 'Redefine with AI';
   String get roadmapGeneratingLabel =>
       _es ? 'Creando tu trayectoria…' : 'Building your roadmap…';
+  String get roadmapRedefineConfirmTitle =>
+      _es ? '¿Redefinir tu trayectoria?' : 'Redefine your roadmap?';
+  String get roadmapRedefineConfirmBody => _es
+      ? 'La IA creará una trayectoria nueva y personalizada para tu objetivo. Perderás el progreso de los pasos actuales.'
+      : 'AI will create a new, personalized roadmap for your goal. You will lose progress on the current steps.';
   String get roadmapTipsTitle => _es ? 'Cómo practicar' : 'How to practice';
   String get roadmapStartLesson => _es ? 'Empezar lección' : 'Start lesson';
   String get roadmapReviewLesson => _es ? 'Repasar lección' : 'Review lesson';

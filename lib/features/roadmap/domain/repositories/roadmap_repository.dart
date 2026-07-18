@@ -14,4 +14,8 @@ abstract interface class RoadmapRepository {
   Future<Set<String>> getCompletedStepIds();
 
   Future<void> markStepCompleted(String stepId);
+
+  /// Limpia `completedStepIds`: se usa al redefinir el roadmap con IA, ya
+  /// que los ids de pasos anteriores dejan de existir.
+  Future<void> resetProgress();
 }
