@@ -2,7 +2,7 @@ name: theloop
 description: "An app for the loop to improve your skills and knowledge for your future job"
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+1
+version: 0.0.1+2
 
 environment:
   sdk: ^3.10.1
@@ -10,10 +10,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-  #setup
-  flutter_launcher_icons: ^0.14.4
-  change_app_package_name: ^1.5.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -27,13 +23,28 @@ dependencies:
   
   flutter_localizations:
     sdk: flutter
+  firebase_auth: ^6.5.4
+  cloud_firestore: ^6.6.0
+  web_socket_channel: ^3.0.3
+  record: ^6.2.1
+  flutter_pcm_sound: ^3.3.3
+  http: ^1.6.0
+  file_picker: ^10.3.4
+  flutter_native_splash: ^2.4.7
+  connectivity_plus: ^7.2.0
+  shared_preferences: ^2.5.5
+  share_plus: ^12.0.1
+  google_sign_in: ^7.2.0
 
 
 dev_dependencies:
-  flutter_native_splash: ^2.4.7
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+
+  #setup
+  flutter_launcher_icons: ^0.14.4
+  change_app_package_name: ^1.5.0
 
 
 #icon
@@ -48,7 +59,7 @@ flutter_launcher_icons:
     background_color: "#hexcode"
     theme_color: "#hexcode"
   windows:
-    generate: false¡
+    generate: false
   macos:
     generate: false
 
@@ -77,6 +88,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/icon/
+    - env.json
   # fonts:
   #   - family: Schyler
   #     fonts:

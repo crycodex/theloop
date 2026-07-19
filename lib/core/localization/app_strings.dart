@@ -16,10 +16,41 @@ class AppStrings {
     return AppStrings(language);
   }
 
+  static AppStrings read(BuildContext context) {
+    final language = context.read<SettingsCubit>().state.language;
+    return AppStrings(language);
+  }
+
   bool get _es => language == AppLanguage.spanish;
 
   String get appTitle => 'Loop';
-  String get homePreparingFor => _es ? 'Tu preparación para' : 'Your prep for';
+  String get homeWelcome => _es ? 'Bienvenido' : 'Welcome';
+  String get homeIntro => _es
+      ? 'Aquí verás tu progreso. Completa tu primer loop para empezar a medirte.'
+      : 'Your progress lives here. Complete your first loop to start measuring.';
+  String get homeLevelTitle => _es ? 'Tu nivel general' : 'Your general level';
+  String get homeLevelEmpty => _es ? 'Sin medir aún' : 'Not measured yet';
+  String get homeLevelEmptyHint => _es
+      ? 'Tu primer loop marca tu punto de partida'
+      : 'Your first loop marks your starting point';
+  String get homeStreakLabel => _es ? 'racha' : 'streak';
+  String get homeLoopsLabel => 'loops';
+  String get homeTracksLabel => _es ? 'rutas' : 'tracks';
+  String get homeCreateLoopTitle =>
+      _es ? 'Crea tu primer loop' : 'Create your first loop';
+  String get homeCreateLoopBody => _es
+      ? 'Elige un puesto objetivo y practica para esa entrevista'
+      : 'Pick a target role and practice for that interview';
+  String get homeCreateLoopCta => _es ? 'Empezar ahora' : 'Start now';
+  String get homePracticesTitle => _es
+      ? 'Tus prácticas de entrevista'
+      : 'Your interview practices';
+  String get homeLatestPractice => _es
+      ? 'Tu práctica más reciente'
+      : 'Your latest practice';
+  String get homeNewLoopCta =>
+      _es ? 'Nuevo loop' : 'New loop';
+  String get homeDefaultUser => _es ? 'Usuario' : 'User';
   String get generalLevel => _es ? 'Nivel general' : 'General level';
   String get generalLevelSummary => _es
       ? 'Listo para sostener una entrevista conductual exigente, con oportunidad de profundizar resultados.'
@@ -123,6 +154,15 @@ class AppStrings {
   String get goalProductManagerDetail => _es ? 'Roles PM' : 'PM roles';
   String get goalCustom => _es ? 'Mi Objetivo' : 'My goal';
   String get goalCustomDetail => _es ? 'Lo defino yo' : 'I define it';
+  String goalLabel(String id) => switch (id) {
+    'bigTech' => goalBigTech,
+    'consulting' => goalConsulting,
+    'banking' => goalBanking,
+    'startup' => goalStartup,
+    'productManager' => goalProductManager,
+    'custom' => goalCustom,
+    _ => id,
+  };
   String get experienceNone => _es ? 'Sin experiencia' : 'No experience';
   String get experienceNoneDetail =>
       _es ? '0 - 1, Estudiante o graduado' : '0 - 1, Student or graduate';
@@ -145,18 +185,29 @@ class AppStrings {
   String get criteriaEvolution =>
       _es ? 'Evolución por criterio' : 'Progress by criterion';
 
-  String get tracks => _es ? 'Trayectos' : 'Tracks';
+  String get tracks => _es ? 'Trayectorias' : 'Tracks';
   String get tracksDescription => _es
       ? 'Cada loop mide tu progreso frente a un puesto objetivo concreto.'
       : 'Each loop measures your progress against a specific target role.';
   String get createCustomTrack => _es
-      ? 'Crear trayecto a medida pegando una descripción de oferta'
-      : 'Create a custom track by pasting a job description';
+      ? 'Crear trayecto: pegar oferta o describirlo con IA'
+      : 'Create a track: paste a job post or describe it with AI';
 
-  String get cvAnalysis => 'CV Analysis';
+  String get cvAnalysis => _es ? 'Análisis de CV' : 'CV Analysis';
   String get cvDescription => _es
       ? 'Tu hoja de vida medida contra claridad, impacto y match con ofertas.'
       : 'Your resume measured against clarity, impact, and job fit.';
+  String get cvPickPdfCta => _es ? 'Subir CV (PDF)' : 'Upload resume (PDF)';
+  String get cvNoFileError => _es
+      ? 'Selecciona tu CV en PDF antes de analizar.'
+      : 'Pick your resume PDF before analyzing.';
+  String get cvSelectTrackLabel => _es
+      ? 'Comparar con una oferta (opcional)'
+      : 'Compare against a job (optional)';
+  String get cvNoTrackOption => _es ? 'Ninguna' : 'None';
+  String get cvAnalyzeCta => _es ? 'Analizar CV' : 'Analyze resume';
+  String get cvAnalyzingLabel => _es ? 'Analizando...' : 'Analyzing...';
+  String get cvReanalyzeCta => _es ? 'Re-analizar' : 'Re-analyze';
   String scoreCurrent(int score) =>
       _es ? 'Score actual: $score/100' : 'Current score: $score/100';
   String lastAnalysis(String value) => _es
@@ -166,7 +217,50 @@ class AppStrings {
   String get breakdown => _es ? 'Desglose' : 'Breakdown';
   String get matchVsJob => _es ? 'Match vs oferta' : 'Match vs job';
 
-  String get roadmap => _es ? 'Ruta' : 'Roadmap';
+  String get roadmap => _es ? 'Roadmap' : 'Roadmap';
+  String get roadmapEmptyBody => _es
+      ? 'Genera una trayectoria personalizada según tu objetivo y progreso.'
+      : 'Generate a personalized roadmap from your goal and progress.';
+  String get roadmapGenerateCta =>
+      _es ? 'Generar mi trayectoria' : 'Generate my roadmap';
+  String get roadmapRegenerateCta =>
+      _es ? 'Redefinir con IA' : 'Redefine with AI';
+  String get roadmapGeneratingLabel =>
+      _es ? 'Creando tu trayectoria…' : 'Building your roadmap…';
+  String get roadmapRedefineConfirmTitle =>
+      _es ? '¿Redefinir tu trayectoria?' : 'Redefine your roadmap?';
+  String get roadmapRedefineConfirmBody => _es
+      ? 'La IA creará una trayectoria nueva y personalizada para tu objetivo. Perderás el progreso de los pasos actuales.'
+      : 'AI will create a new, personalized roadmap for your goal. You will lose progress on the current steps.';
+  String get roadmapTipsTitle => _es ? 'Cómo practicar' : 'How to practice';
+  String get roadmapStartLesson => _es ? 'Empezar lección' : 'Start lesson';
+  String get roadmapReviewLesson => _es ? 'Repasar lección' : 'Review lesson';
+  String get roadmapStartCall =>
+      _es ? 'Practicar en llamada' : 'Practice on a call';
+  String get roadmapLessonQuizTitle => _es ? 'Quiz rápido' : 'Quick quiz';
+  String get roadmapQuizCheck => _es ? 'Comprobar' : 'Check';
+  String get roadmapQuizContinue => _es ? 'Continuar' : 'Continue';
+  String get roadmapQuizCorrect => _es ? '¡Correcto!' : 'Correct!';
+  String get roadmapQuizIncorrect => _es ? 'No exactamente' : 'Not quite';
+  String get roadmapLessonDoneTitle =>
+      _es ? 'Lección completada' : 'Lesson completed';
+  String roadmapQuizScore(int correct, int total) => _es
+      ? 'Acertaste $correct de $total'
+      : 'You got $correct of $total right';
+  String get roadmapLessonFinishCta => _es ? 'Completar paso' : 'Complete step';
+  String get roadmapLessonStartQuizCta =>
+      _es ? 'Ir al quiz' : 'Go to the quiz';
+  String roadmapQuestionOf(int index, int total) =>
+      _es ? 'Pregunta $index de $total' : 'Question $index of $total';
+  String get roadmapStartBadge => _es ? 'EMPEZAR' : 'START';
+  String get roadmapStepLocked => _es
+      ? 'Completa el paso anterior para desbloquearlo.'
+      : 'Complete the previous step to unlock it.';
+  String roadmapStepsProgress(int done, int total) =>
+      _es ? '$done de $total pasos' : '$done of $total steps';
+  String get roadmapLevelPending => _es
+      ? 'Haz tu primera llamada para conocer tu nivel'
+      : 'Do your first call to find out your level';
   String roadmapDescription(String target) => _es
       ? 'Preparación paso a paso para $target.'
       : 'Step-by-step preparation for $target.';
@@ -178,6 +272,36 @@ class AppStrings {
       : 'Level achieved ${level.toStringAsFixed(1)} of 5';
   String get practiceNow => _es ? 'Practicar ahora' : 'Practice now';
 
+  String get profileUpdated =>
+      _es ? 'Perfil actualizado' : 'Profile updated';
+  String get editProfile => _es ? 'Editar perfil' : 'Edit profile';
+  String get experienceLabel => _es ? 'Experiencia' : 'Experience';
+  String get saveChanges => _es ? 'Guardar cambios' : 'Save changes';
+  String get exportData => _es ? 'Exportar datos (JSON)' : 'Export data (JSON)';
+  String get exportDataHint => _es
+      ? 'Descarga tu perfil, trayectos y loops en JSON.'
+      : 'Download your profile, tracks and loops as JSON.';
+  String get exportDataSuccess => _es
+      ? 'Datos exportados correctamente.'
+      : 'Data exported successfully.';
+  String get deleteAccount => _es ? 'Eliminar cuenta' : 'Delete account';
+  String get deleteAccountWarning => _es
+      ? 'Esta acción borra tu perfil, trayectos, loops y cuenta de forma permanente.'
+      : 'This permanently deletes your profile, tracks, loops and account.';
+  String get deleteAccountConfirmTitle =>
+      _es ? '¿Eliminar cuenta?' : 'Delete account?';
+  String get deleteAccountPasswordHint => _es
+      ? 'Confirma tu contraseña para continuar'
+      : 'Confirm your password to continue';
+  String get cancel => _es ? 'Cancelar' : 'Cancel';
+  String get confirmDelete => _es ? 'Eliminar' : 'Delete';
+  String get subscriptionFreeTitle => _es ? 'Plan Gratis' : 'Free plan';
+  String get subscriptionFreeDetail => _es
+      ? 'Acceso a loops de práctica, reportes y trayectorias sugeridas.'
+      : 'Access to practice loops, reports and suggested tracks.';
+  String get subscriptionStatusActive =>
+      _es ? 'Suscripción activa' : 'Active subscription';
+  String get tapToExpand => _es ? 'Toca para expandir' : 'Tap to expand';
   String get profile => _es ? 'Perfil' : 'Profile';
   String get careerGoal => _es ? 'Objetivo profesional' : 'Career goal';
   String get careerGoalSubtitle => _es
@@ -198,9 +322,90 @@ class AppStrings {
       : 'Export data or delete account';
   String get preferences => _es ? 'Preferencias' : 'Preferences';
   String get preferencesSubtitle =>
-      _es ? 'Tema e idioma' : 'Theme and language';
+      _es ? 'Tema, idioma y voz del reclutador' : 'Theme, language and recruiter voice';
   String get darkMode => _es ? 'Modo oscuro' : 'Dark mode';
   String get languageLabel => _es ? 'Idioma' : 'Language';
+  String get recruiterVoiceLabel =>
+      _es ? 'Voz del reclutador' : 'Recruiter voice';
+  String get recruiterLanguageHint => _es
+      ? 'El idioma de la app también define el idioma de la entrevista.'
+      : 'App language also sets the interview language.';
+  String get prepBadge => _es ? 'PREP' : 'PREP';
+  String get preparingPrep =>
+      _es ? 'Guardando preparación…' : 'Saving preparation…';
+
+  String get createTrackTitle =>
+      _es ? 'Nuevo trayecto' : 'New track';
+  String get createTrackSuggestedTab =>
+      _es ? 'Sugeridos' : 'Suggested';
+  String get createTrackPasteTab =>
+      _es ? 'Pegar oferta' : 'Paste job post';
+  String get createTrackAiTab =>
+      _es ? 'Describir con IA' : 'Describe with AI';
+  String createTrackSuggestedHint(String goalLabel) => _es
+      ? 'Según tu objetivo: $goalLabel. Elige una plantilla para empezar el prep.'
+      : 'Based on your goal: $goalLabel. Pick a template to start prep.';
+  String get createTrackSuggestedEmpty => _es
+      ? 'Tu objetivo es personalizado. Define el trayecto pegando una oferta o describiéndolo con IA.'
+      : 'Your goal is custom. Define the track by pasting a job post or describing it with AI.';
+  String get createTrackPasteHint => _es
+      ? 'Pega el título y la descripción del puesto para crear tu primer loop de preparación.'
+      : 'Paste the role title and job description to create your first prep loop.';
+  String get trackJobTitle => _es ? 'Título del puesto' : 'Job title';
+  String get trackCompany => _es ? 'Empresa' : 'Company';
+  String get trackJobDescription =>
+      _es ? 'Descripción del puesto' : 'Job description';
+  String get createTrackCta =>
+      _es ? 'Crear trayecto y preparar' : 'Create track and prepare';
+  String get createTrackAiHint => _es
+      ? 'Cuéntale a la IA el rol que buscas y generará el trayecto automáticamente.'
+      : 'Tell the AI about the role you want and it will generate the track.';
+  String get createTrackAiInput => _es
+      ? 'Ej: Quiero practicar para backend en fintech…'
+      : 'E.g. I want to practice for a backend role in fintech…';
+  String get createTrackAiGenerate =>
+      _es ? 'Generar trayecto con IA' : 'Generate track with AI';
+  String get trackFormRequired => _es
+      ? 'Completa título y descripción.'
+      : 'Fill in title and description.';
+  String get trackAiRequired => _es
+      ? 'Escribe una descripción para la IA.'
+      : 'Write a description for the AI.';
+  String get trackAiUnavailable => _es
+      ? 'La generación con IA no está disponible.'
+      : 'AI generation is unavailable.';
+  String get trackUntitled => _es ? 'Puesto objetivo' : 'Target role';
+  String get trackPrepPending => _es ? 'Preparación pendiente' : 'Prep pending';
+  String get trackPrepDone => _es ? 'Listo para entrevista' : 'Ready to interview';
+
+  String get logout => _es ? 'Cerrar sesión' : 'Sign out';
+  String get logoutConfirmTitle =>
+      _es ? '¿Cerrar sesión?' : 'Sign out?';
+  String get logoutConfirmMessage => _es
+      ? 'Tendrás que iniciar sesión de nuevo.'
+      : "You'll need to sign in again.";
+
+  String get authErrorEmailInUse =>
+      _es ? 'Ese correo ya está registrado.' : 'That email is already registered.';
+  String get authErrorInvalidCredential => _es
+      ? 'Correo o contraseña incorrectos.'
+      : 'Incorrect email or password.';
+  String get authErrorWeakPassword =>
+      _es ? 'La contraseña es demasiado débil.' : 'Password is too weak.';
+  String get authErrorNetwork =>
+      _es ? 'Sin conexión. Inténtalo de nuevo.' : 'No connection. Try again.';
+  String get authErrorUnknown => _es
+      ? 'Ocurrió un error. Inténtalo de nuevo.'
+      : 'Something went wrong. Try again.';
+  String get authErrorEmailNotVerified => _es
+      ? 'Debes verificar tu correo antes de iniciar sesión. Te reenviamos el enlace.'
+      : 'You need to verify your email before signing in. We resent the link.';
+
+  String get verifyEmailTitle =>
+      _es ? 'Verifica tu correo' : 'Verify your email';
+  String verifyEmailMessage(String email) => _es
+      ? 'Te enviamos un enlace de verificación a $email. Confírmalo y luego inicia sesión.'
+      : 'We sent a verification link to $email. Confirm it and then sign in.';
 
   String get recapTitle => _es ? 'Reporte final' : 'Final report';
   String get strength => _es ? 'Fortaleza' : 'Strength';
@@ -217,6 +422,26 @@ class AppStrings {
   String get pause => _es ? 'Pausar' : 'Pause';
   String get resume => _es ? 'Seguir' : 'Resume';
   String get endCall => _es ? 'Terminar' : 'End';
+  String get connectingCall =>
+      _es ? 'Conectando con tu reclutador…' : 'Connecting to your recruiter…';
+  String get recruiterSpeaking =>
+      _es ? 'El reclutador está hablando' : 'The recruiter is speaking';
+  String get recruiterListening =>
+      _es ? 'Te está escuchando' : 'Listening to you';
+  String get preparingReport =>
+      _es ? 'Preparando tu reporte…' : 'Preparing your report…';
+  String get retry => _es ? 'Reintentar' : 'Retry';
+  String get noWifiTitle => _es ? 'Sin Wi‑Fi' : 'No Wi‑Fi';
+  String get noWifiBody => _es
+      ? 'Conéctate a una red Wi‑Fi para usar Loop. La app necesita internet para sincronizar tu progreso y practicar entrevistas.'
+      : 'Connect to a Wi‑Fi network to use Loop. The app needs internet to sync your progress and practice interviews.';
+  String get noWifiReconnect => _es ? 'Reconectar' : 'Reconnect';
+  String get noWifiChecking => _es ? 'Comprobando…' : 'Checking…';
+  String get noTranscript =>
+      _es ? 'El loop terminó sin conversación.' : 'The loop ended without a conversation.';
+  String get noLoopsTitle => homeWelcome;
+  String get noLoopsDescription => homeIntro;
+  String get startFirstLoop => homeCreateLoopCta;
 
   String criterion(String value) {
     if (_es) return value;

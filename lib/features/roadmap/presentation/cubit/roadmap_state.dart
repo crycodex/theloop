@@ -4,12 +4,30 @@ sealed class RoadmapState {
   const RoadmapState();
 }
 
-class RoadmapInitial extends RoadmapState {
-  const RoadmapInitial();
+class RoadmapLoading extends RoadmapState {
+  const RoadmapLoading();
+}
+
+class RoadmapEmpty extends RoadmapState {
+  const RoadmapEmpty();
+}
+
+class RoadmapGenerating extends RoadmapState {
+  const RoadmapGenerating();
 }
 
 class RoadmapLoaded extends RoadmapState {
-  const RoadmapLoaded(this.roadmap);
+  const RoadmapLoaded(this.roadmap, {this.userLevel});
 
   final Roadmap roadmap;
+
+  /// Nivel identificado tras la primera llamada de loop (null si aún no hay
+  /// ciclos completados).
+  final double? userLevel;
+}
+
+class RoadmapError extends RoadmapState {
+  const RoadmapError(this.message);
+
+  final String message;
 }

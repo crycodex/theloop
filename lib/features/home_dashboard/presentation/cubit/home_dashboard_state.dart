@@ -13,3 +13,9 @@ class HomeDashboardLoaded extends HomeDashboardState {
 
   final HomeDashboard dashboard;
 }
+
+class HomeDashboardError extends HomeDashboardState {
+  const HomeDashboardError(this.message);
+
+  final String message;
+}

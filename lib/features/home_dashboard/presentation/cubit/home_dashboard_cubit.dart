@@ -11,7 +11,12 @@ class HomeDashboardCubit extends Cubit<HomeDashboardState> {
 
   final GetHomeDashboard _getHomeDashboard;
 
-  void load() {
-    emit(HomeDashboardLoaded(_getHomeDashboard()));
+  Future<void> load() async {
+    emit(const HomeDashboardInitial());
+    try {
+      emit(HomeDashboardLoaded(await _getHomeDashboard()));
+    } catch (error) {
+      emit(HomeDashboardError(error.toString()));
+    }
   }
 }

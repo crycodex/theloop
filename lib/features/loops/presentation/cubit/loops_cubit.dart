@@ -10,7 +10,12 @@ class LoopsCubit extends Cubit<LoopsState> {
 
   final GetLoopTracks _getLoopTracks;
 
-  void load() {
-    emit(LoopsLoaded(_getLoopTracks()));
+  Future<void> load() async {
+    emit(const LoopsInitial());
+    try {
+      emit(LoopsLoaded(await _getLoopTracks()));
+    } catch (error) {
+      emit(LoopsError(error.toString()));
+    }
   }
 }

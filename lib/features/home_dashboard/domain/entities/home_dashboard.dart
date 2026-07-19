@@ -7,8 +7,10 @@ class HomeDashboard {
     required this.generalLevel,
     required this.streakDays,
     required this.totalLoops,
+    required this.totalTracks,
     required this.criteria,
-    required this.latestTrack,
+    required this.tracks,
+    required this.hasMeasuredLevel,
   });
 
   final String userName;
@@ -16,8 +18,14 @@ class HomeDashboard {
   final double generalLevel;
   final int streakDays;
   final int totalLoops;
+  final int totalTracks;
   final List<CriterionProgress> criteria;
-  final LoopTrack latestTrack;
+  final List<LoopTrack> tracks;
+  final bool hasMeasuredLevel;
+
+  LoopTrack? get latestTrack => tracks.isEmpty ? null : tracks.first;
+
+  bool get hasTracks => tracks.isNotEmpty;
 }
 
 class CriterionProgress {

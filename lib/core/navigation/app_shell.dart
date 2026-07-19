@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/home_dashboard/presentation/cubit/home_dashboard_cubit.dart';
 import '../../features/profile/presentation/cubit/profile_cubit.dart';
 import '../../features/profile/presentation/cubit/profile_state.dart';
 import '../theme/loop_colors.dart';
@@ -146,15 +147,24 @@ class _FloatingNavBar extends StatelessWidget {
               _NavItem(
                 icon: Icons.bar_chart_rounded,
                 active: location == '/',
-                onTap: () => context.go('/'),
+                onTap: () {
+                  context.read<HomeDashboardCubit>().load();
+                  context.go('/');
+                },
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 6),
               _NavItem(
-                icon: Icons.crop_square_rounded,
+                icon: Icons.route_rounded,
+                active: location == '/loops',
+                onTap: () => context.go('/loops'),
+              ),
+              const SizedBox(width: 6),
+              _NavItem(
+                icon: Icons.description_outlined,
                 active: location == '/cv',
                 onTap: () => context.go('/cv'),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 6),
               _NavItem(
                 icon: Icons.account_tree_outlined,
                 active: location == '/roadmap',
@@ -163,7 +173,7 @@ class _FloatingNavBar extends StatelessWidget {
             ],
           ),
         ),
-        _CallButton(onTap: () => context.go('/interview')),
+        _CallButton(onTap: () => context.go('/loops/create')),
       ],
     );
   }
@@ -186,7 +196,7 @@ class _BlurPill extends StatelessWidget {
           decoration: BoxDecoration(
             color: Colors.transparent,
             borderRadius: BorderRadius.circular(999),
-            border: Border.all(color: Colors.transparent),
+            border: Border.all(color: Colors.green.withValues(alpha: 0.4)),
           ),
           child: child,
         ),
@@ -218,11 +228,7 @@ class _CallButton extends StatelessWidget {
                   ? Colors.white.withValues(alpha: 0.08)
                   : LoopColors.lightGreen.withValues(alpha: 0.55),
               shape: BoxShape.circle,
-              border: Border.all(
-                color: isDark
-                    ? Colors.white.withValues(alpha: 0.08)
-                    : Colors.white.withValues(alpha: 0.24),
-              ),
+              border: Border.all(color: Colors.green.withValues(alpha: 0.4)),
             ),
             child: Center(
               child: Image.asset(
@@ -264,8 +270,8 @@ class _NavItem extends StatelessWidget {
       borderRadius: BorderRadius.circular(24),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
-        width: 48,
-        height: 48,
+        width: 44,
+        height: 44,
         decoration: BoxDecoration(
           color: active ? const Color(0xFF11C86F) : Colors.transparent,
           shape: BoxShape.circle,

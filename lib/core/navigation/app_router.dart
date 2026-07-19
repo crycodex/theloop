@@ -1,83 +1,187 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/auth/domain/repositories/auth_repository.dart';
+import '../../features/profile/domain/repositories/profile_repository.dart';
 import '../../features/cv_analysis/presentation/cv_analysis_screen.dart';
 import '../../features/home_dashboard/presentation/home_screen.dart';
 import '../../features/interview_call/presentation/interview_call_screen.dart';
+import '../../features/loops/presentation/create_track_screen.dart';
 import '../../features/loops/presentation/loops_screen.dart';
 import '../../features/onboarding/presentation/onboarding_screens.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/recap/presentation/recap_screen.dart';
+import '../../features/roadmap/presentation/roadmap_lesson_screen.dart';
 import '../../features/roadmap/presentation/roadmap_screen.dart';
 import 'app_shell.dart';
 
-final appRouter = GoRouter(
-  initialLocation: '/welcome',
-  routes: [
-    GoRoute(
-      path: '/welcome',
-      pageBuilder: (context, state) =>
-          _instantPage(state: state, child: const WelcomeScreen()),
+const _authRoutes = {'/welcome', '/login', '/forgot-password', '/register'};
+const _onboardingRoutes = {'/google-onboarding'};
+
+class AppRouter {
+  AppRouter(this._authRepository, this._profileRepository)
+    : refresh = GoRouterRefreshStream(_authRepository.authStateChanges()) {
+    router = GoRouter(
+      initialLocation: '/welcome',
+      refreshListenable: refresh,
+      redirect: _redirect,
+      routes: routes,
+    );
+  }
+
+  final AuthRepository _authRepository;
+  final ProfileRepository _profileRepository;
+  final GoRouterRefreshStream refresh;
+  late final GoRouter router;
+
+  Future<String?> _redirect(BuildContext context, GoRouterState state) async {
+    final user = _authRepository.currentUser;
+    final loggedIn = user != null && user.emailVerified;
+    final goingToAuthRoute = _authRoutes.contains(state.matchedLocation);
+    final goingToOnboarding = _onboardingRoutes.contains(state.matchedLocation);
+
+    if (user != null && !user.emailVerified && !goingToAuthRoute) {
+      return '/login';
+    }
+    if (!loggedIn && !goingToAuthRoute) {
+      return '/welcome';
+    }
+
+    if (loggedIn) {
+      final bool profileComplete;
+      try {
+        profileComplete = await _profileRepository.isProfileComplete();
+      } catch (_) {
+        // Sesión inválida o Firestore inaccesible: no navegar; el listener
+        // de auth reejecuta el redirect cuando el estado se estabiliza.
+        return null;
+      }
+      if (!profileComplete && !goingToOnboarding) {
+        return '/google-onboarding';
+      }
+      if (profileComplete && goingToOnboarding) {
+        return '/';
+      }
+      if (goingToAuthRoute) return '/';
+    }
+
+    return null;
+  }
+
+  void dispose() => refresh.dispose();
+}
+
+class GoRouterRefreshStream extends ChangeNotifier {
+  GoRouterRefreshStream(Stream<dynamic> stream) {
+    notifyListeners();
+    _subscription = stream.asBroadcastStream().listen((_) => notifyListeners());
+  }
+
+  late final StreamSubscription<dynamic> _subscription;
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+}
+
+final routes = [
+  GoRoute(
+    path: '/welcome',
+    pageBuilder: (context, state) =>
+        _instantPage(state: state, child: const WelcomeScreen()),
+  ),
+  GoRoute(
+    path: '/login',
+    pageBuilder: (context, state) =>
+        _instantPage(state: state, child: const LoginScreen()),
+  ),
+  GoRoute(
+    path: '/forgot-password',
+    pageBuilder: (context, state) =>
+        _navPage(state: state, child: const ForgotPasswordScreen()),
+  ),
+  GoRoute(
+    path: '/register',
+    pageBuilder: (context, state) =>
+        _instantPage(state: state, child: const RegisterScreen()),
+  ),
+  GoRoute(
+    path: '/google-onboarding',
+    pageBuilder: (context, state) =>
+        _instantPage(state: state, child: const GoogleOnboardingScreen()),
+  ),
+  ShellRoute(
+    builder: (context, state, child) {
+      return AppShell(location: state.uri.path, child: child);
+    },
+    routes: [
+      GoRoute(
+        path: '/',
+        pageBuilder: (context, state) =>
+            _navPage(state: state, child: const HomeScreen()),
+      ),
+      GoRoute(
+        path: '/loops',
+        pageBuilder: (context, state) =>
+            _navPage(state: state, child: const LoopsScreen()),
+      ),
+      GoRoute(
+        path: '/cv',
+        pageBuilder: (context, state) =>
+            _navPage(state: state, child: const CvAnalysisScreen()),
+      ),
+      GoRoute(
+        path: '/roadmap',
+        pageBuilder: (context, state) =>
+            _navPage(state: state, child: const RoadmapScreen()),
+      ),
+    ],
+  ),
+  GoRoute(
+    path: '/loops/create',
+    pageBuilder: (context, state) =>
+        _navPage(state: state, child: const CreateTrackScreen()),
+  ),
+  GoRoute(
+    path: '/roadmap/lesson/:stepId',
+    pageBuilder: (context, state) => _navPage(
+      state: state,
+      child: RoadmapLessonScreen(
+        stepId: state.pathParameters['stepId'] ?? '',
+      ),
     ),
-    GoRoute(
-      path: '/login',
-      pageBuilder: (context, state) =>
-          _instantPage(state: state, child: const LoginScreen()),
+  ),
+  GoRoute(
+    path: '/profile',
+    pageBuilder: (context, state) =>
+        _navPage(state: state, child: const ProfileScreen()),
+  ),
+  GoRoute(
+    path: '/interview',
+    pageBuilder: (context, state) => _callPage(
+      state: state,
+      child: InterviewCallScreen(
+        sourceLoopId: state.uri.queryParameters['sourceLoopId'],
+        trackId: state.uri.queryParameters['trackId'],
+        loopType: state.uri.queryParameters['loopType'] ?? 'interview',
+      ),
     ),
-    GoRoute(
-      path: '/forgot-password',
-      pageBuilder: (context, state) =>
-          _navPage(state: state, child: const ForgotPasswordScreen()),
+  ),
+  GoRoute(
+    path: '/recap',
+    pageBuilder: (context, state) => _recapPage(
+      state: state,
+      child: RecapScreen(
+        trackId: state.uri.queryParameters['trackId'],
+        loopId: state.uri.queryParameters['loopId'],
+      ),
     ),
-    GoRoute(
-      path: '/register',
-      pageBuilder: (context, state) =>
-          _instantPage(state: state, child: const RegisterScreen()),
-    ),
-    ShellRoute(
-      builder: (context, state, child) {
-        return AppShell(location: state.uri.path, child: child);
-      },
-      routes: [
-        GoRoute(
-          path: '/',
-          pageBuilder: (context, state) =>
-              _navPage(state: state, child: const HomeScreen()),
-        ),
-        GoRoute(
-          path: '/loops',
-          pageBuilder: (context, state) =>
-              _navPage(state: state, child: const LoopsScreen()),
-        ),
-        GoRoute(
-          path: '/cv',
-          pageBuilder: (context, state) =>
-              _navPage(state: state, child: const CvAnalysisScreen()),
-        ),
-        GoRoute(
-          path: '/roadmap',
-          pageBuilder: (context, state) =>
-              _navPage(state: state, child: const RoadmapScreen()),
-        ),
-      ],
-    ),
-    GoRoute(
-      path: '/profile',
-      pageBuilder: (context, state) =>
-          _navPage(state: state, child: const ProfileScreen()),
-    ),
-    GoRoute(
-      path: '/interview',
-      pageBuilder: (context, state) =>
-          _callPage(state: state, child: const InterviewCallScreen()),
-    ),
-    GoRoute(
-      path: '/recap',
-      pageBuilder: (context, state) =>
-          _recapPage(state: state, child: const RecapScreen()),
-    ),
-  ],
-);
+  ),
+];
 
 CustomTransitionPage<void> _instantPage({
   required GoRouterState state,

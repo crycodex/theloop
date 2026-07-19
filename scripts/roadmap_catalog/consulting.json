@@ -1,0 +1,368 @@
+{
+  "goalId": "consulting",
+  "target": { "es": "Consultoría MBB", "en": "MBB Consulting" },
+  "finalGoal": {
+    "es": "Resolver cases con estructura MECE y contar tu historia personal con impacto para una oferta MBB.",
+    "en": "Solve cases with MECE structure and tell your personal impact story to land an MBB offer."
+  },
+  "steps": [
+    {
+      "id": "consulting_step1_case_anatomy",
+      "type": "lesson",
+      "category": { "es": "Case", "en": "Case" },
+      "title": { "es": "Anatomía del case interview", "en": "Anatomy of the case interview" },
+      "guide": {
+        "es": "Conoce las fases de un case y el principio MECE para estructurar cualquier problema de negocio.",
+        "en": "Learn the phases of a case and the MECE principle to structure any business problem."
+      },
+      "tips": {
+        "es": ["Repite la pregunta con tus palabras", "Pide 30 segundos para estructurar", "Cierra siempre con una recomendación"],
+        "en": ["Repeat the question in your own words", "Ask for 30 seconds to structure", "Always close with a recommendation"]
+      },
+      "lesson": {
+        "sections": [
+          {
+            "title": { "es": "Las fases del case", "en": "The phases of a case" },
+            "body": {
+              "es": "Un case fluye así: apertura (clarificar el objetivo), estructura (tu framework), análisis (datos y matemáticas), y síntesis (recomendación final). El entrevistador evalúa cada fase: perderte en el análisis sin volver al objetivo es el fallo clásico.",
+              "en": "A case flows like this: opening (clarify the objective), structure (your framework), analysis (data and math), and synthesis (final recommendation). The interviewer scores each phase: getting lost in analysis without returning to the objective is the classic failure."
+            }
+          },
+          {
+            "title": { "es": "El principio MECE", "en": "The MECE principle" },
+            "body": {
+              "es": "MECE = Mutuamente Excluyente, Colectivamente Exhaustivo. Divide el problema en ramas que no se solapen y que juntas lo cubran todo. Ejemplo: ingresos = precio × volumen; costos = fijos + variables. Un árbol MECE demuestra pensamiento estructurado desde el minuto uno.",
+              "en": "MECE = Mutually Exclusive, Collectively Exhaustive. Split the problem into branches that don't overlap and together cover everything. Example: revenue = price × volume; costs = fixed + variable. A MECE tree signals structured thinking from minute one."
+            }
+          },
+          {
+            "title": { "es": "Guiado por hipótesis", "en": "Hypothesis-driven" },
+            "body": {
+              "es": "Los mejores candidatos no exploran todo el árbol: proponen una hipótesis ('sospecho que el problema está en costos variables') y piden datos para confirmarla o descartarla. Esto es 'hypothesis-driven' y es exactamente cómo trabaja un consultor real.",
+              "en": "Top candidates don't explore the whole tree: they state a hypothesis ('I suspect the issue is in variable costs') and request data to confirm or reject it. This is hypothesis-driven thinking, exactly how a real consultant works."
+            }
+          }
+        ],
+        "quiz": [
+          {
+            "question": {
+              "es": "¿Qué significa que una estructura sea MECE?",
+              "en": "What does it mean for a structure to be MECE?"
+            },
+            "options": {
+              "es": ["Ramas sin solapamiento que cubren todo el problema", "Usar siempre el framework de las 4 P", "Tener mínimo cinco ramas de análisis", "Memorizar frameworks de un libro"],
+              "en": ["Non-overlapping branches covering the whole problem", "Always using the 4 P framework", "Having at least five analysis branches", "Memorizing frameworks from a book"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Mutuamente excluyente (sin solapamiento) y colectivamente exhaustivo (cubre todo).",
+              "en": "Mutually exclusive (no overlap) and collectively exhaustive (covers everything)."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Qué es trabajar 'guiado por hipótesis' en un case?",
+              "en": "What is 'hypothesis-driven' work in a case?"
+            },
+            "options": {
+              "es": ["Proponer una causa probable y pedir datos para validarla", "Analizar todas las ramas en orden", "Adivinar la respuesta al inicio y defenderla siempre", "Esperar a que el entrevistador te dé la respuesta"],
+              "en": ["Stating a likely cause and requesting data to validate it", "Analyzing every branch in order", "Guessing the answer upfront and defending it no matter what", "Waiting for the interviewer to give you the answer"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "La hipótesis dirige el análisis hacia lo más probable, como un consultor real.",
+              "en": "The hypothesis steers analysis toward what's most likely, like a real consultant."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Cómo debe terminar todo case?",
+              "en": "How should every case end?"
+            },
+            "options": {
+              "es": ["Con una recomendación clara y sus riesgos", "Con un resumen de todos los cálculos", "Con preguntas sobre el salario", "Sin conclusión si falta información"],
+              "en": ["With a clear recommendation and its risks", "With a summary of all calculations", "With questions about salary", "Without a conclusion if information is missing"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "La síntesis final ('recomiendo X por Y, con riesgo Z') es la fase más recordada.",
+              "en": "The final synthesis ('I recommend X because Y, with risk Z') is the most remembered phase."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "consulting_step2_sizing",
+      "type": "lesson",
+      "category": { "es": "Case", "en": "Case" },
+      "title": { "es": "Market sizing y matemáticas", "en": "Market sizing and case math" },
+      "guide": {
+        "es": "Domina las estimaciones de mercado y la matemática mental que aparece en todo case MBB.",
+        "en": "Master market estimates and the mental math that shows up in every MBB case."
+      },
+      "tips": {
+        "es": ["Redondea a números manejables", "Anuncia tu método antes de calcular", "Valida si el resultado tiene sentido"],
+        "en": ["Round to manageable numbers", "Announce your method before calculating", "Sanity-check your final number"]
+      },
+      "lesson": {
+        "sections": [
+          {
+            "title": { "es": "El método top-down", "en": "The top-down method" },
+            "body": {
+              "es": "Para estimar un mercado, parte de una población conocida y aplica filtros: '¿Cuántos cafés se venden al día en Madrid?' → 3.3M habitantes → 60% toma café → 1.5 cafés/día ≈ 3M cafés. Lo que evalúan es la lógica de los filtros, no el número exacto.",
+              "en": "To size a market, start from a known population and apply filters: 'How many coffees are sold daily in Madrid?' → 3.3M people → 60% drink coffee → 1.5 coffees/day ≈ 3M coffees. They grade the logic of your filters, not the exact number."
+            }
+          },
+          {
+            "title": { "es": "Matemática limpia bajo presión", "en": "Clean math under pressure" },
+            "body": {
+              "es": "Redondea agresivamente (983 → 1000), trabaja con porcentajes simples y anuncia cada paso: 'voy a multiplicar 200K clientes por 50€ de ticket medio'. Un error de cálculo anunciado y corregido penaliza poco; uno silencioso arruina el case.",
+              "en": "Round aggressively (983 → 1000), work with simple percentages, and announce each step: 'I'll multiply 200K customers by a €50 average ticket'. A calculation error announced and corrected costs little; a silent one ruins the case."
+            }
+          },
+          {
+            "title": { "es": "Sanity check final", "en": "The final sanity check" },
+            "body": {
+              "es": "Antes de dar tu cifra, valídala contra algo conocido: si tu estimación dice que cada español compra 40 coches al año, algo falló. Decir 'esto parece razonable porque...' o detectar tu propio error es una señal de seniority muy valorada.",
+              "en": "Before stating your figure, check it against something known: if your estimate implies every Spaniard buys 40 cars a year, something broke. Saying 'this seems reasonable because...' or catching your own error is a highly valued seniority signal."
+            }
+          }
+        ],
+        "quiz": [
+          {
+            "question": {
+              "es": "En un market sizing, ¿qué evalúa realmente el entrevistador?",
+              "en": "In a market sizing, what does the interviewer actually grade?"
+            },
+            "options": {
+              "es": ["La lógica de tus supuestos y filtros", "Que aciertes el número exacto del mercado", "La velocidad de tu multiplicación", "Que uses una calculadora mental perfecta"],
+              "en": ["The logic of your assumptions and filters", "Getting the exact market number right", "The speed of your multiplication", "Using perfect mental calculation"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "El número exacto no existe; la estructura del razonamiento es lo que puntúa.",
+              "en": "There is no exact number; the reasoning structure is what scores."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Qué hacer si obtienes 983 unidades en un cálculo intermedio?",
+              "en": "What should you do if an intermediate calculation gives 983 units?"
+            },
+            "options": {
+              "es": ["Redondear a 1000 y avisarlo", "Arrastrar 983 en todos los cálculos", "Empezar el case de nuevo", "Ocultar el número al entrevistador"],
+              "en": ["Round to 1000 and say so", "Carry 983 through every calculation", "Restart the case", "Hide the number from the interviewer"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Redondear con transparencia mantiene la matemática limpia y rápida.",
+              "en": "Transparent rounding keeps the math clean and fast."
+            }
+          },
+          {
+            "question": {
+              "es": "Tu estimación implica que cada persona compra 40 coches al año. ¿Qué haces?",
+              "en": "Your estimate implies each person buys 40 cars a year. What do you do?"
+            },
+            "options": {
+              "es": ["Señalar que no es razonable y revisar los supuestos", "Presentarla con confianza de todos modos", "Culpar a los datos del entrevistador", "Reducir el número sin explicar por qué"],
+              "en": ["Flag it as unreasonable and revisit assumptions", "Present it confidently anyway", "Blame the interviewer's data", "Lower the number without explaining why"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Detectar tu propio error con un sanity check es una señal fuerte de seniority.",
+              "en": "Catching your own error via a sanity check is a strong seniority signal."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "consulting_step3_frameworks",
+      "type": "lesson",
+      "category": { "es": "Case", "en": "Case" },
+      "title": { "es": "Profitability y market entry", "en": "Profitability and market entry" },
+      "guide": {
+        "es": "Practica los dos tipos de case más frecuentes: caída de rentabilidad y entrada a un nuevo mercado.",
+        "en": "Practice the two most frequent case types: profitability decline and new market entry."
+      },
+      "tips": {
+        "es": ["Ingresos = precio × volumen, siempre", "Adapta el framework al caso concreto", "Cuantifica antes de recomendar"],
+        "en": ["Revenue = price × volume, always", "Tailor the framework to the specific case", "Quantify before recommending"]
+      },
+      "lesson": {
+        "sections": [
+          {
+            "title": { "es": "El case de profitability", "en": "The profitability case" },
+            "body": {
+              "es": "'Las ganancias cayeron 20%, ¿por qué?' Beneficio = ingresos − costos. Ingresos se abren en precio × volumen (¿bajó el precio o vendemos menos?); costos en fijos y variables. Aísla la rama afectada con datos y luego busca la causa raíz externa (mercado, competencia) o interna.",
+              "en": "'Profits fell 20%, why?' Profit = revenue − costs. Revenue splits into price × volume (did price drop or are we selling less?); costs into fixed and variable. Isolate the affected branch with data, then find the root cause, external (market, competition) or internal."
+            }
+          },
+          {
+            "title": { "es": "El case de market entry", "en": "The market entry case" },
+            "body": {
+              "es": "'¿Debería la empresa X entrar al mercado Y?' Evalúa: atractivo del mercado (tamaño, crecimiento, márgenes), capacidad de competir (ventajas, sinergias), y economía de la entrada (inversión, break-even, modo: orgánico, adquisición o alianza). La respuesta es una recomendación condicionada, no un sí/no plano.",
+              "en": "'Should company X enter market Y?' Assess: market attractiveness (size, growth, margins), ability to compete (advantages, synergies), and entry economics (investment, break-even, mode: organic, acquisition, or partnership). The answer is a conditioned recommendation, not a flat yes/no."
+            }
+          },
+          {
+            "title": { "es": "Frameworks sin sonar robótico", "en": "Frameworks without sounding robotic" },
+            "body": {
+              "es": "Recitar 'las 4 P' o 'Porter' de memoria penaliza en MBB: quieren estructuras hechas a medida. Truco: construye tu árbol desde la ecuación económica del negocio concreto y nómbralo con el lenguaje del cliente ('miraría pasajeros por vuelo, no volumen genérico').",
+              "en": "Reciting 'the 4 Ps' or 'Porter' from memory is penalized at MBB: they want tailored structures. Trick: build your tree from the specific business's economic equation and name it in the client's language ('I'd look at passengers per flight, not generic volume')."
+            }
+          }
+        ],
+        "quiz": [
+          {
+            "question": {
+              "es": "Las ganancias caen pero el volumen de ventas es estable. ¿Dónde miras primero?",
+              "en": "Profits are falling but sales volume is stable. Where do you look first?"
+            },
+            "options": {
+              "es": ["Precio y costos", "Solo el equipo de marketing", "La motivación de los empleados", "El logo de la empresa"],
+              "en": ["Price and costs", "Only the marketing team", "Employee motivation", "The company logo"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Si volumen está estable, el problema vive en precio o en la estructura de costos.",
+              "en": "If volume is stable, the problem lives in price or the cost structure."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Qué tres dimensiones evalúa un case de market entry?",
+              "en": "Which three dimensions does a market entry case assess?"
+            },
+            "options": {
+              "es": ["Atractivo del mercado, capacidad de competir y economía de entrada", "Logo, eslogan y colores de marca", "Solo el tamaño del mercado", "La opinión del CEO y poco más"],
+              "en": ["Market attractiveness, ability to compete, and entry economics", "Logo, slogan, and brand colors", "Only the market size", "The CEO's opinion and little else"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Mercado atractivo + ventaja competitiva + números de entrada viables = entrar.",
+              "en": "Attractive market + competitive advantage + viable entry economics = enter."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Por qué recitar frameworks de memoria penaliza en MBB?",
+              "en": "Why does reciting memorized frameworks hurt you at MBB?"
+            },
+            "options": {
+              "es": ["Buscan estructuras a medida del problema concreto", "Porque los frameworks están prohibidos", "Porque prefieren respuestas sin estructura", "Porque solo valoran la matemática"],
+              "en": ["They want structures tailored to the specific problem", "Because frameworks are forbidden", "Because they prefer unstructured answers", "Because they only value the math"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "El framework genérico ignora la economía específica del cliente; el árbol a medida no.",
+              "en": "A generic framework ignores the client's specific economics; a tailored tree doesn't."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "consulting_step4_pei",
+      "type": "lesson",
+      "category": { "es": "Fit", "en": "Fit" },
+      "title": { "es": "PEI: tu historia personal", "en": "PEI: your personal story" },
+      "guide": {
+        "es": "Prepara las historias de liderazgo, impacto personal y superación que McKinsey, BCG y Bain evalúan tanto como el case.",
+        "en": "Prepare the leadership, personal impact, and overcoming-challenge stories that McKinsey, BCG, and Bain weigh as much as the case."
+      },
+      "tips": {
+        "es": ["Una historia distinta por entrevista", "Profundiza en el 'cómo', no solo el 'qué'", "Muestra influencia sobre personas"],
+        "en": ["A different story per interview", "Go deep on the 'how', not just the 'what'", "Show influence over people"]
+      },
+      "lesson": {
+        "sections": [
+          {
+            "title": { "es": "Qué es el PEI", "en": "What the PEI is" },
+            "body": {
+              "es": "El Personal Experience Interview (nombre de McKinsey; BCG y Bain tienen equivalentes) explora en profundidad UNA historia por dimensión: liderazgo, impacto personal (influir sin autoridad) y logro/superación. A diferencia del behavioral clásico, esperan 5-10 minutos de conversación sobre una sola historia.",
+              "en": "The Personal Experience Interview (McKinsey's name; BCG and Bain have equivalents) explores ONE story per dimension in depth: leadership, personal impact (influencing without authority), and achievement/overcoming adversity. Unlike classic behavioral rounds, expect 5-10 minutes of conversation on a single story."
+            }
+          },
+          {
+            "title": { "es": "Profundidad sobre variedad", "en": "Depth over variety" },
+            "body": {
+              "es": "El entrevistador escarbará: '¿qué dijiste exactamente?', '¿cómo reaccionó esa persona?', '¿qué habrías hecho distinto?'. Elige historias donde TÚ moviste a personas (convencer, alinear, motivar), con tensión real y donde recuerdes los detalles concretos de las conversaciones.",
+              "en": "The interviewer will dig: 'what exactly did you say?', 'how did that person react?', 'what would you do differently?'. Choose stories where YOU moved people (convincing, aligning, motivating), with real tension, and where you remember the concrete details of the conversations."
+            }
+          },
+          {
+            "title": { "es": "Por qué consultoría", "en": "Why consulting" },
+            "body": {
+              "es": "Ten una respuesta honesta y específica a '¿por qué consultoría?' y '¿por qué esta firma?': un proyecto, una persona con quien hablaste, un tipo de problema que te atrae. 'Me gusta resolver problemas' es lo que dicen todos; la especificidad te diferencia.",
+              "en": "Have an honest, specific answer to 'why consulting?' and 'why this firm?': a project, a person you spoke with, a type of problem that draws you. 'I like solving problems' is what everyone says; specificity differentiates you."
+            }
+          }
+        ],
+        "quiz": [
+          {
+            "question": {
+              "es": "¿En qué se diferencia el PEI de un behavioral clásico?",
+              "en": "How does the PEI differ from a classic behavioral interview?"
+            },
+            "options": {
+              "es": ["Explora una sola historia en profundidad durante varios minutos", "Son preguntas rápidas de sí o no", "Solo pregunta sobre notas académicas", "No permite hablar de trabajo en equipo"],
+              "en": ["It explores a single story in depth for several minutes", "It's rapid yes/no questions", "It only asks about academic grades", "It doesn't allow talking about teamwork"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "El PEI escarba 5-10 minutos en una historia: los detalles importan más que la variedad.",
+              "en": "The PEI digs into one story for 5-10 minutes: details matter more than variety."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Qué tipo de historia funciona mejor para 'impacto personal'?",
+              "en": "What kind of story works best for 'personal impact'?"
+            },
+            "options": {
+              "es": ["Convencer o alinear a personas sin tener autoridad formal", "Un logro puramente individual y técnico", "Algo que hizo tu equipo sin ti", "Un premio que recibiste sin esfuerzo"],
+              "en": ["Convincing or aligning people without formal authority", "A purely individual technical achievement", "Something your team did without you", "An award you received effortlessly"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Impacto personal = mover a otras personas: influencia, no jerarquía.",
+              "en": "Personal impact = moving other people: influence, not hierarchy."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Cuál es la mejor respuesta a '¿por qué esta firma?'",
+              "en": "What is the best answer to 'why this firm?'"
+            },
+            "options": {
+              "es": ["Algo específico: un proyecto, una conversación, un tipo de problema", "Porque es prestigiosa y paga bien", "Me gusta resolver problemas en general", "Apliqué a todas y esta respondió primero"],
+              "en": ["Something specific: a project, a conversation, a type of problem", "Because it's prestigious and pays well", "I like solving problems in general", "I applied everywhere and this one answered first"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "La especificidad demuestra investigación y motivación genuina.",
+              "en": "Specificity demonstrates research and genuine motivation."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "consulting_step5_call",
+      "type": "call",
+      "category": { "es": "Práctica", "en": "Practice" },
+      "title": { "es": "Case en vivo con IA", "en": "Live case with AI" },
+      "guide": {
+        "es": "Simula una entrevista completa: inicia un loop en tu trayecto de consultoría, practica estructura y síntesis en voz alta, y recibe tu reporte.",
+        "en": "Simulate a full interview: start a loop on your consulting track, practice structure and synthesis out loud, and get your report."
+      },
+      "tips": {
+        "es": ["Estructura antes de responder", "Sintetiza al cerrar cada respuesta", "Repite el loop hasta subir tu puntaje"],
+        "en": ["Structure before answering", "Synthesize when closing each answer", "Repeat the loop until your score rises"]
+      }
+    }
+  ]
+}

@@ -8,20 +8,69 @@ import '../../../core/widgets/delta_badge.dart';
 import '../../../core/widgets/level_circle.dart';
 import '../../../core/widgets/loop_card.dart';
 import '../../../core/widgets/metric_progress_bar.dart';
+import '../../../core/widgets/skeleton.dart';
+import '../../home_dashboard/presentation/cubit/home_dashboard_cubit.dart';
+import '../domain/entities/session_recap.dart';
 import 'cubit/recap_cubit.dart';
 import 'cubit/recap_state.dart';
 
-class RecapScreen extends StatelessWidget {
-  const RecapScreen({super.key});
+class RecapScreen extends StatefulWidget {
+  const RecapScreen({super.key, this.trackId, this.loopId});
+
+  final String? trackId;
+  final String? loopId;
+
+  @override
+  State<RecapScreen> createState() => _RecapScreenState();
+}
+
+class _RecapScreenState extends State<RecapScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final trackId = widget.trackId;
+      final loopId = widget.loopId;
+      if (trackId == null ||
+          trackId.isEmpty ||
+          loopId == null ||
+          loopId.isEmpty) {
+        return;
+      }
+      context.read<RecapCubit>().load(trackId: trackId, loopId: loopId);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<RecapCubit, RecapState>(
       builder: (context, state) {
+        if (state is RecapEmpty || state is RecapError) {
+          return Scaffold(
+            backgroundColor: LoopColors.surface,
+            appBar: AppBar(
+              leading: IconButton(
+                onPressed: () => _goHome(context),
+                icon: const Icon(Icons.close_rounded),
+              ),
+            ),
+            body: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Text(
+                  state is RecapError
+                      ? state.message
+                      : 'Todavía no hay un reporte disponible.',
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          );
+        }
         if (state is! RecapLoaded) {
           return const Scaffold(
             backgroundColor: LoopColors.surface,
-            body: Center(child: CircularProgressIndicator()),
+            body: _RecapSkeleton(),
           );
         }
 
@@ -33,7 +82,7 @@ class RecapScreen extends StatelessWidget {
           appBar: AppBar(
             title: Text(strings.recapTitle),
             leading: IconButton(
-              onPressed: () => context.go('/'),
+              onPressed: () => _goHome(context),
               icon: const Icon(Icons.close_rounded),
             ),
           ),
@@ -120,12 +169,14 @@ class RecapScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 22),
                 FilledButton(
-                  onPressed: () => context.go('/interview'),
+                  onPressed: () => context.go(
+                    '/interview?trackId=${recap.trackId}&sourceLoopId=${recap.loopId}&loopType=interview',
+                  ),
                   child: Text(strings.practiceAgain),
                 ),
                 const SizedBox(height: 10),
                 OutlinedButton(
-                  onPressed: () {},
+                  onPressed: () => _showTranscript(context, recap),
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size.fromHeight(52),
                     shape: RoundedRectangleBorder(
@@ -139,6 +190,39 @@ class RecapScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  void _showTranscript(BuildContext context, SessionRecap recap) {
+    showModalBottomSheet<void>(
+      context: context,
+      showDragHandle: true,
+      isScrollControlled: true,
+      builder: (context) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.75,
+        maxChildSize: 0.92,
+        builder: (context, controller) => ListView.separated(
+          controller: controller,
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 32),
+          itemCount: recap.transcript.length,
+          separatorBuilder: (_, _) => const SizedBox(height: 12),
+          itemBuilder: (context, index) {
+            final turn = recap.transcript[index];
+            final candidate = turn.role == 'candidate';
+            return ListTile(
+              tileColor: candidate
+                  ? LoopColors.lightGreen
+                  : Theme.of(context).colorScheme.surfaceContainerHighest,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              title: Text(candidate ? 'Candidato' : 'Reclutador'),
+              subtitle: Text(turn.text),
+            );
+          },
+        ),
+      ),
     );
   }
 }
@@ -161,6 +245,49 @@ class _Insight extends StatelessWidget {
         const SizedBox(height: 8),
         Text(body, style: Theme.of(context).textTheme.bodyMedium),
       ],
+    );
+  }
+}
+
+void _goHome(BuildContext context) {
+  context.read<HomeDashboardCubit>().load();
+  context.go('/');
+}
+
+class _RecapSkeleton extends StatelessWidget {
+  const _RecapSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SkeletonCardRow(
+            circleSize: 72,
+            lineWidths: [200, 240, 60],
+            color: LoopColors.lightGreen,
+          ),
+          const SizedBox(height: 20),
+          LoopCard(
+            child: Column(
+              children: [
+                for (var i = 0; i < 4; i++) ...[
+                  if (i > 0) const SizedBox(height: 18),
+                  Row(
+                    children: const [
+                      Expanded(child: SkeletonLine(width: 140)),
+                      SizedBox(width: 12),
+                      Expanded(flex: 2, child: SkeletonBox(height: 8, borderRadius: 4)),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

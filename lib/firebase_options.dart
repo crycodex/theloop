@@ -63,13 +63,13 @@ class DefaultFirebaseOptions {
     projectId: 'the-loop-d46af',
     storageBucket: 'the-loop-d46af.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCTR2Y0PG-UajR-Uxdm-Sc0eFadIGiwxFw',
     appId: '1:1009082169764:ios:9798f3ead0bcbfa680a931',
     messagingSenderId: '1009082169764',
     projectId: 'the-loop-d46af',
     storageBucket: 'the-loop-d46af.firebasestorage.app',
+    iosClientId: '1009082169764-v7fp2e06lk8j9vobkdeqci8m0aq4j4jk.apps.googleusercontent.com',
     iosBundleId: 'com.lopp.app',
   );
 }

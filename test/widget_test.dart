@@ -1,13 +1,109 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:theloop/main.dart';
+import 'package:theloop/core/navigation/app_router.dart';
+import 'package:theloop/core/settings/cubit/settings_cubit.dart';
+import 'package:theloop/core/settings/cubit/settings_state.dart';
+import 'package:theloop/core/settings/data/settings_storage.dart';
+import 'package:theloop/core/theme/loop_theme.dart';
+import 'package:theloop/features/auth/domain/repositories/auth_repository.dart';
+import 'package:theloop/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:theloop/features/profile/domain/repositories/profile_repository.dart';
+import 'package:theloop/features/profile/domain/usecases/get_profile.dart';
+import 'package:theloop/features/profile/presentation/cubit/profile_cubit.dart';
+
+import 'fakes/fake_auth_repository.dart';
+import 'fakes/fake_profile_repository.dart';
+
+class _TestApp extends StatelessWidget {
+  const _TestApp();
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider<AuthRepository>(create: (_) => FakeAuthRepository()),
+        RepositoryProvider<ProfileRepository>(
+          create: (_) => FakeProfileRepository(),
+        ),
+      ],
+      child: const _TestAppView(),
+    );
+  }
+}
+
+class _TestAppView extends StatefulWidget {
+  const _TestAppView();
+
+  @override
+  State<_TestAppView> createState() => _TestAppViewState();
+}
+
+class _TestAppViewState extends State<_TestAppView> {
+  late final AppRouter _appRouter;
+
+  @override
+  void initState() {
+    super.initState();
+    _appRouter = AppRouter(
+      context.read<AuthRepository>(),
+      context.read<ProfileRepository>(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _appRouter.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => AuthCubit(context.read<AuthRepository>()),
+        ),
+        BlocProvider(
+          create: (context) => ProfileCubit(
+            GetProfile(context.read<ProfileRepository>()),
+            context.read<ProfileRepository>(),
+            context.read<AuthRepository>(),
+          ),
+        ),
+        BlocProvider(
+          create: (_) => SettingsCubit(InMemorySettingsStorage()),
+        ),
+      ],
+      child: BlocBuilder<SettingsCubit, SettingsState>(
+        builder: (context, settings) {
+          return MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            theme: LoopTheme.light,
+            darkTheme: LoopTheme.dark,
+            themeMode: settings.themeMode,
+            locale: settings.language.locale,
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale('es'), Locale('en')],
+            routerConfig: _appRouter.router,
+          );
+        },
+      ),
+    );
+  }
+}
 
 void main() {
   testWidgets('Loop app opens the onboarding flow', (
     WidgetTester tester,
   ) async {
-    await tester.pumpWidget(const LoopApp());
+    await tester.pumpWidget(const _TestApp());
     await tester.pump();
 
     expect(find.text('Toca para continuar'), findsOneWidget);

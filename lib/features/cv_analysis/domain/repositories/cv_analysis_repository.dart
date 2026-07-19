@@ -1,5 +1,7 @@
 import '../entities/cv_analysis.dart';
 
 abstract interface class CvAnalysisRepository {
-  CvAnalysis getAnalysis();
+  Future<CvAnalysis?> getLatest();
+
+  Future<void> saveLatest(CvAnalysis analysis);
 }

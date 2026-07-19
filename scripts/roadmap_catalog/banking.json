@@ -1,0 +1,368 @@
+{
+  "goalId": "banking",
+  "target": { "es": "Banca de Inversión", "en": "Investment Banking" },
+  "finalGoal": {
+    "es": "Dominar los técnicos de valoración y contar tu historia con precisión para una oferta de analista IB.",
+    "en": "Master valuation technicals and tell your story with precision to land an IB analyst offer."
+  },
+  "steps": [
+    {
+      "id": "banking_step1_story",
+      "type": "lesson",
+      "category": { "es": "Fit", "en": "Fit" },
+      "title": { "es": "Tu historia y por qué banking", "en": "Your story and why banking" },
+      "guide": {
+        "es": "Construye la narrativa que abre toda entrevista de IB: quién eres, por qué banca de inversión y por qué este banco.",
+        "en": "Build the narrative that opens every IB interview: who you are, why investment banking, and why this bank."
+      },
+      "tips": {
+        "es": ["Historia de 90 segundos, ensayada", "Conecta cada etapa con banking", "Sigue 2-3 deals recientes del sector"],
+        "en": ["A rehearsed 90-second story", "Connect each step of your path to banking", "Follow 2-3 recent deals in the sector"]
+      },
+      "lesson": {
+        "sections": [
+          {
+            "title": { "es": "La narrativa que esperan", "en": "The narrative they expect" },
+            "body": {
+              "es": "En IB tu historia debe sonar deliberada: cada experiencia (finanzas, análisis, competición) te acercó a banking. El formato: origen → chispa de interés → pasos concretos que diste (cursos, prácticas, modeling) → por qué este banco y este grupo. Nada de 'caí aquí de casualidad'.",
+              "en": "In IB your story must sound deliberate: every experience (finance, analysis, competition) moved you toward banking. Format: origin → spark of interest → concrete steps you took (courses, internships, modeling) → why this bank and this group. Never 'I ended up here by accident'."
+            }
+          },
+          {
+            "title": { "es": "Por qué banking, en serio", "en": "Why banking, for real" },
+            "body": {
+              "es": "Respuestas que funcionan: exposición temprana a transacciones que definen empresas, aprendizaje comprimido, trabajar con equipos de alto nivel en problemas con cifras reales. Sé honesto pero evita mencionar solo el dinero o el prestigio: demuestran motivación frágil ante las horas duras.",
+              "en": "Answers that work: early exposure to company-defining transactions, compressed learning, working with top teams on problems with real numbers. Be honest but avoid citing only money or prestige: those signal fragile motivation against the brutal hours."
+            }
+          },
+          {
+            "title": { "es": "Market awareness", "en": "Market awareness" },
+            "body": {
+              "es": "Espera '¿qué deal reciente te interesó?' y '¿dónde está el S&P hoy?'. Prepara 2-3 deals del último año: quién compró a quién, múltiplo aproximado, y la lógica estratégica. Leer un resumen de mercado 10 minutos al día las semanas previas es suficiente para no quedar en blanco.",
+              "en": "Expect 'what recent deal interested you?' and 'where is the S&P today?'. Prepare 2-3 deals from the past year: who bought whom, rough multiple, and the strategic rationale. Reading a market summary 10 minutes a day in the weeks before is enough to never blank."
+            }
+          }
+        ],
+        "quiz": [
+          {
+            "question": {
+              "es": "¿Cómo debe sonar tu historia personal en una entrevista de IB?",
+              "en": "How should your personal story sound in an IB interview?"
+            },
+            "options": {
+              "es": ["Deliberada: cada paso te acercó a banking", "Casual: llegué aquí de casualidad", "Centrada solo en el salario esperado", "Una lista de asignaturas aprobadas"],
+              "en": ["Deliberate: every step moved you toward banking", "Casual: I ended up here by accident", "Focused only on expected salary", "A list of courses you passed"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "La narrativa deliberada demuestra compromiso real con la carrera en banca.",
+              "en": "A deliberate narrative shows real commitment to a banking career."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Qué debes preparar sobre un deal reciente?",
+              "en": "What should you prepare about a recent deal?"
+            },
+            "options": {
+              "es": ["Comprador, objetivo, múltiplo aproximado y lógica estratégica", "Solo el nombre de los bancos asesores", "El color del logo de las empresas", "Los nombres de todos los abogados del deal"],
+              "en": ["Buyer, target, rough multiple, and strategic rationale", "Only the names of the advising banks", "The color of the companies' logos", "The names of every lawyer on the deal"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Esos cuatro elementos permiten una conversación de deal con criterio.",
+              "en": "Those four elements enable an informed deal conversation."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Por qué 'me motiva el prestigio y el dinero' es mala respuesta?",
+              "en": "Why is 'I'm motivated by prestige and money' a weak answer?"
+            },
+            "options": {
+              "es": ["Sugiere motivación frágil frente a las horas exigentes", "Porque en banking no se gana bien", "Porque el prestigio está mal visto siempre", "No es mala respuesta, es la ideal"],
+              "en": ["It suggests fragile motivation against the demanding hours", "Because banking doesn't pay well", "Because prestige is always frowned upon", "It's not weak, it's the ideal answer"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Buscan motivos que sobrevivan a las madrugadas: aprendizaje y exposición a transacciones.",
+              "en": "They want motives that survive the all-nighters: learning and deal exposure."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "banking_step2_statements",
+      "type": "lesson",
+      "category": { "es": "Técnica", "en": "Technical" },
+      "title": { "es": "Los 3 estados financieros", "en": "The 3 financial statements" },
+      "guide": {
+        "es": "Domina cómo se conectan el estado de resultados, el balance y el flujo de caja: la pregunta técnica más frecuente de IB.",
+        "en": "Master how the income statement, balance sheet, and cash flow statement link together: the most frequent IB technical question."
+      },
+      "tips": {
+        "es": ["Practica el caso de +10 en depreciación", "La utilidad neta conecta los tres estados", "Recorre siempre los tres en orden"],
+        "en": ["Drill the +10 depreciation case", "Net income links all three statements", "Always walk through the three in order"]
+      },
+      "lesson": {
+        "sections": [
+          {
+            "title": { "es": "Qué cuenta cada estado", "en": "What each statement tells" },
+            "body": {
+              "es": "Estado de resultados: ingresos, gastos y utilidad neta de un periodo. Balance: activos = pasivos + patrimonio en una fecha (foto). Flujo de caja: efectivo real que entra y sale, partiendo de la utilidad neta y ajustando partidas no monetarias como la depreciación.",
+              "en": "Income statement: revenue, expenses, and net income over a period. Balance sheet: assets = liabilities + equity at a point in time (a snapshot). Cash flow statement: actual cash in and out, starting from net income and adjusting for non-cash items like depreciation."
+            }
+          },
+          {
+            "title": { "es": "Cómo se conectan", "en": "How they link" },
+            "body": {
+              "es": "La utilidad neta del estado de resultados abre el flujo de caja y alimenta las utilidades retenidas del balance. El efectivo final del flujo de caja es el efectivo del balance. Si el balance no cuadra después de tu explicación, algo olvidaste.",
+              "en": "Net income from the income statement opens the cash flow statement and feeds retained earnings on the balance sheet. The ending cash from the cash flow statement is the cash on the balance sheet. If the balance sheet doesn't balance after your walkthrough, you missed something."
+            }
+          },
+          {
+            "title": { "es": "El clásico: +10 de depreciación", "en": "The classic: +10 depreciation" },
+            "body": {
+              "es": "Con impuesto del 40%: utilidad neta baja 6 (10 × 0.6). En flujo de caja: −6 de utilidad, +10 al reversar la depreciación (no es efectivo) → caja sube 4. En balance: caja +4, PP&E −10 → activos −6; patrimonio −6 por utilidades retenidas. Cuadra. Practícalo hasta decirlo sin pensar.",
+              "en": "With a 40% tax rate: net income falls by 6 (10 × 0.6). On the cash flow statement: −6 from net income, +10 adding back depreciation (non-cash) → cash up 4. On the balance sheet: cash +4, PP&E −10 → assets −6; equity −6 via retained earnings. It balances. Drill it until it's automatic."
+            }
+          }
+        ],
+        "quiz": [
+          {
+            "question": {
+              "es": "Con impuestos al 40%, la depreciación sube 10. ¿Qué pasa con la caja?",
+              "en": "With a 40% tax rate, depreciation rises by 10. What happens to cash?"
+            },
+            "options": {
+              "es": ["Sube 4", "Baja 10", "Baja 6", "No cambia"],
+              "en": ["It rises by 4", "It falls by 10", "It falls by 6", "It doesn't change"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Utilidad −6, más el add-back de 10 de depreciación no monetaria: caja +4.",
+              "en": "Net income −6, plus the +10 non-cash depreciation add-back: cash +4."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Qué partida conecta el estado de resultados con el balance?",
+              "en": "Which item links the income statement to the balance sheet?"
+            },
+            "options": {
+              "es": ["La utilidad neta vía utilidades retenidas", "El inventario", "Las cuentas por pagar", "El goodwill"],
+              "en": ["Net income via retained earnings", "Inventory", "Accounts payable", "Goodwill"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "La utilidad neta fluye a utilidades retenidas dentro del patrimonio.",
+              "en": "Net income flows into retained earnings within equity."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Por qué la depreciación se suma de vuelta en el flujo de caja?",
+              "en": "Why is depreciation added back on the cash flow statement?"
+            },
+            "options": {
+              "es": ["Es un gasto contable que no consume efectivo", "Porque siempre aumenta las ventas", "Es un error contable que se corrige", "Porque reduce los impuestos a cero"],
+              "en": ["It's an accounting expense that uses no cash", "Because it always increases sales", "It's an accounting error being corrected", "Because it reduces taxes to zero"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "La depreciación reduce la utilidad contable pero no sale efectivo de la empresa.",
+              "en": "Depreciation lowers accounting profit but no cash leaves the company."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "banking_step3_valuation",
+      "type": "lesson",
+      "category": { "es": "Técnica", "en": "Technical" },
+      "title": { "es": "Valoración: DCF y múltiplos", "en": "Valuation: DCF and multiples" },
+      "guide": {
+        "es": "Aprende a responder 'walk me through a DCF' y a usar comparables como un analista.",
+        "en": "Learn to answer 'walk me through a DCF' and to use comparables like an analyst."
+      },
+      "tips": {
+        "es": ["Memoriza el flujo del DCF en 6 pasos", "EV/EBITDA es el múltiplo estrella", "Di las 3 metodologías principales"],
+        "en": ["Memorize the DCF flow in 6 steps", "EV/EBITDA is the star multiple", "Name the 3 main methodologies"]
+      },
+      "lesson": {
+        "sections": [
+          {
+            "title": { "es": "Las 3 metodologías", "en": "The 3 methodologies" },
+            "body": {
+              "es": "1) DCF: valor intrínseco descontando flujos de caja futuros. 2) Comparables de mercado (trading comps): múltiplos de empresas similares cotizadas. 3) Transacciones precedentes: múltiplos pagados en adquisiciones similares (incluyen prima de control). Un banker triangula las tres para un rango de valor.",
+              "en": "1) DCF: intrinsic value by discounting future cash flows. 2) Trading comps: multiples of similar listed companies. 3) Precedent transactions: multiples paid in similar acquisitions (they include a control premium). A banker triangulates all three into a value range."
+            }
+          },
+          {
+            "title": { "es": "Walk me through a DCF", "en": "Walk me through a DCF" },
+            "body": {
+              "es": "1) Proyecta flujos de caja libres 5-10 años. 2) Calcula el WACC. 3) Descuenta los flujos al presente. 4) Calcula valor terminal (crecimiento perpetuo o múltiplo de salida) y descuéntalo. 5) Suma: enterprise value. 6) Resta deuda neta para llegar al equity value. Di los pasos con seguridad y espera preguntas de seguimiento sobre WACC o valor terminal.",
+              "en": "1) Project free cash flows 5-10 years. 2) Calculate WACC. 3) Discount the flows to present value. 4) Compute terminal value (perpetuity growth or exit multiple) and discount it. 5) Sum: enterprise value. 6) Subtract net debt to reach equity value. Deliver the steps confidently and expect follow-ups on WACC or terminal value."
+            }
+          },
+          {
+            "title": { "es": "EV, equity value y múltiplos", "en": "EV, equity value, and multiples" },
+            "body": {
+              "es": "Enterprise value = equity value + deuda neta: el valor del negocio completo para todos los financiadores. Por eso EV se compara con métricas antes de intereses (EV/EBITDA, EV/Sales) y equity value con métricas para accionistas (P/E). Mezclar numeradores y denominadores es el error técnico clásico.",
+              "en": "Enterprise value = equity value + net debt: the value of the whole business to all capital providers. That's why EV pairs with pre-interest metrics (EV/EBITDA, EV/Sales) and equity value with shareholder metrics (P/E). Mixing numerators and denominators is the classic technical mistake."
+            }
+          }
+        ],
+        "quiz": [
+          {
+            "question": {
+              "es": "¿Cuál es el último paso de un DCF para llegar al equity value?",
+              "en": "What is the final DCF step to reach equity value?"
+            },
+            "options": {
+              "es": ["Restar la deuda neta al enterprise value", "Sumar la depreciación", "Multiplicar por el P/E del sector", "Restar el EBITDA"],
+              "en": ["Subtract net debt from enterprise value", "Add back depreciation", "Multiply by the sector P/E", "Subtract EBITDA"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "EV pertenece a todos los financiadores; quitando deuda neta queda el valor del accionista.",
+              "en": "EV belongs to all capital providers; removing net debt leaves shareholder value."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Por qué EV/EBITDA y no EV/utilidad neta?",
+              "en": "Why EV/EBITDA and not EV/net income?"
+            },
+            "options": {
+              "es": ["EV es pre-deuda y debe compararse con métricas antes de intereses", "Porque el EBITDA siempre es mayor", "Porque la utilidad neta no existe en comps", "Por tradición sin razón técnica"],
+              "en": ["EV is pre-debt and must pair with pre-interest metrics", "Because EBITDA is always larger", "Because net income doesn't exist in comps", "By tradition with no technical reason"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Numerador y denominador deben ser consistentes respecto a la estructura de capital.",
+              "en": "Numerator and denominator must be consistent with respect to capital structure."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Qué metodología suele dar el valor más alto y por qué?",
+              "en": "Which methodology usually yields the highest value and why?"
+            },
+            "options": {
+              "es": ["Transacciones precedentes, por la prima de control", "Trading comps, porque cotizan en bolsa", "DCF, porque usa flujos proyectados", "Todas dan siempre el mismo valor"],
+              "en": ["Precedent transactions, due to the control premium", "Trading comps, because they're listed", "DCF, because it uses projected flows", "They all always give the same value"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Los compradores pagan una prima por el control; los múltiplos precedentes la incorporan.",
+              "en": "Buyers pay a premium for control; precedent multiples embed it."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "banking_step4_lbo_ma",
+      "type": "lesson",
+      "category": { "es": "Técnica", "en": "Technical" },
+      "title": { "es": "LBO y merger math básico", "en": "Basic LBO and merger math" },
+      "guide": {
+        "es": "Entiende la mecánica de un leveraged buyout y la acreción/dilución en fusiones: los técnicos avanzados del proceso.",
+        "en": "Understand leveraged buyout mechanics and merger accretion/dilution: the advanced technicals of the process."
+      },
+      "tips": {
+        "es": ["El apalancamiento amplifica retornos", "Compara yields para acreción rápida", "Domina intuición antes que fórmulas"],
+        "en": ["Leverage amplifies returns", "Compare yields for quick accretion checks", "Master intuition before formulas"]
+      },
+      "lesson": {
+        "sections": [
+          {
+            "title": { "es": "La intuición del LBO", "en": "LBO intuition" },
+            "body": {
+              "es": "Un fondo compra una empresa usando mucha deuda (60-70%) y poco equity, como comprar una casa con hipoteca para alquilarla. Durante 3-7 años la empresa paga la deuda con su flujo de caja; al vender, el equity capturó la desapalancación más la mejora operativa. Buenos candidatos a LBO: flujos estables, poca deuda previa, activos vendibles.",
+              "en": "A fund buys a company using mostly debt (60-70%) and little equity, like buying a rental house with a mortgage. Over 3-7 years the company pays down debt with its cash flow; at exit, the equity captured the deleveraging plus operational improvement. Good LBO candidates: stable cash flows, low existing debt, sellable assets."
+            }
+          },
+          {
+            "title": { "es": "Acreción y dilución", "en": "Accretion and dilution" },
+            "body": {
+              "es": "Un deal es acretivo si el EPS del comprador sube tras la fusión. Regla rápida en deals 100% en acciones: si el P/E del comprador es mayor que el del objetivo, el deal es acretivo. En deals de efectivo: compara el yield de la adquisición (utilidad del objetivo / precio) contra el costo de financiación después de impuestos.",
+              "en": "A deal is accretive if the buyer's EPS rises after the merger. Quick rule in all-stock deals: if the buyer's P/E is higher than the target's, the deal is accretive. In cash deals: compare the acquisition yield (target earnings / price) against the after-tax cost of financing."
+            }
+          },
+          {
+            "title": { "es": "Lo que preguntan de verdad", "en": "What they actually ask" },
+            "body": {
+              "es": "A nivel analista no piden modelar un LBO completo en la entrevista: piden intuición. '¿Por qué usa deuda un fondo?' (amplifica retornos del equity), '¿qué hace bueno un candidato a LBO?', '¿un deal en efectivo al 5% con un objetivo a P/E 25 es acretivo?' (yield 4% < 5%: dilutivo, asumiendo tasa después de impuestos).",
+              "en": "At analyst level they don't ask you to model a full LBO in the interview: they test intuition. 'Why does a fund use debt?' (it amplifies equity returns), 'what makes a good LBO candidate?', 'is a cash deal at 5% for a target at 25x P/E accretive?' (4% yield < 5%: dilutive, assuming after-tax rate)."
+            }
+          }
+        ],
+        "quiz": [
+          {
+            "question": {
+              "es": "¿Por qué un fondo de private equity usa tanta deuda en un LBO?",
+              "en": "Why does a private equity fund use so much debt in an LBO?"
+            },
+            "options": {
+              "es": ["Amplifica el retorno sobre el equity invertido", "Porque la deuda no se devuelve nunca", "Para pagar más impuestos", "Porque el equity está prohibido"],
+              "en": ["It amplifies the return on invested equity", "Because the debt is never repaid", "To pay more taxes", "Because equity is forbidden"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Menos equity invertido con el mismo valor de salida = múltiplo de retorno mayor.",
+              "en": "Less equity in with the same exit value = a higher return multiple."
+            }
+          },
+          {
+            "question": {
+              "es": "¿Qué característica hace a una empresa buen candidato a LBO?",
+              "en": "What trait makes a company a good LBO candidate?"
+            },
+            "options": {
+              "es": ["Flujos de caja estables y predecibles", "Pérdidas crecientes cada año", "Deuda existente enorme", "Ingresos totalmente impredecibles"],
+              "en": ["Stable, predictable cash flows", "Growing losses every year", "Huge existing debt", "Completely unpredictable revenue"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "La deuda del LBO se paga con el flujo de caja: sin estabilidad no hay deal.",
+              "en": "LBO debt is repaid from cash flow: no stability, no deal."
+            }
+          },
+          {
+            "question": {
+              "es": "En un deal 100% en acciones, ¿cuándo es acretivo para el comprador?",
+              "en": "In an all-stock deal, when is it accretive for the buyer?"
+            },
+            "options": {
+              "es": ["Cuando el P/E del comprador supera el del objetivo", "Cuando ambos P/E son idénticos siempre", "Cuando el objetivo no tiene utilidades", "Nunca puede ser acretivo en acciones"],
+              "en": ["When the buyer's P/E exceeds the target's", "Only when both P/Es are identical", "When the target has no earnings", "It can never be accretive in stock"]
+            },
+            "correctIndex": 0,
+            "explanation": {
+              "es": "Compras utilidades 'más baratas' de lo que el mercado paga por las tuyas.",
+              "en": "You're buying earnings 'cheaper' than the market prices your own."
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "banking_step5_call",
+      "type": "call",
+      "category": { "es": "Práctica", "en": "Practice" },
+      "title": { "es": "Superday simulado", "en": "Simulated superday" },
+      "guide": {
+        "es": "Combina fit y técnicos bajo presión: inicia un loop de entrevista en tu trayecto de banking y recibe tu reporte con puntaje.",
+        "en": "Combine fit and technicals under pressure: start an interview loop on your banking track and get your scored report."
+      },
+      "tips": {
+        "es": ["Responde técnicos con estructura", "Mantén la calma ante repreguntas", "Repite el loop hasta dominar el DCF"],
+        "en": ["Answer technicals with structure", "Stay calm under follow-up pressure", "Repeat the loop until the DCF is automatic"]
+      }
+    }
+  ]
+}
